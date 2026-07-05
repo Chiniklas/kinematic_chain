@@ -1,0 +1,82 @@
+{
+  "mechanism_parameters": {
+    "r01": [
+      0.0,
+      0.0
+    ],
+    "link_1_length": 40.0,
+    "link_2_length": 24.0,
+    "link_3_length": 20.0,
+    "link_1_angle_deg": -179.657,
+    "link_2_angle_deg": 180.0,
+    "link_3_angle_deg": 178.254,
+    "a1_on_link_1": [
+      37.97844966271286,
+      3.743022974818161
+    ],
+    "b2_on_link_2": [
+      2.0000412449728455,
+      4.769098908598956
+    ],
+    "c3_on_link_3": [
+      2.001536551562179,
+      -10.661614001024514
+    ],
+    "p0_on_base": [
+      -1.2900419461839783,
+      6.296365940525019
+    ],
+    "base_vertex_on_base": [
+      37.604,
+      -19.521
+    ]
+  },
+  "target": {
+    "q_max_deg": 90.0,
+    "pip_per_q": 1.0,
+    "dip_per_pip": 0.7
+  },
+  "run": {
+    "created_at": "2026-07-05T19:14:01+02:00",
+    "directory": "runs/opt_20260705_191401",
+    "seed": 7
+  },
+  "metrics": {
+    "pip_rmse_deg": 5.9616341829604815,
+    "dip_rmse_deg": 5.988301981529534,
+    "pip_final_deg": 78.5884537581216,
+    "dip_final_deg": 51.76048315136795,
+    "pip_reverse_steps": 0,
+    "dip_reverse_steps": 0,
+    "minimum_transmission_angle_deg": 14.412363049215417,
+    "minimum_link1_link3_clearance_mm": 23.999999999999996,
+    "rod_p0_b2_mm": 42.24981609331917,
+    "rod_a1_c3_mm": 31.259239284165602,
+    "objective": 0.7391722841844418,
+    "baseline_objective": 3918965.5902924407,
+    "evaluations": 14727
+  },
+  "validation": {
+    "samples": 901,
+    "pip_min_increment_deg": 0.01877686720989402,
+    "dip_min_increment_deg": 0.024246107559946495,
+    "minimum_link1_link3_clearance_mm": 23.999999999999993,
+    "maximum_rod_length_error_mm": 1.4210854715202004e-14,
+    "monotonic": true,
+    "collision_free_centerlines": true
+  },
+  "torque_analysis": {
+    "model": "quasi-static gravity via dU/dq",
+    "peak_input_torque_Nm": 0.0175190467723,
+    "peak_input_torque_mNm": 17.5190467723,
+    "mass_assumptions_g": {
+      "link_1": 5.0,
+      "link_2": 4.0,
+      "link_3": 3.0,
+      "each_moving_joint": 3.0,
+      "rod_p0_b2": 1.0,
+      "rod_a1_c3": 1.0,
+      "tcp_payload": 0.0
+    }
+  }
+}
