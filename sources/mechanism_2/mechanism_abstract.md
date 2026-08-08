@@ -12,6 +12,7 @@ Source of truth: `mechanism.yaml` (schema version 1).
 - planar Gruebler mobility: 1
 - warning: 12 dimensions are nominal photo estimates, not measured values
 - warning: mechanism status is nominal_photo_geometry
+- warning: mass model status is nominal_placeholder; torque results are nominal
 
 ## Photo calibration
 
@@ -93,6 +94,38 @@ Source of truth: `mechanism.yaml` (schema version 1).
 |---|---|
 | topology_plot | ready |
 | numeric_link_table | ready_nominal_photo_estimates |
-| kinematic_sweep | placeholder_nominal_geometry_available |
+| kinematic_sweep | ready_nominal_photo_geometry |
 | optimization | placeholder_waiting_for_validated_kinematics_and_objective |
-| input_torque | blocked_no_validated_kinematics_masses_or_centres_of_mass |
+| input_torque | ready_nominal_placeholder_mass_model |
+
+## Workspace analysis settings
+
+| Setting | Value |
+|---|---|
+| q_min_deg | 0.0 |
+| q_max_deg | 90.0 |
+| steps | 181 |
+| solver_tolerance_mm | 1e-05 |
+| max_iterations | 100 |
+
+## Nominal body mass model
+
+| Body | Mass [g] | Centre node weights |
+|---|---|---|
+| input_crank | 5.0 | a: 0.5, b: 0.5 |
+| loop_1_coupler | 4.0 | b: 0.5, c: 0.5 |
+| central_body | 8.0 | c: 0.333333, d: 0.333334, f: 0.333333 |
+| link_eh | 1.0 | e: 0.5, h: 0.5 |
+| distal_body | 6.0 | f: 0.333333, h: 0.333334, i: 0.333333 |
+
+## Nominal point masses
+
+| Mass | Node | Mass [g] |
+|---|---|---|
+| joint_b | b | 3.0 |
+| joint_c | c | 3.0 |
+| joint_f | f | 3.0 |
+| joint_h | h | 3.0 |
+| output_payload | i | 0.0 |
+
+Mass-model status: `nominal_placeholder`.

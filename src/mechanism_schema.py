@@ -169,6 +169,68 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
         if body.get("kind") == "binary_link" and len(body_nodes) != 2:
             raise AbstractionError(f"binary body {body['id']} must contain exactly two nodes")
 
+    analysis = data.get("analysis", {})
+    if analysis is not None and not isinstance(analysis, dict):
+        raise AbstractionError("analysis must be a mapping")
+    sweep = analysis.get("workspace_sweep") if isinstance(analysis, dict) else None
+    if sweep is not None:
+        if not isinstance(sweep, dict):
+            raise AbstractionError("analysis.workspace_sweep must be a mapping")
+        q_min, q_max = sweep.get("q_min_deg"), sweep.get("q_max_deg")
+        steps = sweep.get("steps")
+        tolerance = sweep.get("solver_tolerance_mm")
+        iterations = sweep.get("max_iterations")
+        if (not all(isinstance(value, (int, float)) and math.isfinite(value)
+                    for value in (q_min, q_max))
+                or q_min >= q_max or q_min > 0 or q_max < 0):
+            raise AbstractionError("workspace sweep range must include zero")
+        if not isinstance(steps, int) or steps < 3:
+            raise AbstractionError("workspace sweep steps must be an integer of at least 3")
+        if not isinstance(tolerance, (int, float)) or tolerance <= 0:
+            raise AbstractionError("workspace solver tolerance must be positive")
+        if not isinstance(iterations, int) or iterations < 1:
+            raise AbstractionError("workspace max_iterations must be a positive integer")
+
+    mass_model = data.get("mass_model")
+    if mass_model is not None:
+        if not isinstance(mass_model, dict):
+            raise AbstractionError("mass_model must be a mapping")
+        gravity = mass_model.get("gravity_m_s2")
+        if not isinstance(gravity, (int, float)) or gravity <= 0:
+            raise AbstractionError("mass_model.gravity_m_s2 must be positive")
+        seen_mass_bodies: set[str] = set()
+        for row in mass_model.get("bodies", []):
+            if not isinstance(row, dict) or row.get("body") not in bodies:
+                raise AbstractionError("mass_model contains an unknown body")
+            body_id = row["body"]
+            if body_id in seen_mass_bodies:
+                raise AbstractionError(f"mass_model repeats body {body_id}")
+            seen_mass_bodies.add(body_id)
+            mass = row.get("mass_g")
+            if not isinstance(mass, (int, float)) or mass < 0:
+                raise AbstractionError(f"mass for body {body_id} must be non-negative")
+            weights = row.get("center_node_weights")
+            if weights is not None:
+                if not isinstance(weights, dict) or not weights:
+                    raise AbstractionError(f"body {body_id} centre weights must be a mapping")
+                if not set(weights) <= set(bodies[body_id]["nodes"]):
+                    raise AbstractionError(f"body {body_id} centre weights reference other nodes")
+                if (not all(isinstance(value, (int, float)) and value >= 0
+                            for value in weights.values()) or sum(weights.values()) <= 0):
+                    raise AbstractionError(f"body {body_id} centre weights must be non-negative")
+        seen_point_masses: set[str] = set()
+        for row in mass_model.get("point_masses", []):
+            if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+                raise AbstractionError("each point mass needs an id")
+            if row["id"] in seen_point_masses:
+                raise AbstractionError(f"duplicate point mass {row['id']}")
+            seen_point_masses.add(row["id"])
+            if row.get("node") not in nodes:
+                raise AbstractionError(f"point mass {row['id']} references an unknown node")
+            mass = row.get("mass_g")
+            if not isinstance(mass, (int, float)) or mass < 0:
+                raise AbstractionError(f"point mass {row['id']} must be non-negative")
+
     memberships = body_memberships(data)
     seen_joint_nodes: set[str] = set()
     equivalent_pairs = 0
@@ -289,6 +351,11 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
             raise AbstractionError(f"actuator {actuator.get('id')} has an invalid joint")
         if actuator.get("body") not in bodies or actuator.get("reference_body") not in bodies:
             raise AbstractionError(f"actuator {actuator.get('id')} has an invalid body")
+        if actuator["body"] == actuator["reference_body"]:
+            raise AbstractionError(f"actuator {actuator.get('id')} repeats its body")
+        joint = actuator["joint"]
+        if joint not in bodies[actuator["body"]]["nodes"] or joint not in bodies[actuator["reference_body"]]["nodes"]:
+            raise AbstractionError(f"actuator {actuator.get('id')} bodies do not meet at its joint")
 
     for output in data.get("outputs", []):
         if output.get("node") not in nodes or output.get("body") not in bodies:
@@ -325,6 +392,11 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
         )
     if mechanism.get("status") != "validated":
         warnings.append(f"mechanism status is {mechanism.get('status', 'unspecified')}")
+    if mass_model is not None and mass_model.get("status") != "validated":
+        warnings.append(
+            f"mass model status is {mass_model.get('status', 'unspecified')}; "
+            "torque results are nominal"
+        )
 
     return ValidationSummary(
         mechanism_id=mechanism["id"],

@@ -273,16 +273,53 @@ actuators:
     joint: a
     body: input_crank
     reference_body: ground
-    positive_direction: counter_clockwise
+    positive_direction: clockwise
 
 outputs:
   - id: fingertip
     node: i
     body: distal_body
 
+# Read-only numerical analysis settings. Angles are offsets from the photographed pose.
+analysis:
+  workspace_sweep:
+    q_min_deg: 0.0
+    q_max_deg: 90.0
+    steps: 181
+    solver_tolerance_mm: 0.00001
+    max_iterations: 100
+
+# Nominal placeholders for quasi-static gravity analysis. Replace with measured masses
+# and centres of mass before using torque results for component sizing.
+mass_model:
+  status: nominal_placeholder
+  gravity_m_s2: 9.80665
+  bodies:
+    - body: input_crank
+      mass_g: 5.0
+      center_node_weights: {a: 0.5, b: 0.5}
+    - body: loop_1_coupler
+      mass_g: 4.0
+      center_node_weights: {b: 0.5, c: 0.5}
+    - body: central_body
+      mass_g: 8.0
+      center_node_weights: {c: 0.333333, d: 0.333334, f: 0.333333}
+    - body: link_eh
+      mass_g: 1.0
+      center_node_weights: {e: 0.5, h: 0.5}
+    - body: distal_body
+      mass_g: 6.0
+      center_node_weights: {f: 0.333333, h: 0.333334, i: 0.333333}
+  point_masses:
+    - {id: joint_b, node: b, mass_g: 3.0}
+    - {id: joint_c, node: c, mass_g: 3.0}
+    - {id: joint_f, node: f, mass_g: 3.0}
+    - {id: joint_h, node: h, mass_g: 3.0}
+    - {id: output_payload, node: i, mass_g: 0.0}
+
 model_readiness:
   topology_plot: ready
   numeric_link_table: ready_nominal_photo_estimates
-  kinematic_sweep: placeholder_nominal_geometry_available
+  kinematic_sweep: ready_nominal_photo_geometry
   optimization: placeholder_waiting_for_validated_kinematics_and_objective
-  input_torque: blocked_no_validated_kinematics_masses_or_centres_of_mass
+  input_torque: ready_nominal_placeholder_mass_model

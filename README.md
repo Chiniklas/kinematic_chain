@@ -36,7 +36,11 @@ The analysis writes:
 runs/mechanism_2/
 ├── abstraction.png       # topology with every declared nominal dimension
 ├── link_lengths.csv      # machine-readable dimension table
-└── mechanism_tables.md   # complete human-readable abstraction report
+├── mechanism_tables.md   # complete human-readable abstraction report
+├── workspace_report.png  # swept poses, output path, and closure residuals
+├── workspace_samples.csv # solved node coordinates for every input sample
+├── torque_report.png     # nominal quasi-static gravity torque
+└── torque_samples.csv    # total and component torque samples
 ```
 
 Open [the generated abstraction plot](runs/mechanism_2/abstraction.png) to inspect the
@@ -78,12 +82,17 @@ canonicalizes that joint as node `f`; there is no separate node `g`, FG link, or
 
 The two closed paths are A–B–C–D–A and D–F–H–E–D. Six bodies and seven equivalent
 lower pairs give planar Grübler mobility 1, matching the single rotary actuator at A.
+Positive input is clockwise closing motion. The configured workspace request is
+0–90°; with the present photo-derived lengths, the nominal distance constraints close
+only through approximately 66°. The workspace report marks 66–90° as infeasible
+instead of extrapolating nonexistent poses.
 
 The 12 current dimensions are nominal estimates derived from the source photograph.
-They include uncertainty and are suitable for abstraction development and initial
-solver work, but not manufacturing, load, or torque decisions. Diagram coordinates
-under `nodes[*].layout` control only the plot layout and are never interpreted as
-physical lengths.
+They include uncertainty and drive the generic distance-constraint workspace solver.
+The torque stage uses an explicitly declared nominal placeholder mass model. These
+results support pipeline development, but not manufacturing, rated-load, or actuator
+sizing decisions. Diagram coordinates under `nodes[*].layout` control only the plot
+layout and are never interpreted as physical lengths.
 
 ## Pipeline contracts
 
@@ -117,10 +126,15 @@ The pipeline performs these operations:
 2. Calculate body count, equivalent lower pairs, independent loops, and planar mobility.
 3. Export the complete mechanism report as Markdown.
 4. Export the dimension table as CSV.
-5. Render the topology and annotate every declared length, uncertainty, and unit.
+5. Render the topology and annotate every declared nominal length and unit.
+6. Sweep the rotary input, solve the declared distance constraints, and report the
+   output workspace and closure residual at every feasible pose.
+7. Apply the YAML mass model to the solved poses and calculate nominal quasi-static
+   gravitational input torque by virtual work.
 
 The abstraction YAML is read-only throughout this flow. Invalid topology, incidence,
-dimensions, loops, actuators, or outputs stop the pipeline before reports are produced.
+dimensions, loops, actuators, or outputs stop the pipeline; artifacts completed by an
+earlier stage may remain in the selected output directory.
 
 ### Optimization pipeline
 
@@ -169,6 +183,8 @@ Its main tables are:
 | `loops` | Closed node and body cycles |
 | `actuators` | Driven joints and positive direction |
 | `outputs` | Tracked points and their owning bodies |
+| `analysis` | Sweep range, sampling, and numerical solver settings |
+| `mass_model` | Body masses, point masses, and centre-of-mass node weights |
 | `model_readiness` | Availability of downstream analyses |
 
 After changing the YAML, regenerate and verify all derived files:
@@ -199,6 +215,8 @@ The generic validator currently enforces that:
 11. Actuators reference existing revolute joints and bodies, and output nodes belong to
     their declared bodies.
 12. Planar mobility is derived from the validated body and lower-pair counts.
+13. Workspace ranges, tolerances, and iteration limits are numerically valid.
+14. Mass rows reference existing bodies/nodes and use valid centre weights.
 
 These checks validate the abstraction’s structure. They do not yet prove that every
 input angle has a feasible assembly configuration or that the mechanism avoids branch
@@ -233,6 +251,27 @@ MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
 
 Add `--show` to the plot command when an interactive graphical session is available.
 
+Run only the workspace sweep:
+
+```bash
+MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
+  python3 src/workspace_sweep.py sources/mechanism_2/mechanism.yaml \
+  --output /tmp/workspace_report.png \
+  --csv /tmp/workspace_samples.csv
+```
+
+Run only the nominal torque analysis:
+
+```bash
+MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
+  python3 src/torque_analysis.py sources/mechanism_2/mechanism.yaml \
+  --output /tmp/torque_report.png \
+  --csv /tmp/torque_samples.csv
+```
+
+Both tools accept `--q-min`, `--q-max`, and `--steps` overrides. Without overrides,
+they use `analysis.workspace_sweep` from the YAML.
+
 ## Repository layout
 
 ```text
@@ -246,23 +285,26 @@ src/
   mechanism_schema.py                   Generic loader, validator, and mobility summary
   mechanism_table.py                    Markdown and CSV exporter
   plot_linkage.py                       Dimensioned abstraction renderer
+  workspace_sweep.py                    Generic distance-constraint workspace solver
+  torque_analysis.py                    Generic quasi-static gravity analysis
   run_analysis.sh                       Read-only analysis entry point
   run_optimization.sh                   Reserved optimization/override entry point
-tests/test_mechanism_schema.py           Schema and plotting regression tests
+tests/test_mechanism_schema.py           Schema, workspace, torque, and plot tests
 runs/mechanism_2/                        Generated analysis artifacts
 ```
 
 ## Preparing for numerical optimization
 
-Before activating the optimization pipeline, add or validate:
+Before activating the optimization pipeline, replace or validate:
 
-- measured joint-centre distances or CAD geometry;
-- a position solver and assembly-mode selection rule;
+- the photo-derived joint-centre dimensions with measurements or CAD geometry;
+- the current continuity-based assembly-mode selection with design-specific rules;
 - permitted input range and design-variable bounds;
 - the required output trajectory or workspace;
 - an objective function and candidate acceptance thresholds;
 - collision, singularity, packaging, and transmission constraints;
-- masses, centres of mass, loads, and drive limits if torque is part of the objective.
+- the nominal mass placeholders with measured masses and centres of mass;
+- external loads and drive limits if torque is part of the objective.
 
 Those additions should consume the same YAML abstraction. Mechanism-specific solvers
 or parameters should extend the schema explicitly rather than reintroducing hard-coded

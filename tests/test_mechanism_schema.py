@@ -6,6 +6,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -19,6 +21,8 @@ from mechanism_schema import (  # noqa: E402
     validate_abstraction,
 )
 from plot_linkage import draw_abstraction  # noqa: E402
+from torque_analysis import analyze_torque, total_mass_g  # noqa: E402
+from workspace_sweep import sweep_workspace  # noqa: E402
 
 
 ABSTRACTION = ROOT / "sources" / "mechanism_2" / "mechanism.yaml"
@@ -75,6 +79,25 @@ class MechanismSchemaTests(unittest.TestCase):
         finally:
             import matplotlib.pyplot as plt
             plt.close(figure)
+
+    def test_workspace_sweep_closes_declared_dimensions(self) -> None:
+        result = sweep_workspace(self.data, q_min=0.0, q_max=90.0, steps=19)
+        self.assertEqual(result.poses[0].q_deg, 0.0)
+        self.assertGreater(result.poses[-1].q_deg, 60.0)
+        self.assertLess(result.poses[-1].q_deg, 90.0)
+        self.assertLess(max(pose.max_residual_mm for pose in result.poses), 1e-4)
+        self.assertEqual(result.output_node, "i")
+        self.assertLess(
+            result.poses[-1].positions["i"][1],
+            result.poses[0].positions["i"][1],
+        )
+
+    def test_nominal_torque_analysis_uses_yaml_mass_model(self) -> None:
+        sweep = sweep_workspace(self.data, q_min=0.0, q_max=5.0, steps=6)
+        torque = analyze_torque(self.data, sweep)
+        self.assertEqual(len(torque.q_deg), 6)
+        self.assertTrue(np.all(np.isfinite(torque.total_nm)))
+        self.assertAlmostEqual(total_mass_g(self.data), 36.0)
 
     def test_validator_accepts_an_unrelated_four_bar(self) -> None:
         data = {

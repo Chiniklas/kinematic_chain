@@ -47,9 +47,6 @@ def _dimension_label(dimension: dict[str, Any], default_units: str) -> str:
         value_text = "not set"
     else:
         value_text = f"{value:g}"
-        uncertainty = dimension.get("uncertainty_mm")
-        if isinstance(uncertainty, (int, float)):
-            value_text += f" ± {uncertainty:g}"
         if units:
             value_text += f" {units}"
     return f"{dimension['id']}\n{value_text}"

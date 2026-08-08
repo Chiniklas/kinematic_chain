@@ -98,6 +98,34 @@ def render_markdown(data: dict[str, Any], source_path: Path) -> str:
             [[name, status] for name, status in data.get("model_readiness", {}).items()],
         ),
         "",
+        "## Workspace analysis settings",
+        "",
+        *_markdown_table(
+            ["Setting", "Value"],
+            [[name, value] for name, value in
+             data.get("analysis", {}).get("workspace_sweep", {}).items()],
+        ),
+        "",
+        "## Nominal body mass model",
+        "",
+        *_markdown_table(
+            ["Body", "Mass [g]", "Centre node weights"],
+            [[row.get("body"), row.get("mass_g"),
+              ", ".join(f"{node}: {weight}" for node, weight in
+                        row.get("center_node_weights", {}).items())]
+             for row in data.get("mass_model", {}).get("bodies", [])],
+        ),
+        "",
+        "## Nominal point masses",
+        "",
+        *_markdown_table(
+            ["Mass", "Node", "Mass [g]"],
+            [[row.get("id"), row.get("node"), row.get("mass_g")]
+             for row in data.get("mass_model", {}).get("point_masses", [])],
+        ),
+        "",
+        f"Mass-model status: `{data.get('mass_model', {}).get('status', 'not provided')}`.",
+        "",
     ]
     return "\n".join(lines)
 
