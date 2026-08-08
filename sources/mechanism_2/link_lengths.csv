@@ -1,0 +1,13 @@
+dimension_id,body_id,node_1,node_2,body_role,value,units,value_source,uncertainty_mm,confidence
+L_ab,input_crank,a,b,actuated crank,24.3,mm,photo_nominal,1.9,high
+L_bc,loop_1_coupler,b,c,first-stage coupler,42.0,mm,photo_nominal,3.4,high
+L_cd,central_body,c,d,rigid CDF body,20.3,mm,photo_nominal,1.6,high
+L_ad,ground,a,d,fixed ADE frame,39.5,mm,photo_nominal,3.2,high
+L_ae,ground,a,e,fixed ADE frame,49.1,mm,photo_nominal,3.9,high
+L_de,ground,d,e,fixed ADE frame,10.8,mm,photo_nominal,1.0,high
+L_cf,central_body,c,f,rigid CDF body,35.8,mm,photo_nominal,2.9,high
+L_df,central_body,d,f,rigid CDF body,41.7,mm,photo_nominal,3.3,high
+L_eh,link_eh,e,h,lower distal coupler,22.4,mm,photo_nominal,1.8,high
+L_fh,distal_body,f,h,rigid FHI distal output body after merging source F/G,20.2,mm,photo_nominal,1.6,high
+L_fi,distal_body,f,i,rigid FHI distal output body after merging source F/G,34.3,mm,photo_nominal,2.7,high
+L_hi,distal_body,h,i,rigid FHI distal output body after merging source F/G,37.9,mm,photo_nominal,3.0,high

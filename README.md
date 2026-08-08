@@ -1,239 +1,269 @@
-# Biomimetic finger-linkage analysis
+# Kinematic-chain abstraction pipeline
 
-This project reconstructs the planar finger linkage from the images in
-`sources/`, evaluates its workspace, and optimizes its passive-loop pivots for
-monotonic finger closure.
-
-The mechanism has one active input: rotation `q` at `R01`. The two passive rods
-close the loops `P0-B2` and `A1-C3`. The anatomical phalange lengths are always:
-
-- `R01-R12 = 40 mm`
-- `R12-R23 = 24 mm`
-- `R23-T3 = 20 mm`
-
-The optimizer does not change these three lengths.
-
-## Repository layout
+This repository turns a real planar mechanism into a validated, reusable body–joint
+abstraction. The current target is **mechanism 2**. Its topology, nominal geometry,
+joint incidence, actuation, and model-readiness state live in one YAML file:
 
 ```text
-.
-├── environment.yml          # reproducible Conda environment
-├── README.md
-├── sources/                 # CAD views, explanation, and topology rules
-├── src/                     # model, sweep, optimization, and torque scripts
-└── runs/
-    ├── nominal/             # reports from the original geometry
-    ├── opt_YYYYMMDD_HHMMSS/ # automatically stamped optimization runs
-    └── rejected_*/          # retained invalid runs, never design inputs
+sources/mechanism_2/mechanism.yaml
 ```
 
-Source code and input references stay separate from generated results. All
-default output paths are under `runs/`.
+The tooling is mechanism-independent. Any planar mechanism represented with the same
+tables can use the same validation, reporting, and plotting pipeline without adding
+mechanism-specific joint names to the Python code.
 
-## Environment
+## Quick start
 
-Create the reproducible Conda environment:
+From the repository root, create the environment and run the current analysis:
 
 ```bash
 conda env create -f environment.yml
 conda activate kinematic-chain
+./src/run_analysis.sh
 ```
 
-The environment contains Python 3.11, NumPy, SciPy, and Matplotlib. The system
-Python in the original workspace has incompatible NumPy and SciPy versions, so
-the Conda environment should be used for optimization.
-
-## Scripts
-
-### Draw the nominal mechanism
+If the environment already exists, update it instead:
 
 ```bash
-python src/plot_linkage.py
+conda env update --name kinematic-chain --file environment.yml
+conda activate kinematic-chain
+./src/run_analysis.sh
 ```
 
-The initial configuration is the horizontal, fully open pose. Geometry and plot
-settings are parameterized by `MechanismParameters` and `PlotParameters`.
-
-### Analyze the nominal workspace
-
-```bash
-python src/workspace_sweep.py
-```
-
-This solves both passive loop closures while rotating only `R01`. It writes
-`runs/nominal/workspace_report.png` and opens the report interactively.
-
-### Optimize biomimetic closure
-
-Run the deterministic global and local search:
-
-```bash
-python src/optimize_linkage.py
-```
-
-Default synthesis target over `q = 0...90 deg`:
+The analysis writes:
 
 ```text
-PIP flexion = 1.0 * q
-DIP flexion = 0.70 * PIP flexion
+runs/mechanism_2/
+├── abstraction.png       # topology with every declared nominal dimension
+├── link_lengths.csv      # machine-readable dimension table
+└── mechanism_tables.md   # complete human-readable abstraction report
 ```
 
-The optimization variables are the local coordinates of:
+Open [the generated abstraction plot](runs/mechanism_2/abstraction.png) to inspect the
+current mechanism.
 
-- `P0` on Base
-- `A1` on link 1
-- `B2` on link 2
-- `C3` on link 3
-
-The passive-rod lengths are calculated from these pivots in the open pose and
-then remain constant throughout the sweep.
-
-The objective includes:
-
-- PIP and DIP target-trajectory error
-- a strong penalty for non-monotonic flexion
-- positive anatomical flexion direction and joint-angle limits
-- minimum clearance between nonadjacent phalanges
-- failed loop closure and assembly-branch loss
-- poor transmission angles near toggle singularities
-- weak geometry regularization and excessive rod-length penalties
-
-The default run writes:
-
-- `runs/opt_YYYYMMDD_HHMMSS/parameters.json` -- parameters and metrics
-- `runs/opt_YYYYMMDD_HHMMSS/optimization_report.png` -- flexion report
-- `runs/opt_YYYYMMDD_HHMMSS/workspace_report.png` -- optimized workspace
-- `runs/opt_YYYYMMDD_HHMMSS/torque_report.png` -- input holding torque
-- `runs/opt_YYYYMMDD_HHMMSS/torque_samples.csv` -- numerical torque samples
-
-The timestamp uses local time at the start of the optimization. It is also saved
-as ISO 8601 metadata inside `parameters.json`. Use `--run-dir` only when an
-explicit directory name is required.
-
-It also opens the generated reports interactively unless `--no-show` is supplied.
-
-### Analyze unloaded input torque
-
-The torque model is quasi-static. It computes the R01 actuator holding torque
-from gravitational virtual work, `tau = dU/dq`. The default TCP payload is zero.
+Run the test suite with:
 
 ```bash
-python src/torque_analysis.py \
-  --params runs/opt_YYYYMMDD_HHMMSS/parameters.json
+PYTHONPATH=src MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
+  python3 -m unittest discover -s tests -v
 ```
 
-Default lumped masses are 5/4/3 g for links 1/2/3, 3 g for each moving-joint
-assembly, and 1 g for each passive rod. Override them with measured values:
+Preview the reserved optimization entry point without treating its expected placeholder
+status as a shell failure:
 
 ```bash
-python src/torque_analysis.py \
-  --params runs/opt_YYYYMMDD_HHMMSS/parameters.json \
-  --link-masses-g 5 4 3 \
-  --joint-mass-g 3 \
-  --rod-masses-g 1 1 \
-  --tcp-payload-g 0
+./src/run_optimization.sh || [[ $? -eq 2 ]]
 ```
 
-The report uses mN·m; its numerical value is identical in N·mm. Negative signed
-torque means gravity assists positive-q closure. This model excludes friction,
-joint preload, actuator/gear inertia, acceleration torque, cable forces, and
-contact loads, so it is not an actuator-sizing result by itself.
+This validates the current abstraction and demonstrates the future override contract;
+it does not optimize or modify anything yet.
 
-### Draw the SyLink mechanism abstraction
+## Current mechanism
 
-The supplied SyLink paper is stored at `sources/sylink/2606.14250v1.pdf`.
-Figure 4(c,f) is abstracted into the same mechanical-graph convention used by
-this project:
+Mechanism 2 currently has the following abstract topology:
+
+| Body | Type | Nodes | Purpose |
+|---|---|---|---|
+| `ground` | fixed rigid body | A–D–E | Base frame |
+| `input_crank` | binary link | A–B | Actuated input |
+| `loop_1_coupler` | binary link | B–C | First-loop coupler |
+| `central_body` | rigid body | C–D–F | Central ternary member |
+| `link_eh` | binary link | E–H | Lower distal coupler |
+| `distal_body` | rigid body | F–H–I | Output member and fingertip |
+
+Source labels **F and G refer to the same physical revolute joint**. The abstraction
+canonicalizes that joint as node `f`; there is no separate node `g`, FG link, or
+`L_fg` dimension. Original source points H and I remain nodes `h` and `i`.
+
+The two closed paths are A–B–C–D–A and D–F–H–E–D. Six bodies and seven equivalent
+lower pairs give planar Grübler mobility 1, matching the single rotary actuator at A.
+
+The 12 current dimensions are nominal estimates derived from the source photograph.
+They include uncertainty and are suitable for abstraction development and initial
+solver work, but not manufacturing, load, or torque decisions. Diagram coordinates
+under `nodes[*].layout` control only the plot layout and are never interpreted as
+physical lengths.
+
+## Pipeline contracts
+
+The repository deliberately separates inspection from mutation:
+
+| Pipeline | Entry point | Input mutation | Current status |
+|---|---|---|---|
+| Analysis | `src/run_analysis.sh` | Never | Operational |
+| Optimization | `src/run_optimization.sh` | Reserved for validated atomic replacement | Placeholder |
+
+### Analysis pipeline
+
+Use analysis to validate and render the current mechanism without modifying its YAML:
 
 ```bash
-python src/plot_sylink_mechanisms.py
+./src/run_analysis.sh [abstraction.yaml] [output-directory]
 ```
 
-The result is written to
-`runs/nominal/sylink/mechanism_abstraction.png`. It shows one crossed four-bar
-coupling PIP–DIP for each ordinary finger and two stacked crossed four-bars
-coupling CMC–MCP–IP for the thumb. Because the paper provides symbolic topology
-but no complete dimensional table, this diagram is explicitly not a scale
-reconstruction.
-
-For a faster development run:
+With no arguments it reads `sources/mechanism_2/mechanism.yaml` and writes to
+`runs/mechanism_2`. A custom, read-only run looks like:
 
 ```bash
-python src/optimize_linkage.py \
-  --run-dir runs/quick_test \
-  --maxiter 30 --popsize 8 --samples 13
+./src/run_analysis.sh \
+  sources/mechanism_2/mechanism.yaml \
+  /tmp/mechanism_2-analysis
 ```
 
-Change the synthesis target if measured Inspire Hand or human-finger data are
-available:
+The pipeline performs these operations:
+
+1. Load and validate the YAML schema and all cross-table references.
+2. Calculate body count, equivalent lower pairs, independent loops, and planar mobility.
+3. Export the complete mechanism report as Markdown.
+4. Export the dimension table as CSV.
+5. Render the topology and annotate every declared length, uncertainty, and unit.
+
+The abstraction YAML is read-only throughout this flow. Invalid topology, incidence,
+dimensions, loops, actuators, or outputs stop the pipeline before reports are produced.
+
+### Optimization pipeline
+
+The optimization entry point reserves the future mutation workflow:
 
 ```bash
-python src/optimize_linkage.py \
-  --q-max 90 \
-  --pip-ratio 0.9 \
-  --dip-ratio 0.7 \
-  --monotonic-weight 100
+./src/run_optimization.sh [abstraction.yaml] [candidate-work-directory]
 ```
 
-## Reusing an optimized design
+It currently validates the input, prints the intended workflow, leaves the YAML
+unchanged, and exits with status `2`. That exit status is expected while optimization
+is a placeholder.
 
-Draw the optimized open pose:
+The implementation contract is:
+
+1. Load and validate the current abstraction.
+2. Copy parameters into an isolated candidate workspace.
+3. Optimize the candidate against an explicit objective and constraints.
+4. Validate the complete candidate with the same generic schema and kinematic checks.
+5. Atomically replace the current YAML only when every check succeeds.
+6. Regenerate the analysis report, dimension CSV, and abstraction plot.
+
+Optimization must not overwrite the current abstraction partially or replace it with
+an invalid candidate. A working optimizer still requires validated kinematics, design
+bounds, an objective function, and an acceptance criterion.
+
+## Editing the abstraction
+
+Edit only the YAML source of truth:
+
+```text
+sources/mechanism_2/mechanism.yaml
+```
+
+Its main tables are:
+
+| YAML section | Meaning |
+|---|---|
+| `mechanism` | Identity, units, coordinate convention, and readiness status |
+| `sources` | Photographs or other evidence used for the abstraction |
+| `photo_calibration` | Pixel scale and uncertainty for nominal photo geometry |
+| `nodes` | Revolute joints and reference/output points |
+| `bodies` | Binary links, multipoint rigid bodies, and ground |
+| `joints` | Joint-to-body incidence |
+| `dimensions` | Body-owned centre-to-centre distances |
+| `loops` | Closed node and body cycles |
+| `actuators` | Driven joints and positive direction |
+| `outputs` | Tracked points and their owning bodies |
+| `model_readiness` | Availability of downstream analyses |
+
+After changing the YAML, regenerate and verify all derived files:
 
 ```bash
-python src/plot_linkage.py \
-  --params runs/opt_YYYYMMDD_HHMMSS/parameters.json \
-  -o runs/opt_YYYYMMDD_HHMMSS/open_pose.png
+./src/run_analysis.sh
+PYTHONPATH=src MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
+  python3 -m unittest discover -s tests -v
 ```
 
-Run a new workspace sweep with the optimized parameters:
+Do not independently edit `runs/mechanism_2/mechanism_tables.md` or
+`runs/mechanism_2/link_lengths.csv`; they are generated views and will be overwritten.
+
+## Validation rules
+
+The generic validator currently enforces that:
+
+1. Exactly one ground body exists.
+2. Every body references known, non-repeated nodes.
+3. A binary link contains exactly two nodes.
+4. Every revolute node has one joint-incidence row.
+5. Joint incidence exactly matches body membership.
+6. Every dimension belongs to a body containing both endpoint nodes.
+7. Each binary link has a physical dimension.
+8. Multipoint rigid bodies have enough dimensions to define their planar shape.
+9. Photo-derived values agree with calibrated pixel distances and carry uncertainty.
+10. Every loop side belongs to its declared body.
+11. Actuators reference existing revolute joints and bodies, and output nodes belong to
+    their declared bodies.
+12. Planar mobility is derived from the validated body and lower-pair counts.
+
+These checks validate the abstraction’s structure. They do not yet prove that every
+input angle has a feasible assembly configuration or that the mechanism avoids branch
+changes, singularities, interference, or excessive loads.
+
+## Direct tools
+
+The two shell entry points are the normal interface. The underlying tools are also
+available for focused work.
+
+Validate and print a summary:
 
 ```bash
-python src/workspace_sweep.py \
-  --params runs/opt_YYYYMMDD_HHMMSS/parameters.json \
-  --q-min -5 --q-max 95 --steps 401 \
-  -o runs/opt_YYYYMMDD_HHMMSS/extended_sweep.png
+python3 src/mechanism_table.py sources/mechanism_2/mechanism.yaml
 ```
 
-## Coordinate conventions
+Export selected tables:
 
-- World `+x` points right and `+y` points upward.
-- Link-local `+x` points from the proximal joint toward the distal joint.
-- Angles are counter-clockwise in the model.
-- Positive input `q` closes the finger from the horizontal open pose.
-- Reported PIP and DIP values are relative joint flexions, not absolute link
-  orientations.
+```bash
+python3 src/mechanism_table.py sources/mechanism_2/mechanism.yaml \
+  --markdown /tmp/mechanism_tables.md \
+  --csv /tmp/link_lengths.csv
+```
 
-## Current optimization result
+Render a plot at a custom location:
 
-The corrected verified run is `runs/opt_20260705_191401`. It preserves all
-closures from `q=0` through `q=90 deg`, uses the anatomical flexion direction,
-and has zero PIP/DIP reopening samples. Its end flexions are approximately
-`PIP=78.6 deg` and `DIP=51.8 deg`. The minimum distance between link 1 and link 3
-centerlines is `24.0 mm` over a 901-pose validation sweep. Both relative joint
-angles remain strictly monotonic on that denser grid.
+```bash
+MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
+  python3 src/plot_linkage.py sources/mechanism_2/mechanism.yaml \
+  --output /tmp/abstraction.png
+```
 
-Under the documented unloaded mass assumptions, the peak quasi-static R01
-holding torque is approximately `17.52 mN·m` (`17.52 N·mm`) at the open pose.
-Hardware sizing must add measured friction, dynamic loads, contact force, drive
-efficiency, and an appropriate safety factor.
+Add `--show` to the plot command when an interactive graphical session is available.
 
-This is a substantial improvement over the original geometry, but it does not
-fully reach the aggressive `90/63 deg` target. Several pivot coordinates approach
-their allowed bounds. That result indicates either the physical pivot bounds
-must be reconsidered or the topology needs another design variable.
+## Repository layout
 
-`runs/rejected_wrong_flexion_sign` is retained only for traceability. That run
-used the wrong relative-angle sign and must not be used as a mechanical design.
+```text
+environment.yml                         Conda environment
+sources/mechanism_2/
+  mechanism.yaml                        Editable abstraction source of truth
+  1224a3cf4f13d2e78e428296289e2e0c.jpg Source assembly photograph
+  mechanism_abstract.md                 Reference table snapshot
+  link_lengths.csv                      Reference dimension snapshot
+src/
+  mechanism_schema.py                   Generic loader, validator, and mobility summary
+  mechanism_table.py                    Markdown and CSV exporter
+  plot_linkage.py                       Dimensioned abstraction renderer
+  run_analysis.sh                       Read-only analysis entry point
+  run_optimization.sh                   Reserved optimization/override entry point
+tests/test_mechanism_schema.py           Schema and plotting regression tests
+runs/mechanism_2/                        Generated analysis artifacts
+```
 
-## Engineering limitations
+## Preparing for numerical optimization
 
-This is a planar kinematic synthesis tool, not a manufacturing validator. Before
-building hardware, add checks for:
+Before activating the optimization pipeline, add or validate:
 
-- link and pin collision/clearance
-- plate boundaries around optimized pivots
-- bearing, pin, and rod strength
-- actuator torque and fingertip force
-- backlash and compliance
-- singularity margin on a finer motion grid
-- alignment with anatomical joint centers for exoskeleton use
+- measured joint-centre distances or CAD geometry;
+- a position solver and assembly-mode selection rule;
+- permitted input range and design-variable bounds;
+- the required output trajectory or workspace;
+- an objective function and candidate acceptance thresholds;
+- collision, singularity, packaging, and transmission constraints;
+- masses, centres of mass, loads, and drive limits if torque is part of the objective.
+
+Those additions should consume the same YAML abstraction. Mechanism-specific solvers
+or parameters should extend the schema explicitly rather than reintroducing hard-coded
+dependencies on a particular mechanism.
