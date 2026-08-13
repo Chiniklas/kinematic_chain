@@ -13,6 +13,7 @@ from mechanism_schema import DEFAULT_ABSTRACTION, load_abstraction
 from plot_combined_abstraction import (
     apply_finger_objective,
     draw_combined_abstraction,
+    finger_analysis_targets,
     load_finger_objective,
 )
 
@@ -21,16 +22,26 @@ FINGERS = ("index", "middle", "ring", "little")
 
 
 def render_suite(
-    abstraction: Path, objectives_dir: Path, output_dir: Path, overview: Path,
-    group_by_finger: bool = False,
+    abstraction: Path, output_dir: Path, overview: Path,
+    group_by_finger: bool = False, fingers: tuple[str, ...] = FINGERS,
+    objectives_dir: Path | None = None,
 ) -> None:
     base_data = load_abstraction(abstraction)
+    embedded_targets = finger_analysis_targets(base_data)
     output_dir.mkdir(parents=True, exist_ok=True)
     rendered: list[tuple[str, np.ndarray]] = []
-    for finger in FINGERS:
-        objective_path = objectives_dir / f"{finger}.yaml"
+    if not fingers:
+        raise ValueError("combined abstraction suite needs at least one finger")
+    for finger in fingers:
+        objective_path = (
+            objectives_dir / f"{finger}.yaml" if objectives_dir is not None else None
+        )
+        objective = (
+            load_finger_objective(objective_path)
+            if objective_path is not None else embedded_targets[finger]
+        )
         data = apply_finger_objective(
-            base_data, load_finger_objective(objective_path), objective_path,
+            base_data, objective, objective_path,
         )
         figure, _ = draw_combined_abstraction(data)
         individual = (
@@ -46,14 +57,21 @@ def render_suite(
         print(f"Wrote {individual}")
 
     overview.parent.mkdir(parents=True, exist_ok=True)
-    figure, axes = plt.subplots(2, 2, figsize=(22, 12), constrained_layout=True)
+    if len(rendered) == 1:
+        figure, axes = plt.subplots(1, 1, figsize=(11, 7), constrained_layout=True)
+        axes_flat = [axes]
+    else:
+        figure, axes = plt.subplots(2, 2, figsize=(22, 12), constrained_layout=True)
+        axes_flat = list(axes.flat)
     figure.patch.set_facecolor("white")
-    for axes_row, (finger, image) in zip(axes.flat, rendered):
+    for axes_row, (finger, image) in zip(axes_flat, rendered):
         axes_row.imshow(image)
         axes_row.set_title(finger.capitalize(), fontsize=15, fontweight="bold")
         axes_row.axis("off")
     figure.suptitle(
-        "Mechanism 2 — four long-finger combined abstractions",
+        ("Mechanism 2 — independent finger mechanism abstraction"
+         if len(rendered) == 1
+         else "Mechanism 2 — four long-finger combined abstractions"),
         fontsize=20,
         fontweight="bold",
     )
@@ -65,10 +83,14 @@ def render_suite(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("abstraction", type=Path, nargs="?", default=DEFAULT_ABSTRACTION)
-    parser.add_argument("--objectives-dir", type=Path, required=True)
+    parser.add_argument(
+        "--objectives-dir", type=Path,
+        help="legacy external targets; mechanism.yaml targets are used by default",
+    )
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--overview", type=Path, required=True)
     parser.add_argument("--group-by-finger", action="store_true")
+    parser.add_argument("--finger", choices=FINGERS, action="append")
     return parser.parse_args()
 
 
@@ -76,10 +98,11 @@ def main() -> None:
     args = parse_args()
     render_suite(
         args.abstraction.resolve(),
-        args.objectives_dir.resolve(),
         args.output_dir.resolve(),
         args.overview.resolve(),
         args.group_by_finger,
+        tuple(args.finger or FINGERS),
+        args.objectives_dir.resolve() if args.objectives_dir is not None else None,
     )
 
 

@@ -116,6 +116,18 @@ def dimension_pairs(data: dict[str, Any]) -> dict[frozenset[str], dict[str, Any]
     return {frozenset(row["nodes"]): row for row in data["dimensions"]}
 
 
+def l_bracket_segments(
+    body: dict[str, Any], positions: dict[str, tuple[float, float]],
+) -> tuple[tuple[tuple[float, float], tuple[float, float]], ...] | None:
+    """Return the two visual arms of an L-bracket body, if declared."""
+    if body.get("render_shape") != "l_bracket":
+        return None
+    corner = positions[body["render_corner_node"]]
+    return tuple(
+        (corner, positions[node_id]) for node_id in body["render_arm_nodes"]
+    )
+
+
 def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
     """Validate schema references and calculate the implied planar mobility."""
     if data.get("schema_version") != 1:
@@ -169,6 +181,28 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
             raise AbstractionError(f"body {body['id']} has unknown nodes: {sorted(unknown)}")
         if body.get("kind") == "binary_link" and len(body_nodes) != 2:
             raise AbstractionError(f"binary body {body['id']} must contain exactly two nodes")
+        render_shape = body.get("render_shape")
+        if render_shape is not None and render_shape != "l_bracket":
+            raise AbstractionError(
+                f"body {body['id']} has unsupported render_shape: {render_shape}"
+            )
+        if render_shape == "l_bracket":
+            corner = body.get("render_corner_node")
+            arms = body.get("render_arm_nodes")
+            if (body.get("kind") != "rigid_body" or len(body_nodes) != 3
+                    or corner not in body_nodes
+                    or not isinstance(arms, list) or len(arms) != 2
+                    or len(set(arms)) != 2
+                    or set(arms) != set(body_nodes) - {corner}):
+                raise AbstractionError(
+                    f"body {body['id']} L-bracket rendering needs one corner and "
+                    "the other two body nodes as arms"
+                )
+            flesh_scale = body.get("render_flesh_scale", 1.0)
+            if not isinstance(flesh_scale, (int, float)) or flesh_scale <= 0:
+                raise AbstractionError(
+                    f"body {body['id']} render_flesh_scale must be positive"
+                )
 
     hand_model = data.get("human_hand_model")
     hand_joints: dict[str, dict[str, Any]] = {}
@@ -248,6 +282,70 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
                 raise AbstractionError(
                     f"attachment {attachment['id']} has an invalid hand offset"
                 )
+
+        target_rows = data.get("finger_analysis_targets")
+        if not isinstance(target_rows, list) or not target_rows:
+            raise AbstractionError(
+                "human_hand_model requires non-empty finger_analysis_targets"
+            )
+        seen_fingers: set[str] = set()
+        for index, target in enumerate(target_rows):
+            if not isinstance(target, dict):
+                raise AbstractionError(f"finger_analysis_targets[{index}] must be a mapping")
+            objective = target.get("objective")
+            finger = objective.get("finger") if isinstance(objective, dict) else None
+            if not isinstance(finger, str) or not finger or finger in seen_fingers:
+                raise AbstractionError(
+                    "finger_analysis_targets need unique non-empty objective.finger values"
+                )
+            seen_fingers.add(finger)
+            lengths = target.get("phalanx_lengths_mm")
+            ranges = target.get("joint_flexion_ranges_deg")
+            if not isinstance(lengths, dict) or not isinstance(ranges, dict):
+                raise AbstractionError(
+                    f"finger target {finger} needs lengths and joint flexion ranges"
+                )
+            for segment_id in ("proximal", "middle", "distal"):
+                value = lengths.get(segment_id)
+                if not isinstance(value, (int, float)) or value <= 0:
+                    raise AbstractionError(
+                        f"finger target {finger} has invalid {segment_id} length"
+                    )
+            for joint_id in ("mcp", "pip", "dip"):
+                limits = ranges.get(joint_id)
+                if (not isinstance(limits, dict)
+                        or not isinstance(limits.get("min"), (int, float))
+                        or not isinstance(limits.get("max"), (int, float))
+                        or limits["min"] < 0 or limits["min"] >= limits["max"]):
+                    raise AbstractionError(
+                        f"finger target {finger} has invalid {joint_id} flexion range"
+                    )
+        reference_finger = hand_model.get("reference_finger")
+        reference_target = next(
+            (row for row in target_rows
+             if row["objective"]["finger"] == reference_finger),
+            None,
+        )
+        if reference_target is None:
+            raise AbstractionError(
+                "human_hand_model.reference_finger needs an embedded analysis target"
+            )
+        hand_lengths = {
+            "proximal": phalanx_rows["proximal_phalanx"]["length_mm"],
+            "middle": phalanx_rows["middle_phalanx"]["length_mm"],
+            "distal": phalanx_rows["distal_phalanx"]["length_mm"],
+        }
+        if any(
+            not math.isclose(
+                float(hand_lengths[name]),
+                float(reference_target["phalanx_lengths_mm"][name]),
+                abs_tol=1e-9,
+            )
+            for name in hand_lengths
+        ):
+            raise AbstractionError(
+                "human_hand_model phalanx lengths must match its embedded target"
+            )
             clearance = attachment.get("dorsal_clearance_mm")
             if clearance is not None and (
                 not isinstance(clearance, (int, float))
@@ -270,32 +368,46 @@ def validate_abstraction(data: dict[str, Any]) -> ValidationSummary:
                         f"rod attachment {attachment['id']} needs positive assumed_length_mm"
                     )
                 hand_interface = attachment.get("hand_interface")
-                if hand_interface not in {
-                    "revolute", "revolute_prismatic_pin_in_slot",
-                }:
+                if hand_interface != "revolute":
                     raise AbstractionError(
-                        f"rod attachment {attachment['id']} needs a supported hand pair"
+                        f"rod attachment {attachment['id']} must use a fixed revolute"
                     )
-                if hand_interface == "revolute_prismatic_pin_in_slot":
-                    translation_range = attachment.get("translation_range_mm")
-                    distal_length = float(phalanx_rows["distal_phalanx"]["length_mm"])
-                    if (not isinstance(translation_range, list)
-                            or len(translation_range) != 2
-                            or not all(isinstance(value, (int, float))
-                                       for value in translation_range)
-                            or not math.isclose(float(translation_range[0]), 0.0)
-                            or not math.isclose(float(translation_range[1]), distal_length)):
-                        raise AbstractionError(
-                            f"slot attachment {attachment['id']} must span distal length"
-                        )
-                    if attachment.get("surface") != "distal_phalanx_lower_palmar":
-                        raise AbstractionError(
-                            f"slot attachment {attachment['id']} must use lower surface"
-                        )
-                    if attachment.get("pair_dofs") != ["rotation", "translation"]:
-                        raise AbstractionError(
-                            f"slot attachment {attachment['id']} needs rotation and translation"
-                        )
+                if attachment.get("surface") != "distal_phalanx_upper_dorsal":
+                    raise AbstractionError(
+                        f"rod attachment {attachment['id']} must use upper distal surface"
+                    )
+                if not math.isclose(
+                    float(attachment.get("longitudinal_fraction", math.nan)), 0.5,
+                ):
+                    raise AbstractionError(
+                        f"rod attachment {attachment['id']} must use distal midpoint"
+                    )
+                if attachment.get("pair_dofs") != ["rotation"]:
+                    raise AbstractionError(
+                        f"rod attachment {attachment['id']} needs rotation only"
+                    )
+                if any(key in attachment for key in (
+                    "translation_axis", "translation_range_mm", "nominal_translation_mm",
+                )):
+                    raise AbstractionError(
+                        f"fixed rod attachment {attachment['id']} cannot translate"
+                    )
+                contact = hand_joints[attachment["hand_reference"]]
+                if contact.get("kind") != "attachment_revolute":
+                    raise AbstractionError(
+                        f"rod attachment {attachment['id']} needs attachment_revolute reference"
+                    )
+                distal = phalanx_rows["distal_phalanx"]
+                dip, tip = (
+                    hand_joints[node_id]["position_mm"] for node_id in distal["joints"]
+                )
+                expected = ((dip[0] + tip[0]) / 2.0, (dip[1] + tip[1]) / 2.0)
+                if not math.isclose(
+                    math.dist(contact["position_mm"], expected), 0.0, abs_tol=1e-6,
+                ):
+                    raise AbstractionError(
+                        f"rod attachment {attachment['id']} must be at upper distal midpoint"
+                    )
 
     analysis = data.get("analysis", {})
     if analysis is not None and not isinstance(analysis, dict):

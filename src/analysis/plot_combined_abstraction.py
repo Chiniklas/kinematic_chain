@@ -15,10 +15,28 @@ from matplotlib.colors import to_rgba
 from matplotlib.patches import Circle, FancyBboxPatch, Polygon
 from matplotlib.transforms import Affine2D
 
-from mechanism_schema import DEFAULT_ABSTRACTION, load_abstraction, node_layout
+from mechanism_schema import (
+    DEFAULT_ABSTRACTION, l_bracket_segments, load_abstraction, node_layout,
+)
+from plot_primitives import draw_l_bracket
 
 
 Point = tuple[float, float]
+
+
+def finger_analysis_targets(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Return the self-contained per-finger task models from mechanism.yaml."""
+    rows = data.get("finger_analysis_targets")
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("mechanism.yaml needs non-empty finger_analysis_targets")
+    result: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        objective = row.get("objective", {}) if isinstance(row, dict) else {}
+        finger = objective.get("finger")
+        if not isinstance(finger, str) or finger in result:
+            raise ValueError("finger_analysis_targets need unique objective.finger values")
+        result[finger] = row
+    return result
 
 
 def apply_finger_objective(
@@ -58,31 +76,20 @@ def apply_finger_objective(
             points[-1][0] + length * math.cos(heading),
             points[-1][1] + length * math.sin(heading),
         ))
-    upper_midpoint = (
+    distal_midpoint = (
         (points[2][0] + points[3][0]) / 2,
         (points[2][1] + points[3][1]) / 2,
-    )
-    distal_width = float(phalanges["distal_phalanx"]["width_mm"])
-    distal_heading = headings[2]
-    dorsal_normal = (-math.sin(distal_heading), math.cos(distal_heading))
-    lower_midpoint = (
-        upper_midpoint[0] - distal_width * dorsal_normal[0],
-        upper_midpoint[1] - distal_width * dorsal_normal[1],
     )
     positions = {
         "hand_wrist_dorsal": (-float(hand["palm"]["length_mm"]), 0.0),
         "hand_mcp": points[0],
         "hand_pip": points[1],
         "hand_dip": points[2],
-        "hand_distal_slot_midpoint": lower_midpoint,
+        "hand_distal_contact": distal_midpoint,
         "hand_tip": points[3],
     }
     for joint in hand["joints"]:
         joint["position_mm"] = [float(value) for value in positions[joint["id"]]]
-    output_rod = _attachment_by_id(result, "distal_output_rod")
-    distal_length = float(lengths["distal"])
-    output_rod["translation_range_mm"] = [0.0, distal_length]
-    output_rod["nominal_translation_mm"] = distal_length / 2.0
     return result
 
 
@@ -108,16 +115,15 @@ def _attachment_by_id(data: dict[str, Any], attachment_id: str) -> dict[str, Any
     raise ValueError(f"missing exoskeleton attachment {attachment_id}")
 
 
-def _horizontal_slot_mount_transform(
+def _horizontal_fixed_contact_mount_transform(
     source_a: Point,
     source_d: Point,
     source_h: Point,
     target_d: Point,
-    slot_start: Point,
-    slot_end: Point,
+    hand_contact: Point,
     rod_length: float,
 ):
-    """Place horizontal AD and select a lower-surface slot coordinate for the rod."""
+    """Place horizontal AD and close the rod at the fixed upper-surface R4."""
     ad_dx = source_d[0] - source_a[0]
     ad_dy = source_d[1] - source_a[1]
     if math.hypot(ad_dx, ad_dy) == 0:
@@ -132,48 +138,36 @@ def _horizontal_slot_mount_transform(
 
     h_vector = rotate_about_d(source_h)
     quadratic_a = h_vector[0] ** 2 + h_vector[1] ** 2
-    slot_length = math.dist(slot_start, slot_end)
-    candidates: list[tuple[float, float, float, Point]] = []
-    closest: list[tuple[float, float, float, Point]] = []
-    for fraction in [index / 400 for index in range(401)]:
-        slot_point = (
-            slot_start[0] + fraction * (slot_end[0] - slot_start[0]),
-            slot_start[1] + fraction * (slot_end[1] - slot_start[1]),
-        )
-        delta = (target_d[0] - slot_point[0], target_d[1] - slot_point[1])
-        quadratic_b = 2 * (h_vector[0] * delta[0] + h_vector[1] * delta[1])
-        quadratic_c = delta[0] ** 2 + delta[1] ** 2 - rod_length ** 2
-        discriminant = quadratic_b ** 2 - 4 * quadratic_a * quadratic_c
-        if discriminant >= 0:
-            root = math.sqrt(discriminant)
-            for scale in (
+    delta = (target_d[0] - hand_contact[0], target_d[1] - hand_contact[1])
+    quadratic_b = 2 * (h_vector[0] * delta[0] + h_vector[1] * delta[1])
+    quadratic_c = delta[0] ** 2 + delta[1] ** 2 - rod_length ** 2
+    discriminant = quadratic_b ** 2 - 4 * quadratic_a * quadratic_c
+    candidates: list[float] = []
+    if discriminant >= 0:
+        root = math.sqrt(discriminant)
+        candidates = [
+            scale for scale in (
                 (-quadratic_b - root) / (2 * quadratic_a),
                 (-quadratic_b + root) / (2 * quadratic_a),
-            ):
-                if scale > 0:
-                    candidates.append((abs(fraction - 0.5), abs(scale - 14.0), scale, slot_point))
-        projection = (
-            (slot_point[0] - target_d[0]) * h_vector[0]
-            + (slot_point[1] - target_d[1]) * h_vector[1]
-        ) / quadratic_a
-        if projection > 0:
-            projected_h = (
-                target_d[0] + projection * h_vector[0],
-                target_d[1] + projection * h_vector[1],
-            )
-            closest.append((
-                math.dist(projected_h, slot_point), abs(fraction - 0.5),
-                projection, slot_point,
-            ))
+            ) if scale > 0
+        ]
     if candidates:
-        _, _, scale, slot_point = min(candidates)
+        scale = min(candidates, key=lambda value: abs(value - 14.0))
         connector_length = rod_length
         closure_feasible = True
-    elif closest:
-        connector_length, _, scale, slot_point = min(closest)
-        closure_feasible = False
     else:
-        raise ValueError("horizontal AD placement has no positive-scale assembly")
+        scale = (
+            (hand_contact[0] - target_d[0]) * h_vector[0]
+            + (hand_contact[1] - target_d[1]) * h_vector[1]
+        ) / quadratic_a
+        if scale <= 0:
+            raise ValueError("horizontal AD placement has no positive-scale assembly")
+        projected_h = (
+            target_d[0] + scale * h_vector[0],
+            target_d[1] + scale * h_vector[1],
+        )
+        connector_length = math.dist(projected_h, hand_contact)
+        closure_feasible = False
 
     def transform(point: Point) -> Point:
         x, y = rotate_about_d(point)
@@ -185,25 +179,18 @@ def _horizontal_slot_mount_transform(
     return (
         transform,
         transform(source_h),
-        slot_point,
+        hand_contact,
         connector_length,
         closure_feasible,
-        math.dist(slot_start, slot_point) if slot_length else 0.0,
     )
 
 
-def _lower_distal_surface(
+def _upper_distal_midpoint(
     hand: dict[str, Any], hand_joints: dict[str, Point],
-) -> tuple[Point, Point]:
+) -> Point:
     distal = next(row for row in hand["phalanges"] if row["id"] == "distal_phalanx")
     start, end = (hand_joints[node_id] for node_id in distal["joints"])
-    length = math.dist(start, end)
-    dorsal_normal = (-(end[1] - start[1]) / length, (end[0] - start[0]) / length)
-    width = float(distal["width_mm"])
-    return (
-        (start[0] - width * dorsal_normal[0], start[1] - width * dorsal_normal[1]),
-        (end[0] - width * dorsal_normal[0], end[1] - width * dorsal_normal[1]),
-    )
+    return ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0)
 
 
 def draw_combined_abstraction(data: dict[str, Any]):
@@ -224,19 +211,18 @@ def draw_combined_abstraction(data: dict[str, Any]):
         input_reference[1] + dorsal_clearance,
     )
     rod_length = float(output_rod["assumed_length_mm"])
-    slot_start, slot_end = _lower_distal_surface(hand, hand_joints)
+    hand_contact = _upper_distal_midpoint(hand, hand_joints)
 
     diagram_positions = node_layout(data)
     (
         transform, target_h, hand_attachment, connector_length,
-        rod_closure_feasible, slider_translation,
-    ) = _horizontal_slot_mount_transform(
+        rod_closure_feasible,
+    ) = _horizontal_fixed_contact_mount_transform(
         diagram_positions["a"],
         diagram_positions[input_mount["mechanism_node"]],
         diagram_positions[output_rod["mechanism_node"]],
         target_input,
-        slot_start,
-        slot_end,
+        hand_contact,
         rod_length,
     )
     mechanism_positions = {
@@ -300,28 +286,7 @@ def draw_combined_abstraction(data: dict[str, Any]):
         solid_joinstyle="round",
         zorder=5,
     )
-    axes.plot(
-        [slot_start[0], slot_end[0]],
-        [slot_start[1], slot_end[1]],
-        color="#7c3aed",
-        linewidth=4.0,
-        solid_capstyle="round",
-        zorder=6,
-    )
-    axes.text(
-        (slot_start[0] + slot_end[0]) / 2,
-        (slot_start[1] + slot_end[1]) / 2 + 3.0,
-        f"RP4 slot 0–{math.dist(slot_start, slot_end):g} mm",
-        ha="center",
-        va="bottom",
-        fontsize=8,
-        color="#6d28d9",
-        fontweight="bold",
-    )
-
     for joint_id, point in hand_joints.items():
-        if hand_joint_rows[joint_id].get("kind") == "attachment_slot_reference":
-            continue
         axes.add_patch(Circle(
             point,
             radius=1.8,
@@ -340,7 +305,16 @@ def draw_combined_abstraction(data: dict[str, Any]):
     for body in sorted(data["bodies"], key=lambda row: row.get("draw_order", 2)):
         points = [mechanism_positions[node_id] for node_id in body["nodes"]]
         color = body.get("color", "#334155")
-        if len(points) == 2:
+        bracket = l_bracket_segments(body, mechanism_positions)
+        if bracket is not None:
+            draw_l_bracket(
+                axes,
+                bracket,
+                color,
+                linewidth=5.5 * float(body.get("render_flesh_scale", 1.0)),
+                zorder=10,
+            )
+        elif len(points) == 2:
             axes.plot(
                 *zip(*points), color=color, linewidth=5.5,
                 solid_capstyle="round", zorder=10,
@@ -404,7 +378,7 @@ def draw_combined_abstraction(data: dict[str, Any]):
         zorder=24,
     ))
     rod_label = (
-        f"output rod\n{rod_length:g} mm · s={slider_translation:.1f} mm"
+        f"output rod\n{rod_length:g} mm · fixed R4"
         if rod_closure_feasible
         else f"{rod_length:g} mm rod infeasible\nminimum here: {connector_length:.1f} mm"
     )
@@ -419,9 +393,9 @@ def draw_combined_abstraction(data: dict[str, Any]):
         fontweight="bold",
     )
     axes.annotate(
-        "RP4: rotating pin translating on lower-surface slot",
+        "R4: fixed revolute at upper distal midpoint",
         xy=hand_attachment,
-        xytext=(slot_end[0] + 10, slot_end[1] - 17),
+        xytext=(hand_attachment[0] + 16, hand_attachment[1] + 18),
         arrowprops={"arrowstyle": "->", "color": rod_color, "linewidth": 1.5},
         fontsize=9,
         color=rod_color,
@@ -479,7 +453,7 @@ def draw_combined_abstraction(data: dict[str, Any]):
             zorder=30,
         )
     axes.annotate(
-        "RP4",
+        "R4",
         xy=hand_attachment,
         xytext=(-12, -20),
         textcoords="offset points",
@@ -500,7 +474,7 @@ def draw_combined_abstraction(data: dict[str, Any]):
 
     all_points = [
         *hand_joints.values(), *mechanism_positions.values(), target_input, target_h,
-        slot_start, slot_end, hand_attachment,
+        hand_attachment,
     ]
     xs, ys = zip(*all_points)
     axes.set_xlim(min(xs) - 18, max(xs) + 36)

@@ -1,0 +1,1 @@
+# it should animate the design and give a report to the terminal

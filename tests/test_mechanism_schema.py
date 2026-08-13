@@ -19,7 +19,7 @@ from mechanism_schema import (  # noqa: E402
     load_abstraction,
     validate_abstraction,
 )
-from combined_analysis import analyze_combined  # noqa: E402
+from combined_analysis import analyze_combined, draw_combined_report  # noqa: E402
 from plot_linkage import draw_abstraction  # noqa: E402
 from plot_combined_abstraction import (  # noqa: E402
     apply_finger_objective,
@@ -32,7 +32,7 @@ from workspace_sweep import sweep_workspace  # noqa: E402
 
 NOMINAL_SOURCE = ROOT / "designs" / "mechanism_2" / "nominal"
 ABSTRACTION = NOMINAL_SOURCE / "mechanism.yaml"
-DIMENSION_CSV = NOMINAL_SOURCE / "link_lengths.csv"
+DIMENSION_CSV = NOMINAL_SOURCE / "artifacts" / "mechanism" / "link_lengths.csv"
 OBJECTIVES_DIR = ROOT / "src" / "co-optimization" / "config" / "objectives"
 
 
@@ -45,6 +45,38 @@ class MechanismSchemaTests(unittest.TestCase):
     def test_mechanism_2_node_sequence(self) -> None:
         self.assertEqual([node["id"] for node in self.data["nodes"]], list("abcdefgh"))
 
+    def test_nominal_design_directory_is_grouped(self) -> None:
+        self.assertEqual(
+            {path.name for path in NOMINAL_SOURCE.iterdir() if path.is_file()},
+            {"README.md", "mechanism.yaml"},
+        )
+        expected_artifacts = {
+            "mechanism/abstraction.png",
+            "mechanism/link_lengths.csv",
+            "mechanism/mechanism_tables.md",
+            "mechanism/workspace/workspace_report.png",
+            "mechanism/workspace/workspace_samples.csv",
+            "mechanism/torque/torque_report.png",
+            "mechanism/torque/torque_samples.csv",
+            "combined/combined_abstraction.png",
+            "combined/combined_workspace_report.png",
+            "combined/combined_workspace_samples.csv",
+            "combined/combined_workspace_summary.yaml",
+        }
+        for finger in ("index", "middle", "ring", "little"):
+            expected_artifacts.update({
+                f"combined/fingers/{finger}/combined_abstraction.png",
+                f"combined/fingers/{finger}/combined_workspace_report.png",
+                f"combined/fingers/{finger}/combined_workspace_samples.csv",
+                f"combined/fingers/{finger}/combined_workspace_summary.yaml",
+            })
+        artifacts = NOMINAL_SOURCE / "artifacts"
+        actual_artifacts = {
+            path.relative_to(artifacts).as_posix()
+            for path in artifacts.rglob("*") if path.is_file()
+        }
+        self.assertEqual(actual_artifacts, expected_artifacts)
+
     def test_tip_is_a_reference_on_distal_body(self) -> None:
         nodes = {node["id"]: node for node in self.data["nodes"]}
         self.assertEqual(nodes["h"]["kind"], "reference")
@@ -54,6 +86,10 @@ class MechanismSchemaTests(unittest.TestCase):
         hand = self.data["human_hand_model"]
         phalanges = {row["id"]: row for row in hand["phalanges"]}
         self.assertEqual(hand["reference_finger"], "index")
+        self.assertEqual(
+            [row["objective"]["finger"] for row in self.data["finger_analysis_targets"]],
+            ["index", "middle", "ring", "little"],
+        )
         self.assertEqual(hand["pose"], "mildly_curled")
         self.assertEqual(
             (hand["palm"]["length_mm"], hand["palm"]["width_mm"]),
@@ -84,17 +120,18 @@ class MechanismSchemaTests(unittest.TestCase):
         self.assertEqual(input_mount["alignment"], "horizontal")
         output = attachments["distal_output_rod"]
         self.assertEqual(output["mechanism_node"], "h")
-        self.assertEqual(output["hand_reference"], "hand_distal_slot_midpoint")
-        self.assertEqual(output["hand_interface"], "revolute_prismatic_pin_in_slot")
+        self.assertEqual(output["hand_reference"], "hand_distal_contact")
+        self.assertEqual(output["hand_interface"], "revolute")
         self.assertEqual(output["assumed_length_mm"], 28.0)
         self.assertEqual(output["previous_assumption_mm"], 15.0)
         self.assertEqual(
             output["value_source"],
-            "preliminary_four_finger_synchronized_sweep_rounded",
+            "retained_pre_fixed_R4_baseline",
         )
-        self.assertEqual(output["surface"], "distal_phalanx_lower_palmar")
-        self.assertEqual(output["translation_range_mm"], [0.0, 25.0])
-        self.assertEqual(output["pair_dofs"], ["rotation", "translation"])
+        self.assertEqual(output["surface"], "distal_phalanx_upper_dorsal")
+        self.assertEqual(output["longitudinal_fraction"], 0.5)
+        self.assertEqual(output["pair_dofs"], ["rotation"])
+        self.assertNotIn("translation_range_mm", output)
         hand_joints = {row["id"]: row for row in hand["joints"]}
         self.assertEqual(
             [hand_joints[node_id]["node_index"] for node_id in (
@@ -102,18 +139,13 @@ class MechanismSchemaTests(unittest.TestCase):
             )],
             [1, 2, 3],
         )
-        self.assertEqual(hand_joints["hand_distal_slot_midpoint"]["pair_index"], 4)
-        slot_midpoint = hand_joints["hand_distal_slot_midpoint"]["position_mm"]
+        self.assertEqual(hand_joints["hand_distal_contact"]["attachment_index"], 4)
+        contact = hand_joints["hand_distal_contact"]["position_mm"]
         dip = hand_joints["hand_dip"]["position_mm"]
         tip = hand_joints["hand_tip"]["position_mm"]
-        dx, dy = tip[0] - dip[0], tip[1] - dip[1]
-        length = (dx * dx + dy * dy) ** 0.5
-        lower_midpoint = (
-            (dip[0] + tip[0]) / 2 + 10.0 * dy / length,
-            (dip[1] + tip[1]) / 2 - 10.0 * dx / length,
-        )
-        self.assertAlmostEqual(slot_midpoint[0], lower_midpoint[0], places=5)
-        self.assertAlmostEqual(slot_midpoint[1], lower_midpoint[1], places=5)
+        upper_midpoint = ((dip[0] + tip[0]) / 2, (dip[1] + tip[1]) / 2)
+        self.assertAlmostEqual(contact[0], upper_midpoint[0], places=5)
+        self.assertAlmostEqual(contact[1], upper_midpoint[1], places=5)
 
     def test_every_declared_loop_side_has_a_dimension(self) -> None:
         pairs = dimension_pairs(self.data)
@@ -174,7 +206,7 @@ class MechanismSchemaTests(unittest.TestCase):
             labels = {text.get_text() for text in axes.texts}
             self.assertTrue(any("proximal_phalanx" in label for label in labels))
             self.assertTrue(any("rod" in label for label in labels))
-            self.assertTrue({"J1", "J2", "J3", "RP4"} <= labels)
+            self.assertTrue({"J1", "J2", "J3", "R4"} <= labels)
         finally:
             import matplotlib.pyplot as plt
             plt.close(figure)
@@ -218,30 +250,35 @@ class MechanismSchemaTests(unittest.TestCase):
             result.poses[0].positions["h"][1],
         )
 
-    def test_combined_sweep_covers_all_fingers_and_finite_slots(self) -> None:
-        result = analyze_combined(self.data, OBJECTIVES_DIR, steps=19)
+    def test_combined_sweep_covers_all_fingers_and_fixed_r4(self) -> None:
+        result = analyze_combined(self.data, steps=19)
         self.assertEqual([row.finger for row in result.fingers], [
             "index", "middle", "ring", "little",
         ])
-        self.assertEqual(
-            [round(row.slot_length_mm) for row in result.fingers],
-            [25, 27, 26, 23],
-        )
         for finger in result.fingers:
             self.assertEqual(finger.samples[0].progress, 0.0)
             self.assertEqual(finger.samples[-1].progress, 1.0)
-            self.assertGreaterEqual(finger.best_curled_translation_mm, 0.0)
-            self.assertLessEqual(
-                finger.best_curled_translation_mm, finger.slot_length_mm,
-            )
             for sample in finger.samples:
-                self.assertGreaterEqual(sample.slider_translation_mm, 0.0)
-                self.assertLessEqual(
-                    sample.slider_translation_mm, finger.slot_length_mm + 1e-9,
+                self.assertAlmostEqual(
+                    sample.contact[0],
+                    (sample.distal_start[0] + sample.distal_end[0]) / 2.0,
+                )
+                self.assertAlmostEqual(
+                    sample.contact[1],
+                    (sample.distal_start[1] + sample.distal_end[1]) / 2.0,
                 )
                 self.assertTrue(np.isfinite(sample.rod_error_mm))
                 self.assertGreaterEqual(sample.rod_error_mm, 0.0)
                 self.assertLess(sample.mechanism_residual_mm, 1e-4)
+        figure = draw_combined_report(result)
+        try:
+            self.assertEqual(len(figure.axes), 4)
+            self.assertTrue(all(axes.patches for axes in figure.axes))
+            self.assertTrue(all("full assembly sweep" in axes.get_title()
+                                for axes in figure.axes))
+        finally:
+            import matplotlib.pyplot as plt
+            plt.close(figure)
 
     def test_nominal_torque_analysis_uses_yaml_mass_model(self) -> None:
         sweep = sweep_workspace(self.data, q_min=0.0, q_max=5.0, steps=6)

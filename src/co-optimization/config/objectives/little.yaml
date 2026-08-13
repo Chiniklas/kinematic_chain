@@ -1,10 +1,10 @@
 schema_version: 1
 
 objective:
-  id: little_finger_reachability
+  id: little_finger_design
   finger: little
   source_image: little.jpg
-  task_space_reference: distal_phalanx_lower_slot_rp4
+  task_space_reference: distal_phalanx_upper_midpoint_r4
 
 measurement:
   method: manual_polyline_estimate_from_pixels

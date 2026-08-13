@@ -15,10 +15,12 @@ from matplotlib.patches import Arc, Circle, Polygon
 from mechanism_schema import (
     DEFAULT_ABSTRACTION,
     load_abstraction,
+    l_bracket_segments,
     node_layout,
     summary_lines,
     validate_abstraction,
 )
+from plot_primitives import draw_l_bracket
 
 
 Point = tuple[float, float]
@@ -109,6 +111,14 @@ def draw_abstraction(data: dict[str, Any]):
                 edgecolor=color, linewidth=5 if len(points) > 2 else 1.2,
                 hatch="////", joinstyle="round", zorder=0,
             ))
+        elif l_bracket_segments(body, positions) is not None:
+            draw_l_bracket(
+                axes,
+                l_bracket_segments(body, positions) or (),
+                color,
+                linewidth=7 * float(body.get("render_flesh_scale", 1.0)),
+                zorder=body.get("draw_order", 2) + 1,
+            )
         elif len(points) == 2:
             axes.plot(*zip(*points), color=color, linewidth=7,
                       solid_capstyle="round", zorder=body.get("draw_order", 2) + 1)

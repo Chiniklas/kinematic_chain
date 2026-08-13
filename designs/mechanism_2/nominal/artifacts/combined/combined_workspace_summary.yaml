@@ -1,0 +1,79 @@
+schema_version: 1
+analysis: combined_mechanism_hand_sweep
+motion_mapping: normalized_actuator_progress_to_linear_joint_flexion
+closure_tolerance_mm: 1.0
+rod_length_mm: 28.0
+dorsal_clearance_mm: 1.0
+optimization_constraint_acceptance: {}
+mechanism_requested_q_range_deg:
+- 0.0
+- 90.0
+mechanism_solved_q_range_deg:
+- 0.0
+- 65.5
+mechanism_completed_requested_range: false
+fingers:
+- finger: index
+  contact: fixed_R4_at_upper_distal_midpoint
+  horizontal_error_mm: 5.412806
+  synchronized_curled_error_mm: 9.425915
+  maximum_synchronized_error_mm: 12.75549
+  whole_workspace_rod_closure_feasible: false
+  samples_within_closure_tolerance_fraction: 0.0
+  samples_within_1mm_fraction: 0.0
+  best_static_curled_q_deg: 52.0
+  best_static_curled_error_mm: 0.367724
+  maximum_perpendicular_deviation_deg: 88.514516
+  hand_motion:
+    progress_bounds_satisfied: true
+    monotonic_non_decreasing: true
+    terminal_progress: 1.0
+    dorsal_flexion_prohibited: true
+- finger: middle
+  contact: fixed_R4_at_upper_distal_midpoint
+  horizontal_error_mm: 14.295585
+  synchronized_curled_error_mm: 2.455289
+  maximum_synchronized_error_mm: 21.570701
+  whole_workspace_rod_closure_feasible: false
+  samples_within_closure_tolerance_fraction: 0.0
+  samples_within_1mm_fraction: 0.0
+  best_static_curled_q_deg: 47.0
+  best_static_curled_error_mm: 0.336251
+  maximum_perpendicular_deviation_deg: 89.813357
+  hand_motion:
+    progress_bounds_satisfied: true
+    monotonic_non_decreasing: true
+    terminal_progress: 1.0
+    dorsal_flexion_prohibited: true
+- finger: ring
+  contact: fixed_R4_at_upper_distal_midpoint
+  horizontal_error_mm: 9.925757
+  synchronized_curled_error_mm: 4.518226
+  maximum_synchronized_error_mm: 16.940357
+  whole_workspace_rod_closure_feasible: false
+  samples_within_closure_tolerance_fraction: 0.022727
+  samples_within_1mm_fraction: 0.022727
+  best_static_curled_q_deg: 64.0
+  best_static_curled_error_mm: 0.032847
+  maximum_perpendicular_deviation_deg: 89.743097
+  hand_motion:
+    progress_bounds_satisfied: true
+    monotonic_non_decreasing: true
+    terminal_progress: 1.0
+    dorsal_flexion_prohibited: true
+- finger: little
+  contact: fixed_R4_at_upper_distal_midpoint
+  horizontal_error_mm: 2.675057
+  synchronized_curled_error_mm: 17.735843
+  maximum_synchronized_error_mm: 17.735843
+  whole_workspace_rod_closure_feasible: false
+  samples_within_closure_tolerance_fraction: 0.19697
+  samples_within_1mm_fraction: 0.19697
+  best_static_curled_q_deg: 56.5
+  best_static_curled_error_mm: 0.056599
+  maximum_perpendicular_deviation_deg: 73.006294
+  hand_motion:
+    progress_bounds_satisfied: true
+    monotonic_non_decreasing: true
+    terminal_progress: 1.0
+    dorsal_flexion_prohibited: true

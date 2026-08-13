@@ -8,6 +8,7 @@ import csv
 import math
 from dataclasses import dataclass
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -15,7 +16,8 @@ import numpy as np
 from matplotlib.colors import to_rgba
 from matplotlib.patches import Circle, Polygon
 
-from mechanism_schema import DEFAULT_ABSTRACTION, load_abstraction
+from mechanism_schema import DEFAULT_ABSTRACTION, l_bracket_segments, load_abstraction
+from plot_primitives import draw_l_bracket
 
 
 Point = tuple[float, float]
@@ -220,8 +222,40 @@ def sweep_workspace(
     q_min: float | None = None,
     q_max: float | None = None,
     steps: int | None = None,
+    q_values_deg: Sequence[float] | None = None,
 ) -> SweepResult:
     """Track the initial assembly branch from q=0 in both directions."""
+    if q_values_deg is not None:
+        values = np.asarray(q_values_deg, dtype=float)
+        if (values.ndim != 1 or len(values) < 3
+                or not np.all(np.isfinite(values))
+                or not math.isclose(float(values[0]), 0.0, abs_tol=1e-9)
+                or bool(np.any(np.diff(values) < -1e-9))):
+            raise ValueError(
+                "explicit q schedule must contain at least three finite, "
+                "nondecreasing values starting at zero"
+            )
+        solver = DistanceConstraintSolver(data)
+        initial = solver.solve(0.0, solver.initial)
+        if initial is None:
+            raise KinematicSolveError(
+                "nominal geometry does not satisfy the distance constraints"
+            )
+        poses = [initial]
+        previous = initial
+        for q in values[1:]:
+            pose = solver.solve(float(q), previous.positions)
+            if pose is None:
+                break
+            poses.append(pose)
+            previous = pose
+        outputs = data.get("outputs", [])
+        if not outputs:
+            raise KinematicSolveError("workspace analysis needs at least one output node")
+        return SweepResult(
+            tuple(poses), float(values[0]), float(values[-1]), outputs[0]["node"],
+        )
+
     config = data.get("analysis", {}).get("workspace_sweep", {})
     q_min = float(config.get("q_min_deg", 0.0) if q_min is None else q_min)
     q_max = float(config.get("q_max_deg", 90.0) if q_max is None else q_max)
@@ -266,7 +300,18 @@ def _draw_pose(axes, data: dict[str, Any], pose: Pose, alpha: float, linewidth: 
     for body in data["bodies"]:
         points = [pose.positions[node_id] for node_id in body["nodes"]]
         color = body.get("color", "#334155")
-        if len(points) == 2:
+        bracket = l_bracket_segments(body, pose.positions)
+        if bracket is not None:
+            draw_l_bracket(
+                axes,
+                bracket,
+                color,
+                linewidth=max(2.8, linewidth * 2.5)
+                * float(body.get("render_flesh_scale", 1.0)),
+                alpha=alpha,
+                zorder=3,
+            )
+        elif len(points) == 2:
             axes.plot(*zip(*points), color=color, alpha=alpha, linewidth=linewidth,
                       solid_capstyle="round", zorder=3)
         else:

@@ -2,41 +2,32 @@
 
 ## Product mental model
 
-We are designing a planar, hand-mounted exoskeleton based on `mechanism_2`. One
-actuated linkage topology should support the index, middle, ring, and little fingers.
-Those fingers differ in phalanx lengths and intended curl, so success is not a single
-best-fit pose: it is a constrained compromise across four human geometries, motion
-trajectories, device packaging, and actuator performance.
-
-The present optimizer assumes one shared mechanism link-length vector for all four
-fingers. That is only the first co-design interpretation. A likely better product
-architecture is a shared topology and shared dimensionless ratios with a small set of
-finger-specific scale, attachment, or mounting variables. This shared-versus-local
-variable split has not yet been decided.
+We are designing four planar, hand-mounted exoskeleton mechanisms based on the same
+`mechanism_2` topology: one distinctive design for each of index, middle, ring, and
+little. The fingers differ in phalanx lengths and intended curl, so each is an
+independent optimization problem. All four jobs start from the same nominal mechanism
+dimensions, then own separate copies of all design variables and separate Adam state.
+There is no cross-finger scalarization or shared optimized link vector.
 
 The intended information flow is:
 
 ```text
-12 mechanism link lengths + tip-rod length
-                           |
-                           v
-             candidate geometry and assembly branch
-                           |
-                           v
-       per-finger kinematics, fingertip path, forces, energy
-                           |
-                           v
-        objective vector + feasibility/safety constraints
-                           |
-                           v
-              scalarization/Pareto strategy + Adam
-                           |
-                           v
-            validated candidate, never automatic adoption
+                 shared nominal Mechanism 2
+                            |
+             copy the same 12 optimizable initial lengths
+          / index / middle / ring / little /
+         v        v        v       v
+  four independent candidate geometries and Adam states
+         |        |        |       |
+  finger-local kinematics, collision, contact and objectives
+         |        |        |       |
+  four validated candidates, never automatic nominal adoption
 ```
 
-The repository has the inputs and optimizer plumbing around this flow. The missing
-core is the candidate-to-per-finger kinematic and load predictor.
+The repository has the inputs and independent optimizer plumbing around this flow.
+It now includes a first crank-driven passive-hand coupling abstraction. The missing
+core is continuous-time certification and a physically calibrated multi-DOF
+hand/contact/load equilibrium model within each finger problem.
 
 The nominal assembly uses a mildly curled index-finger pose, a horizontal placeholder
 palm (`90 × 25 mm`, rounded rectangle), and places the complete mechanism on its dorsal
@@ -46,17 +37,18 @@ side. It makes two interface assumptions explicit:
   by `dorsal_clearance_mm`, a manually controlled upstream design parameter currently
   set to 1 mm; ground member `A–D` remains horizontal, and unequal phalanx widths
   extend toward the palmar side; and
-- output TCP `H` connects through a nominal 28 mm rod to compound pair `RP4` on the
-  distal phalanx's lower surface. The pin rotates freely and translates through
-  `0…L_distal`; it is not a fixed distal revolute joint.
+- output TCP `H` connects through a nominal 28 mm ideal rigid rod to fixed revolute
+  `R4` at the longitudinal midpoint of the distal phalanx's upper surface. There is no
+  translational pair or sliding contact.
 
 The output rod is fixed-length within one mechanism motion, but its length is a design
-variable between candidates. The present 28 mm baseline is the rounded minimum-RMS
-choice from a rod-only scan of the four synchronized nominal sweeps; the earlier 15 mm
-assumption is retained as `previous_assumption_mm` in the nominal YAML for provenance.
+variable between candidates. The present 28 mm value predates fixed R4 and is retained
+only as the optimization initialization; it is not claimed to close the new nominal
+assembly. The earlier 15 mm assumption remains in the nominal YAML for provenance.
 
-These interfaces are external metadata and do not add unconstrained human joints to
-the one-DOF mechanism solver.
+This first interface layer is deliberately ideal: rigid distal phalanx, exact planar
+revolute, and massless two-force rod. Cuff compliance, skin motion, attachment
+pressure, backlash, and out-of-plane freedom are deferred.
 
 ## Nominal mechanism
 
@@ -124,13 +116,16 @@ registration between the human MCP/PIP/DIP joints and mechanism nodes has not be
 validated.
 
 The combined suite draws a horizontal placeholder palm and three slightly curled
-rounded phalanges for every long finger. Lengths come from each finger objective; the
+rounded phalanges for every long finger. Analysis lengths and ranges are embedded in
+the design's `mechanism.yaml`; the co-optimization objective files are not analysis
+dependencies. The
 provisional widths `20/15/10 mm` and `90 × 25 mm` palm are shared. The four-panel view
-is `designs/mechanism_2/nominal/combined_abstraction.png`, with individual files named
-`combined_abstraction_<finger>.png`. Anatomical revolutes are indexed `J1–J3`; the
-lower-surface rotating/translating output pair is labeled `RP4`.
+is `designs/mechanism_2/nominal/artifacts/combined/combined_abstraction.png`, with
+individual files under
+`artifacts/combined/fingers/<finger>/combined_abstraction.png`. Anatomical revolutes are indexed
+`J1–J3`; the fixed upper-distal attachment revolute is labeled `R4`.
 Mechanism placement enforces horizontal `A–D`, the upstream `D–J1` clearance, and
-nominal `H–RP4` slot/rod closure, but remains an abstraction rather than a validated wearable
+nominal `H–R4` rod closure, but remains an abstraction rather than a validated wearable
 fit.
 
 ## Analysis pipeline
@@ -141,19 +136,23 @@ Canonical entry point:
 ./run_analysis.sh
 ```
 
-It validates the YAML body–joint graph, exports tables, draws the abstraction, sweeps
+It accepts one `mechanism.yaml`, several YAMLs, or directories searched recursively
+for `mechanism.yaml`. It validates each self-contained body–joint graph, exports tables, draws the abstraction, sweeps
 the distance-constrained mechanism workspace, runs a coupled mechanism–hand sweep for
-all four long fingers, and calculates nominal quasi-static gravity torque. Standalone
-outputs go to `runs/analysis_<UTC timestamp>/`.
+its declared finger targets, and calculates nominal quasi-static gravity torque. By
+default, each input writes beside itself under `artifacts/`; `--output-dir` redirects
+one selected design.
 
-The combined sweep synchronizes normalized actuator progress with each finger's
-horizontal-to-maximum-curl target. At every sample it reports TCP `H`, the finite
-lower-distal RP4 slot, the closest valid slider coordinate, output-rod closure error,
-and mechanism loop residual. It also searches the feasible actuator sweep for the
+For standalone nominal analysis, the combined sweep still uses normalized actuator
+progress as a visualization assumption. Candidate analysis instead replays the
+optimizer's recorded crank-driven passive hand response. At every sample it reports
+TCP `H`, fixed upper
+distal contact `R4`, output-rod closure error, perpendicular deviation, and mechanism
+loop residual. It also searches the feasible actuator sweep for the
 independently best match to each static curled target. The generated artifacts are:
 
 ```text
-runs/analysis_<UTC timestamp>/
+<design>/artifacts/
 ├── mechanism/
 │   ├── abstraction.png
 │   ├── workspace/
@@ -171,21 +170,22 @@ runs/analysis_<UTC timestamp>/
             └── combined_workspace_summary.yaml
 ```
 
-This is a prescribed-motion compatibility analysis, not yet a coupled dynamics or
-contact solve: the hand angles are interpolated from measured target ranges rather
-than predicted from mechanism forces and attachment constraints.
+Standalone nominal output is a prescribed-motion compatibility analysis. Optimized
+candidate output uses fixed-contact closure to solve one passive curl coordinate, but
+it is still kinematic: it has no calibrated joint stiffness, user effort, or contact
+force equilibrium.
 Each per-finger workspace report nevertheless renders the whole declared assembly at
-representative synchronized poses: fixed palm and D/J1 mounting clearance, all three
+representative coupled poses: fixed palm and D/J1 mounting clearance, all three
 rounded phalanges from horizontal through the supplied maximum MCP/PIP/DIP curl,
-every mechanism body, TCP `H`, output rod, and the translating RP4 pin.
+every mechanism body, TCP `H`, output rod, and fixed R4 joint.
 
 What is trustworthy today:
 
 - topology, joint incidence, loop declaration, and mobility checks;
 - the remeasured nominal link table;
 - closure residuals for the nominal assembly branch;
-- repeatable four-finger RP4 translation and rod-closure metrics under the declared
-  synchronized motion assumption;
+- repeatable four-finger fixed-contact closure and perpendicularity metrics under the
+  declared motion model;
 - identification of infeasible requested input poses; and
 - repeatable generated reports.
 
@@ -195,7 +195,7 @@ What remains provisional:
 - assembly-mode selection based only on continuity from the initial pose;
 - the placeholder mass and center-of-mass model;
 - torque without finger contact loads, friction, springs, or transmission losses;
-- collision, packaging, singularity, and structural checks; and
+- continuously certified collision, packaging, singularity, and structural checks; and
 - any manufacturing or actuator-sizing conclusion.
 
 ## Co-optimization pipeline
@@ -207,23 +207,24 @@ Canonical entry point:
 ```
 
 The shell wrapper delegates numerical optimization to
-`src/co-optimization/run_adam.py`, materializes every retained candidate as a complete
-mechanism YAML, and invokes the full analysis entry point for that candidate. The
-implementation loads YAML configuration, performs bounded Adam updates with central
-finite-difference gradients, retains individual per-finger losses, scalarizes them
-with configurable weights, and writes:
+`src/co-optimization/run_adam.py`. It instantiates four independent problems from the
+finger manifest, gives every problem a fresh copy of the same nominal 12-value vector,
+runs separate bounded Adam updates, materializes a distinct mechanism YAML, and invokes
+the full analysis for only that candidate's finger. It writes:
 
 ```text
 runs/co-optimization_<UTC timestamp>/
-├── history.csv
-└── candidate_0001/
-    ├── candidate.yaml
-    ├── mechanism.yaml
-    └── analysis_<UTC timestamp>/
-        ├── mechanism/
-        └── combined/
-            ├── combined_workspace_report.png
-            └── fingers/<finger>/combined_workspace_report.png
+├── run_manifest.yaml
+└── fingers/
+    └── {index,middle,ring,little}/
+        ├── history.csv
+        ├── tensorboard/events.out.tfevents.*
+        └── candidate_0001/
+            ├── candidate.yaml
+            ├── mechanism.yaml
+            └── artifacts/
+                ├── mechanism/
+                └── combined/fingers/<that-finger>/combined_workspace_report.png
 ```
 
 The `candidate_0001` numbering is the retained-candidate contract, not an assumption
@@ -232,34 +233,48 @@ candidates should be numbered alongside it and must each receive a full analysis
 There is deliberately no `adam/` path component: algorithms are implementation
 metadata. The pipeline is non-destructive and never modifies the nominal design.
 
-The first result produced under this contract illustrates why the nested analysis is
-mandatory: although its two-pose optimization loss decreased, its reconstructed
-assembly branch completed only `0…39°` of the requested `0…90°` sweep and accumulated
-large synchronized middle/ring-finger errors. It is therefore an analyzed but rejected
-candidate, not a design improvement. Feasible sweep extent must become an explicit
-optimization constraint before candidates can be promoted.
+Each finger owns a TensorBoard stream that logs its total and component losses,
+optimizer gradient/step norms, each finite-difference gradient, and its 12 local
+design-variable values and bounds. View all four with
+`tensorboard --logdir runs/co-optimization_<timestamp>/fingers`.
+
+A legacy result produced before the independent-finger refactor used one shared vector;
+it is conceptually invalid and must not be used as a starting design. It also showed why
+nested analysis remains mandatory: its assembly branch completed only `0…39°` of the
+requested `0…90°` sweep. Feasible sweep extent must become an explicit constraint in
+each finger problem before candidates can be promoted.
 
 ### Design variables
 
-`src/co-optimization/config/optimizable_variables.yaml` declares all 12 mechanism link
-lengths plus the external `H–RP4` output rod (`L_tip_rod`) as bounded variables. Their
-initial values match the nominal mechanism and its 28 mm attachment baseline.
+`src/co-optimization/config/optimizable_variables.yaml` declares 11 mechanism link
+lengths plus the external `H–R4` output rod (`L_tip_rod`) as bounded variables. Their
+initial values match the nominal mechanism and its 28 mm attachment baseline. `L_ad`
+is excluded from Adam and remains the fixed 54 mm horizontal grounded baseline.
 The bounds are broad scaffolding limits and have not been checked against packaging,
 anatomy, triangle inequalities, or assembly feasibility.
 
 ### Active objective behavior
 
-The sole active objective is two-pose task-space reachability of lower distal slot
-`RP4`. For each finger, forward kinematics of its measured phalanx lengths and curl
-angles produces horizontal and maximum-curled slot poses. An analytic linkage solver
-tracks TCP `H`; the loss minimizes rod-closure residual over translation
-`0…L_distal`. Horizontal is evaluated at zero actuator input and curl uses a smooth
-minimum over the feasible 0–90° sweep. All 13 design lengths can affect this loss. The complete derivation is in
-`src/co-optimization/objective_math.md`.
+Output-rod perpendicularity is the sole design objective. Full-workspace fixed
+`H–R4` closure, monotone downward hand curl, and sampled hand–mechanism non-collision
+are hard constraints. The crank `q` is the sole prescribed input. A curled endpoint
+search selects terminal `q_f,*`; closure then solves the passive one-DOF hand curl
+coordinate `s` at 31 increasing crank poses. The rule `0 <= s <= 1`,
+`s[k+1] >= s[k]`, `s[0]=0`, and terminal `s=1` forbids dorsal bending and reversal.
+There is no fixed hand/crank ratio. Every pose must close within `0.1 mm`, and any
+sampled unintended penetration rejects the candidate.
+All 12 optimizable lengths can affect closure, clearance, and rod angle; fixed `L_ad`
+still participates in every kinematic evaluation. The complete ideal-interface
+derivation is in `src/co-optimization/objective_math.md`.
 
-Reaching the RP4 slot does not prove that the intermediate anatomical joints reproduce the full
-drawn hand pose. The generated candidate remains a reachability study, not a feasible
-mechanism recommendation.
+Candidate combined reports replay the recorded prescribed crank samples and passive
+hand-progress samples. They do not synthesize a new linear hand/crank mapping;
+mechanism-only reports still show the broader diagnostic sweep.
+
+The passive response remains idealized: it restricts MCP/PIP/DIP motion to a measured
+one-DOF synergy and assumes zero hand stiffness. It therefore proves geometric
+compatibility only, not feedback force or comfort. Collision between the 31 samples is
+also not yet continuously certified.
 
 ### Declared but unevaluated placeholders
 
@@ -269,28 +284,30 @@ mechanism recommendation.
 - fingertip-path tracking;
 - actuation energy;
 - peak motor torque;
-- cross-finger error or robustness;
+- legacy cross-finger error (disabled and incompatible with the independent contract);
 - link-length regularization;
 - compactness; and
 - motion smoothness.
 
-It also declares closure, singularity, joint-limit, and collision penalties. Every one
-of these placeholder objectives and penalties is currently disabled; they are planning
-metadata, not active safeguards.
+It also declares closure, singularity, joint-limit, and a legacy collision penalty.
+Those generic placeholders remain disabled; the dedicated
+`hand_mechanism_non_collision` component is the active collision safeguard.
 
 ## Important modeling decisions still open
 
-1. **Shared versus finger-specific geometry.** Decide whether all fingers use one
-   identical link vector, scaled copies, shared ratios with local attachment offsets,
-   or independently sized mechanisms with shared actuator/manufacturing constraints.
+1. **Manufacturing coordination after optimization.** The geometry decision is fixed:
+   four independent link vectors. Later comparison may identify reusable parts, but
+   commonality must remain a postprocessing/manufacturing decision unless explicitly
+   introduced as a new outer-level problem.
 2. **Human-device registration.** Define which mechanism points attach to each phalanx
    and how device motion maps to MCP/PIP/DIP flexion without forcing joint-axis
    coincidence.
-3. **Motion parameterization.** Decide whether all fingers share actuator angle,
-   normalized curl progress, cable displacement, or force as the comparison variable.
-4. **Objective aggregation.** A weighted mean can sacrifice one finger. Decide whether
-   the primary robustness term is worst-case loss, a smooth maximum, explicit per-finger
-   limits, or a Pareto-front selection.
+3. **Motion parameterization.** The current decision is that crank angle is the sole
+   prescribed input and hand curl is passive. Next decide how joint stiffness, user
+   effort, and feedback torque determine the passive multi-joint equilibrium.
+4. **Objective aggregation within each finger.** Decide how that finger's reachability,
+   clearance, contact travel, and perpendicularity terms are scalarized or represented
+   on a Pareto front. Never aggregate losses across fingers.
 5. **Feasibility treatment.** Decide which requirements are hard constraints and which
    are differentiable penalties. Closure, assembly, collision, and safe joint limits
    should generally not be traded away for better tracking.
@@ -300,8 +317,8 @@ metadata, not active safeguards.
 ### 1. Freeze the human-device mapping
 
 Extend the existing nominal hand/attachment schema to every finger. Validate the
-dorsal MCP mount at node D, manually defined clearance, lower-surface distal slot,
-offset, and the mapping from mechanism motion to phalanges before adding more
+dorsal MCP mount at node D, manually defined clearance, fixed upper-distal R4,
+and the mapping from mechanism motion to phalanges before adding more
 objectives.
 
 ### 2. Build candidate geometry robustly
@@ -313,17 +330,18 @@ workspaces from complete sweeps, and report why non-assemblable candidates faile
 
 ### 3. Connect a per-finger kinematic predictor
 
-The current predictor returns mechanism TCP `H` and `H–RP4` slot reachability. Extend it to
-solve the complete coupled hand trajectory and return:
+The current predictor returns mechanism TCP `H` and a passive one-DOF hand-synergy
+response from fixed `H–R4` closure. Extend it to solve a calibrated multi-DOF static or
+quasi-static hand equilibrium and return:
 
 - mechanism node coordinates;
 - predicted human MCP/PIP/DIP angles;
 - fingertip position and orientation;
 - closure residual and feasible motion extent;
 - singularity or Jacobian metrics; and
-- attachment misalignment or sliding demand.
+- attachment misalignment and force-transmission quality.
 
-This is required before treating a reachable slot as proof of the full hand pose.
+This is required before using the geometry to claim force-feedback quality or comfort.
 
 ### 4. Activate hard feasibility checks first
 
@@ -335,8 +353,8 @@ link vectors.
 ### 5. Activate pose and path objectives
 
 Compare predicted trajectories with the full nominal-to-curled target, not only endpoint
-angles. Normalize errors by the measured uncertainty and finger size. Add a worst-finger
-metric so a low mean error cannot conceal an unusable little or middle finger.
+angles. Normalize errors by the measured uncertainty and finger size. Apply explicit
+acceptance thresholds separately to every finger candidate.
 
 ### 6. Establish the physical load model
 
@@ -345,17 +363,16 @@ return springs, desired fingertip force, and external finger resistance. Then ac
 energy, peak torque, transmission, and thermal/duty-cycle objectives. The current
 gravity-only torque report is insufficient for actuator selection.
 
-### 7. Choose the co-design variable hierarchy
+### 7. Compare the four independent designs
 
-A practical starting point is shared dimensionless linkage ratios plus one scale and a
-few attachment offsets per finger. This captures anatomical variation without creating
-four unrelated mechanisms. Manufacturing objectives can then reward common parts and a
-small number of discrete link sizes.
+After all four candidates pass their own feasibility checks, generate a read-only
+comparison of link sizes, objective vectors, packaging envelopes, and potential common
+parts. This comparison must not silently feed back into the independent losses.
 
 ### 8. Improve optimization only after the evaluator is stable
 
 Central finite differences are appropriate for plumbing tests but will become expensive
-and noisy once each evaluation contains four full sweeps and collision/load analysis.
+and noisy once each evaluation contains a full collision/load sweep.
 First validate the evaluator against hand calculations and known poses. Then consider
 automatic differentiation, analytic sensitivities, parallel finite differences, or a
 hybrid global/local search. Adam should not be the only algorithm used to establish
@@ -371,21 +388,23 @@ per-finger thresholds; and only then create a new named design directory. Never 
 
 ## Immediate definition of done for the next milestone
 
-The next milestone should produce one candidate link vector for which all four fingers
-can be simulated from horizontal to intended curl, with explicit attachment mapping,
-zero accepted closure violations, recorded joint-limit and singularity margins, and
-per-finger pose/path errors. Energy and torque can remain secondary until this
-kinematic-feasibility milestone is trustworthy.
+The next milestone should produce four candidate link vectors, each initialized from
+the same nominal design and each able to simulate its assigned finger from horizontal
+to intended curl, with explicit attachment mapping, zero accepted closure/collision
+violations, recorded joint-limit and singularity margins, and pose/path errors. Energy
+and torque can remain secondary until this kinematic-feasibility milestone is trustworthy.
 
 ## Key paths
 
 | Purpose | Path |
 |---|---|
 | Nominal mechanism | `designs/mechanism_2/nominal/mechanism.yaml` |
-| Nominal dimensioned graph | `designs/mechanism_2/nominal/mechanism_graph.png` |
-| Combined hand/device abstraction | `designs/mechanism_2/nominal/combined_abstraction.png` |
+| Nominal design layout | `designs/mechanism_2/nominal/README.md` |
+| Nominal dimensioned graph | `designs/mechanism_2/nominal/artifacts/mechanism/abstraction.png` |
+| Combined hand/device abstraction | `designs/mechanism_2/nominal/artifacts/combined/combined_abstraction.png` |
 | Finger objective manifest | `src/co-optimization/config/objectives.yaml` |
-| Per-finger targets | `src/co-optimization/config/objectives/*.yaml` |
+| Embedded nominal analysis targets | `designs/mechanism_2/nominal/mechanism.yaml` |
+| Optimization training targets | `src/co-optimization/config/objectives/*.yaml` |
 | Active objective derivation | `src/co-optimization/objective_math.md` |
 | Link-length variables | `src/co-optimization/config/optimizable_variables.yaml` |
 | Adam implementation | `src/co-optimization/run_adam.py` |
@@ -395,10 +414,10 @@ kinematic-feasibility milestone is trustworthy.
 | Optimization entry point | `run_optimization.sh` |
 | Tests | `tests/` |
 
-At handover time, all 18 tests pass. The tests cover topology/schema consistency,
+At handover time, all 19 tests pass. The tests cover topology/schema consistency,
 workspace closure for the nominal design, plotting, nominal torque plumbing, exact
 alignment between optimizer variable initials and nominal dimensions, and end-to-end
-execution through the top-level Adam wrapper. They also verify that task-space
-reachability is the only enabled optimization objective and validate the nominal hand
-dimensions, attachment interfaces, combined abstraction renderer, and four-finger
-combined sweep bounds.
+execution through the top-level Adam wrapper. They also enforce four isolated finger
+candidate trees, shared nominal initialization, distinct finger mechanism identities,
+finger-specific analysis routing, reachability plus whole-workspace collision as the
+enabled optimization components, and the nominal hand/attachment and sweep bounds.

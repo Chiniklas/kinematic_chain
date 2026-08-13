@@ -47,9 +47,9 @@ python3 "${entry_point}" "${arguments[@]}"
 if [[ "${output_dir}" != /* ]]; then
   output_dir="$(pwd)/${output_dir}"
 fi
-candidate_dirs=("${output_dir}"/candidate_*)
+candidate_dirs=("${output_dir}"/fingers/*/candidate_*)
 if [[ ! -d "${candidate_dirs[0]}" ]]; then
-  printf 'No retained candidate directories found under %s\n' "${output_dir}" >&2
+  printf 'No per-finger retained candidate directories found under %s\n' "${output_dir}" >&2
   exit 4
 fi
 for candidate_dir in "${candidate_dirs[@]}"; do
@@ -57,9 +57,26 @@ for candidate_dir in "${candidate_dirs[@]}"; do
     printf 'Candidate is missing materialized mechanism: %s\n' "${candidate_dir}" >&2
     exit 4
   fi
-  analysis_timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
-  analysis_dir="${candidate_dir}/analysis_${analysis_timestamp}"
-  "${project_dir}/run_analysis.sh" "${candidate_dir}/mechanism.yaml" "${analysis_dir}"
 done
+
+analysis_failures=0
+for candidate_dir in "${candidate_dirs[@]}"; do
+  finger="$(basename -- "$(dirname -- "${candidate_dir}")")"
+  analysis_dir="${candidate_dir}/artifacts"
+  printf 'Analyzing materialized %s design: %s\n' \
+    "${finger}" "${candidate_dir}/mechanism.yaml"
+  if ! "${project_dir}/run_analysis.sh" \
+      --output-dir "${analysis_dir}" --finger "${finger}" \
+      "${candidate_dir}/mechanism.yaml"; then
+    printf 'Analysis failed for %s: %s\n' "${finger}" "${candidate_dir}" >&2
+    analysis_failures=$((analysis_failures + 1))
+  fi
+done
+
+if ((analysis_failures > 0)); then
+  printf '%d candidate analysis job(s) failed under %s\n' \
+    "${analysis_failures}" "${output_dir}" >&2
+  exit 5
+fi
 
 printf 'Co-optimization outputs written to %s\n' "${output_dir}"

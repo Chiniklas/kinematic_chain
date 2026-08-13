@@ -1,9 +1,9 @@
 # Multi-finger exoskeleton co-optimization
 
 This repository is developing a hand-mounted exoskeleton from the planar
-`mechanism_2` linkage. The four long fingers have different phalanx lengths and
-intended curl ranges, so the design problem is treated as a multi-objective
-co-optimization rather than a fit to one representative finger.
+`mechanism_2` linkage. The index, middle, ring, and little fingers are four independent
+design problems: each starts from the same nominal mechanism, then optimizes its own
+copy of every mechanism and attachment length against that finger's geometry.
 
 The project currently contains:
 
@@ -11,22 +11,29 @@ The project currently contains:
 - a combined mildly curled nominal index-finger abstraction, with the mechanism on
   the dorsal side of a horizontal 90 × 25 mm palm, horizontal member
   `A–D`, a manually defined dorsal clearance between `D` and indexed MCP joint `J1`,
-  and a rod from TCP `H` to an `RP4` rotating pin that translates along the lower
-  distal-phalanx surface;
-- mechanism-only workspace and nominal quasi-static torque analysis, plus a
-  synchronized mechanism–hand sweep for all four long fingers;
+  and an ideal rod from TCP `H` to fixed revolute `R4` at the upper distal-phalanx
+  midpoint;
+- mechanism-only workspace and nominal quasi-static torque analysis, plus a coupled
+  mechanism–hand sweep for all four long fingers;
 - pixel-derived index, middle, ring, and little finger targets in millimetres and
   degrees;
-- a bounded, non-destructive Adam optimization skeleton over all 12 mechanism link
-  lengths plus the `H–RP4` output-rod length; and
-- an active two-pose task-space reachability objective; all energy, torque, path,
-  regularization, collision, singularity, and joint-limit terms are currently disabled.
+- four bounded, non-destructive Adam optimization jobs, each with its own copy of 11
+  mechanism link lengths plus the `H–R4` output-rod length; the 54 mm grounded `AD`
+  baseline remains fixed; and
+- one design objective, `H–R4` rod perpendicularity, plus hard full-workspace rod
+  closure, downward-only hand motion, and sampled hand–mechanism non-collision
+  constraints.
 
-The optimizer analytically tracks the candidate linkage and minimizes the `H–RP4` rod
-closure error over the finite distal slot at each finger's horizontal and
-maximum-curled target. It remains an
-early design tool: full joint-pose tracking, force, energy, collision, singularity,
-and safety metrics are disabled, so candidates are not yet physically validated.
+Each optimizer treats crank angle `q` as the sole prescribed coordinate. The current
+ideal compliant hand has one passive curl coordinate constrained to the measured
+horizontal-to-maximum-curl path; closure solves this response without a hand/crank
+ratio, and a hard rule forbids dorsal bending or mid-motion reversal. The fixed
+`H–R4` rod must close across all 31 poses.
+Every pose must close within `0.1 mm`; smooth closure and clearance penalties guide
+Adam toward the hard-feasible region but are not design objectives. It remains an
+early design tool: collision is sampled rather than continuously certified, and full
+joint-pose tracking, force, energy, singularity, and other safety metrics are still
+incomplete, so candidates are not yet physically validated.
 
 See [handover.md](handover.md) for the complete mental model, current contracts,
 limitations, and recommended next steps.
@@ -53,14 +60,28 @@ Validate and analyze the nominal mechanism:
 ./run_analysis.sh
 ```
 
-Each standalone run creates `runs/analysis_<UTC timestamp>/`, grouped into
-`mechanism/` and `combined/`. The aggregate four-finger abstraction and sweep are in
-`combined/`. Each of `combined/fingers/{index,middle,ring,little}/` contains a
+This reads the self-contained nominal `mechanism.yaml` and refreshes its adjacent
+`designs/mechanism_2/nominal/artifacts/`, grouped into `mechanism/` and `combined/`.
+The aggregate four-finger abstraction and sweep are in `combined/`. Each of
+`combined/fingers/{index,middle,ring,little}/` contains a
 workspace-style `combined_workspace_report.png`, its individual abstraction, sample
 CSV, and YAML summary. The report overlays representative poses of the complete palm,
-three phalanges, mechanism, output rod, and RP4 slider from horizontal extension to
-the supplied maximum MCP/PIP/DIP curl; supporting panels report RP4 translation and
-rod-closure error.
+three phalanges, mechanism, output rod, and fixed R4 contact from horizontal extension
+to the supplied maximum MCP/PIP/DIP curl; supporting panels report fixed-contact rod
+closure and perpendicular deviation.
+
+Analyze one other design, several YAMLs, or a directory tree containing designs:
+
+```bash
+./run_analysis.sh path/to/design/mechanism.yaml
+./run_analysis.sh path/to/a/mechanism.yaml path/to/b/mechanism.yaml
+./run_analysis.sh path/to/designs/
+```
+
+By default, every input writes to an `artifacts/` folder beside its own
+`mechanism.yaml`. For a single input, `--output-dir /tmp/artifacts` redirects that
+artifact tree. Analysis does not read co-optimization configuration; hand targets and
+attachment assumptions required by a design are stored in that design's YAML.
 
 Run the current multi-objective Adam skeleton:
 
@@ -68,11 +89,17 @@ Run the current multi-objective Adam skeleton:
 ./run_optimization.sh
 ```
 
-Each run creates `runs/co-optimization_<UTC timestamp>/`; there is no algorithm-named
-`adam/` output layer. The retained result is stored under `candidate_0001/` as both a
-candidate record and a complete mechanism YAML. A timestamped `analysis_*` directory
-inside that candidate contains the same full analysis suite produced by
-`run_analysis.sh`.
+Each run creates `runs/co-optimization_<UTC timestamp>/fingers/<finger>/`. Every finger
+has its own `candidate_0001/`, `history.csv`, TensorBoard stream, optimized mechanism
+YAML, and finger-specific full analysis. The four candidate vectors share no variables
+or Adam state; only their initial values come from the same nominal YAML. Run-level
+aggregate material is comparison-only and never enters a finger's loss.
+
+After updating the environment, inspect a run with:
+
+```bash
+tensorboard --logdir runs/co-optimization_<UTC timestamp>/fingers
+```
 
 Override optimizer settings:
 
@@ -81,6 +108,12 @@ Override optimizer settings:
   --iterations 500 \
   --learning-rate 0.2 \
   --output-dir /tmp/co-optimization
+```
+
+Run only one independent problem while developing its evaluator:
+
+```bash
+./run_optimization.sh --finger index --iterations 50
 ```
 
 Run all tests:
@@ -97,5 +130,8 @@ Primary inputs are [the nominal mechanism](designs/mechanism_2/nominal/mechanism
 [the link-length variables](src/co-optimization/config/optimizable_variables.yaml).
 The active loss is specified in
 [objective_math.md](src/co-optimization/objective_math.md).
-The nominal [four-finger combined abstraction](designs/mechanism_2/nominal/combined_abstraction.png)
-and its adjacent finger-specific images show the current attachment assumptions.
+The nominal [four-finger combined abstraction](designs/mechanism_2/nominal/artifacts/combined/combined_abstraction.png)
+and its grouped [finger-specific artifacts](designs/mechanism_2/nominal/artifacts/combined/fingers/)
+show the current attachment assumptions. See the
+[nominal design layout](designs/mechanism_2/nominal/README.md) for the source/artifact
+contract.

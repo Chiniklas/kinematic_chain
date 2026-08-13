@@ -154,6 +154,10 @@ bodies:
     kind: rigid_body
     nodes: [f, g, h]
     role: rigid FGH distal output body
+    render_shape: l_bracket
+    render_corner_node: g
+    render_arm_nodes: [f, h]
+    render_flesh_scale: 1.8
     confidence: high
     draw_order: 1
     color: "#dc2626"
@@ -209,6 +213,8 @@ dimensions:
     value: 54
     units: mm
     value_source: dimensioned_plot_rounded
+    optimizable: false
+    design_role: fixed_horizontal_ground_mount_baseline
   - id: L_ae
     body: ground
     nodes: [a, e]
@@ -302,7 +308,7 @@ human_hand_model:
     - {id: hand_mcp, node_index: 1, position_mm: [0.0, 0.0], kind: anatomical_revolute}
     - {id: hand_pip, node_index: 2, position_mm: [39.993908, -0.698096], kind: anatomical_revolute}
     - {id: hand_dip, node_index: 3, position_mm: [64.959646, -2.006495], kind: anatomical_revolute}
-    - {id: hand_distal_slot_midpoint, pair_index: 4, position_mm: [76.540523, -13.057889], kind: attachment_slot_reference}
+    - {id: hand_distal_contact, attachment_index: 4, position_mm: [77.41208, -3.095942], kind: attachment_revolute}
     - {id: hand_tip, position_mm: [89.864514, -4.185389], kind: terminal_reference}
   palm:
     id: palm
@@ -329,6 +335,34 @@ human_hand_model:
       width_mm: 10.0
       shape: rounded_rectangle
 
+# Self-contained human task models used by combined analysis. Candidate
+# mechanism.yaml files retain only their own finger row.
+finger_analysis_targets:
+  - objective: {id: index_finger_design, finger: index}
+    phalanx_lengths_mm: {proximal: 40.0, middle: 25.0, distal: 25.0}
+    joint_flexion_ranges_deg:
+      mcp: {min: 0.0, max: 46.0}
+      pip: {min: 0.0, max: 67.0}
+      dip: {min: 0.0, max: 27.0}
+  - objective: {id: middle_finger_design, finger: middle}
+    phalanx_lengths_mm: {proximal: 49.0, middle: 27.0, distal: 27.0}
+    joint_flexion_ranges_deg:
+      mcp: {min: 0.0, max: 37.0}
+      pip: {min: 0.0, max: 79.0}
+      dip: {min: 0.0, max: 27.0}
+  - objective: {id: ring_finger_design, finger: ring}
+    phalanx_lengths_mm: {proximal: 44.0, middle: 26.0, distal: 26.0}
+    joint_flexion_ranges_deg:
+      mcp: {min: 0.0, max: 39.0}
+      pip: {min: 0.0, max: 52.0}
+      dip: {min: 0.0, max: 50.0}
+  - objective: {id: little_finger_design, finger: little}
+    phalanx_lengths_mm: {proximal: 34.0, middle: 23.0, distal: 23.0}
+    joint_flexion_ranges_deg:
+      mcp: {min: 0.0, max: 65.0}
+      pip: {min: 0.0, max: 44.0}
+      dip: {min: 0.0, max: 34.0}
+
 exoskeleton_attachments:
   - id: dorsal_input_mount
     mechanism_node: d
@@ -349,24 +383,23 @@ exoskeleton_attachments:
   - id: distal_output_rod
     mechanism_node: h
     mechanism_interface: rigid_to_tcp
-    hand_reference: hand_distal_slot_midpoint
-    hand_interface: revolute_prismatic_pin_in_slot
+    hand_reference: hand_distal_contact
+    hand_interface: revolute
     connector: binary_rod
     assumed_length_mm: 28.0
     previous_assumption_mm: 15.0
-    value_source: preliminary_four_finger_synchronized_sweep_rounded
-    surface: distal_phalanx_lower_palmar
-    translation_axis: distal_phalanx_longitudinal
-    translation_range_mm: [0.0, 25.0]
-    nominal_translation_mm: 12.5
+    value_source: retained_pre_fixed_R4_baseline
+    surface: distal_phalanx_upper_dorsal
+    longitudinal_fraction: 0.5
     rotation: free
-    pair_dofs: [rotation, translation]
+    pair_dofs: [rotation]
     status: assumed_placeholder
     notes:
       - The rod is the only connection between TCP H and the human finger.
-      - The hand-side pin rotates freely and translates along the lower-surface slot.
-      - Slot travel is bounded by the full distal-phalanx length.
-      - The 28 mm nominal is a rounded analysis baseline; rod length stays fixed during one motion sweep but is optimizable between design candidates.
+      - R4 is a fixed revolute at the longitudinal midpoint of the upper distal surface.
+      - The physical interface is intended to be a retained distal cuff, not a sliding skin contact.
+      - The 28 mm nominal predates fixed R4 and is retained only as the optimization initialization.
+      - Rod length stays fixed during one motion sweep but is optimizable between design candidates.
       - Rod length and attachment hardware require physical validation.
 
 # Read-only numerical analysis settings. Angles are offsets from the photographed pose.
@@ -411,5 +444,5 @@ model_readiness:
   combined_hand_abstraction: ready_assumed_nominal_index_attachment
   numeric_link_table: ready_remeasured_dimensions
   kinematic_sweep: ready_remeasured_geometry
-  optimization: adam_skeleton_waiting_for_hand_coupled_kinematics
+  optimization: adam_crank_driven_passive_hand_synergy_skeleton
   input_torque: ready_nominal_placeholder_mass_model

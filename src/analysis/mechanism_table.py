@@ -102,7 +102,8 @@ def render_markdown(data: dict[str, Any], source_path: Path) -> str:
                 [[row.get("id"), (
                     row.get("node_index")
                     if row.get("node_index") is not None
-                    else f"RP{row['pair_index']}" if row.get("pair_index") is not None else "—"
+                    else f"R{row['attachment_index']}"
+                    if row.get("attachment_index") is not None else "—"
                 ), row.get("kind"),
                   row.get("position_mm")]
                  for row in data["human_hand_model"].get("joints", [])],

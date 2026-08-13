@@ -1,5 +1,11 @@
 schema_version: 1
 
+optimization_scope:
+  problem_unit: one_independent_mechanism_per_finger
+  initialization: shared_nominal_mechanism_2
+  design_variable_sharing: none
+  aggregate_reports_are_postprocessing_only: true
+
 scalarization:
   method: weighted_sum
   normalize_objective_weights: true
@@ -7,15 +13,49 @@ scalarization:
 loss_components:
   task_space_reachability:
     enabled: true
-    weight: 1.0
-    hand_reference: distal_phalanx_lower_slot_rp4
+    optimization_role: hard_constraint_guidance
+    implementation_status: active_full_intended_workspace_rod_closure
+    guidance_weight: 1.0
+    hand_reference: distal_phalanx_upper_midpoint_r4
     mechanism_reference: h
     horizontal_input_deg: 0.0
     curled_input_search_deg: [0.0, 90.0]
     curled_input_samples: 91
     normalization_mm: 5.0
-    soft_min_temperature: 0.02
-    metric: squared_pin_in_slot_rod_closure_residual
+    metric: mean_squared_full_workspace_fixed_contact_rod_closure_residual
+  hand_mechanism_non_collision:
+    enabled: true
+    optimization_role: hard_constraint_guidance
+    implementation_status: active_full_intended_workspace_sampled_constraint
+    guidance_weight: 5.0
+    passive_hand_progress_bounds: [0.0, 1.0]
+    evaluation_poses: 31
+    require_all_evaluation_poses: true
+    continuous_between_sample_certification: false
+    safety_clearance_mm: 2.0
+    mechanism_link_radius_mm: 2.0
+    output_rod_radius_mm: 1.5
+    dorsal_mount_exclusion_radius_mm: 12.0
+    r4_contact_exclusion_radius_mm: 4.0
+    link_axis_samples: 7
+    smooth_hinge_width_mm: 0.5
+    smooth_max_temperature: 0.05
+    metric: worst_smooth_signed_clearance_violation
+    hard_rejection: any_unintended_signed_distance_below_zero
+    allowed_contacts:
+      - dorsal_input_mount_D_to_J1
+      - output_revolute_R4
+  output_link_perpendicularity:
+    enabled: true
+    optimization_role: design_objective
+    objective_order: 1
+    implementation_status: active_full_intended_workspace
+    weight: 1.0
+    evaluation_poses: 31
+    output_link: H_to_R4_rod
+    target: perpendicular_to_distal_surface
+    metric: squared_rod_dot_distal_surface_tangent
+    smooth_max_temperature: 0.05
   phalanx_lengths: {enabled: false, weight: 0.0}
   joint_flexion_ranges: {enabled: false, weight: 0.0}
 
@@ -24,30 +64,52 @@ placeholder_objectives:
   fingertip_path_error: {enabled: false, weight: 0.8}
   actuation_energy: {enabled: false, weight: 0.3}
   peak_motor_torque: {enabled: false, weight: 0.5}
-  cross_finger_error: {enabled: false, weight: 0.8}
+  cross_finger_error: {enabled: false, weight: 0.8, status: legacy_incompatible_with_independent_finger_designs}
   link_length_regularization: {enabled: false, weight: 0.1}
   compactness: {enabled: false, weight: 0.1}
   motion_smoothness: {enabled: false, weight: 0.2}
 
 constraint_penalties:
-  closure_error: {enabled: false, weight: 10.0}
+  hand_motion_admissibility:
+    enabled: true
+    mode: hard_kinematic_constraint
+    model: passive_one_dof_measured_flexion_path
+    prescribed_input: mechanism_crank_angle_q
+    passive_output: hand_curl_progress_s
+    progress_bounds: [0.0, 1.0]
+    monotonic_non_decreasing: true
+    prohibit_dorsal_flexion: true
+    require_terminal_maximum_curl: true
+    terminal_progress_tolerance: 0.01
+    evaluation_poses: 31
+  closure_error:
+    enabled: true
+    mode: hard_rejection_with_reachability_guidance
+    tolerance_mm: 0.1
+    evaluation_poses: 31
+    require_all_evaluation_poses: true
+    metric: maximum_full_workspace_fixed_contact_rod_closure_residual
   singularity_margin: {enabled: false, weight: 5.0}
   joint_limit_penalty: {enabled: false, weight: 10.0}
-  collision_penalty: {enabled: false, weight: 10.0}
+  collision_penalty:
+    enabled: true
+    mode: hard_rejection_with_clearance_guidance
+    metric: minimum_full_workspace_signed_clearance
+    superseded_by: hand_mechanism_non_collision
 
-objectives:
-  - id: index_finger_reachability
+finger_problems:
+  - finger: index
+    id: index_finger_design
     file: objectives/index.yaml
-    weight: 1.0
-  - id: middle_finger_reachability
+  - finger: middle
+    id: middle_finger_design
     file: objectives/middle.yaml
-    weight: 1.0
-  - id: ring_finger_reachability
+  - finger: ring
+    id: ring_finger_design
     file: objectives/ring.yaml
-    weight: 1.0
-  - id: little_finger_reachability
+  - finger: little
+    id: little_finger_design
     file: objectives/little.yaml
-    weight: 1.0
 
 adam:
   iterations: 300

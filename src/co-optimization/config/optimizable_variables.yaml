@@ -5,12 +5,16 @@ model:
   status: skeleton
   nominal_design: ../../../designs/mechanism_2/nominal/mechanism.yaml
   mechanism_dimension_variables:
-    [L_ab, L_bc, L_cd, L_ad, L_ae, L_de, L_cg, L_dg, L_ef, L_fg, L_gh, L_fh]
+    [L_ab, L_bc, L_cd, L_ae, L_de, L_cg, L_dg, L_ef, L_fg, L_gh, L_fh]
+  fixed_mechanism_dimensions: [L_ad]
   tip_rod_variable: L_tip_rod
   notes:
     - Every optimizable variable is a mechanism or attachment link length in millimetres.
-    - L_tip_rod is the external connector from TCP H to the distal lower-surface pin-in-slot pair.
+    - Each finger optimization owns an independent copy of this complete variable list.
+    - Every copy starts from these same nominal initial values; optimized values are never shared across fingers.
+    - L_tip_rod is the external connector from TCP H to fixed upper-surface revolute R4.
     - Task-space reachability uses all mechanism dimensions and the tip-rod length.
+    - L_ad is the fixed 54 mm horizontal grounded mounting baseline from the nominal design.
     - D-to-J1 dorsal clearance is read from the nominal design and remains fixed upstream.
     - Bounds are broad scaffolding limits, not validated design constraints.
 
@@ -18,7 +22,6 @@ variables:
   - {id: L_ab, body: input_crank, nodes: [a, b], initial: 31.0, min: 20.0, max: 45.0}
   - {id: L_bc, body: loop_1_coupler, nodes: [b, c], initial: 54.0, min: 15.0, max: 70.0}
   - {id: L_cd, body: central_body, nodes: [c, d], initial: 28.0, min: 18.0, max: 42.0}
-  - {id: L_ad, body: ground, nodes: [a, d], initial: 54.0, min: 35.0, max: 75.0}
   - {id: L_ae, body: ground, nodes: [a, e], initial: 66.0, min: 45.0, max: 90.0}
   - {id: L_de, body: ground, nodes: [d, e], initial: 14.0, min: 7.0, max: 25.0}
   - {id: L_cg, body: central_body, nodes: [c, g], initial: 50.0, min: 15.0, max: 70.0}
@@ -27,4 +30,4 @@ variables:
   - {id: L_fg, body: distal_body, nodes: [f, g], initial: 28.0, min: 18.0, max: 42.0}
   - {id: L_gh, body: distal_body, nodes: [g, h], initial: 50.0, min: 15.0, max: 70.0}
   - {id: L_fh, body: distal_body, nodes: [f, h], initial: 57.0, min: 35.0, max: 80.0}
-  - {id: L_tip_rod, category: attachment_link, attachment: distal_output_rod, nodes: [h, hand_distal_slot_midpoint], initial: 28.0, min: 5.0, max: 45.0}
+  - {id: L_tip_rod, category: attachment_link, attachment: distal_output_rod, nodes: [h, hand_distal_contact], initial: 28.0, min: 5.0, max: 45.0}

@@ -1,4 +1,4 @@
-# Co-optimization skeleton
+# Independent per-finger co-optimization
 
 Run the initial multi-objective Adam scaffold through the canonical top-level entry:
 
@@ -8,37 +8,69 @@ Run the initial multi-objective Adam scaffold through the canonical top-level en
 
 The wrapper forwards all options to `src/co-optimization/run_adam.py`.
 
-It reads `config/objectives.yaml`, the four per-finger objective YAMLs, and
-`config/optimizable_variables.yaml`. The default output contract is:
+Use `--finger index` (or another long finger) to run only one independent job during
+development; omit it to run all four.
+
+It reads `config/objectives.yaml`, the four finger target YAMLs, and
+`config/optimizable_variables.yaml`. It creates four independent optimization
+problems. Each receives a fresh copy of the same nominal 12-value initialization;
+there is no cross-finger loss, shared candidate vector, or shared Adam state.
+
+The default output contract is:
 
 ```text
 runs/co-optimization_<UTC timestamp>/
-├── history.csv
-└── candidate_0001/
-    ├── candidate.yaml
-    ├── mechanism.yaml
-    └── analysis_<UTC timestamp>/
-        ├── mechanism/
-        └── combined/
-            └── fingers/{index,middle,ring,little}/
+├── run_manifest.yaml
+└── fingers/
+    └── {index,middle,ring,little}/
+        ├── history.csv
+        ├── tensorboard/events.out.tfevents.*
+        └── candidate_0001/
+            ├── candidate.yaml
+            ├── mechanism.yaml
+            └── artifacts/
+                ├── mechanism/
+                └── combined/fingers/<that-finger>/
 ```
 
 The algorithm remains Adam internally, but algorithm names are not part of the output
-path. `mechanism.yaml` is materialized with the candidate dimensions and a reconstructed
-closed initial pose. The nested analysis directory groups mechanism-only workspace and
-torque artifacts under `mechanism/`, aggregate coupled artifacts under `combined/`, and
-workspace-style per-finger full-assembly sweep reports under
-`combined/fingers/<finger>/`. Each overlays the moving mechanism, palm, three rounded
-phalanges, output rod, and RP4 slider from horizontal pose to that finger's supplied
-maximum curl. Future retained candidates must follow the same numbered-directory
-contract and each receive their own analysis.
+path. Each `mechanism.yaml` has a distinct ID such as `mechanism_2_index`, materializes
+that finger's hand dimensions and analysis target, and records the shared nominal
+parent. It is therefore independently analyzable without reading optimization
+configuration. Its nested
+analysis contains only that candidate's target finger plus the mechanism-only reports.
+The combined report replays exactly the optimizer's crank-driven intended workspace,
+including the recorded passive hand response from `q=0` to that candidate's terminal
+`q*`; it no longer imposes a linear hand/crank ratio.
+Future retained candidates must follow the same numbered-directory contract.
 
-The variables are the twelve mechanism link lengths from `L_ab` through `L_fh`, plus
-the external `L_tip_rod` length from TCP `H` to the lower distal `RP4` pin-in-slot
-pair. The active objective analytically tracks the candidate linkage and minimizes
-rod-closure error over the finite slot in the horizontal and maximum-curled poses for
-all four fingers. Consequently, all 13 variables can influence the active loss.
+Each finger's TensorBoard stream records `loss/total`, that finger's component losses, every
+numeric component metric, gradient and step norms, individual finite-difference
+gradients, and all 12 optimizable link-length trajectories and bounds. Launch it with:
 
-The exact formulation and its limitations are documented in
-[`objective_math.md`](objective_math.md). Every other planned objective and constraint
-is disabled until this primary reachability model is validated.
+```bash
+tensorboard --logdir runs/co-optimization_<UTC timestamp>/fingers
+```
+
+The event writer has no training-time dependency on TensorFlow or PyTorch.
+`environment.yml` includes TensorBoard for reading and visualizing the logs.
+
+For each finger, the variables are eleven mechanism link lengths plus the external
+`L_tip_rod` length from TCP `H` to fixed revolute `R4` at the upper distal midpoint.
+Every sampled pose, including initial and terminal poses, must close within `0.1 mm`
+or the candidate is rejected. All 12 local variables can influence closure and rod
+angle. `L_ad` remains fixed at the nominal 54 mm because it is the horizontal grounded
+mounting baseline.
+
+Crank angle is the sole prescribed input. The initial ideal compliant-hand model has
+one passive coordinate on the measured curl path. Closure solves that coordinate at
+each increasing crank sample, while a hard constraint enforces `0 <= s <= 1`, monotone
+downward curl, no reversal, and arrival at maximum intended curl. There is no fixed
+hand/crank ratio. A future stiffness/equilibrium model is still required to predict
+force feedback.
+
+The exact ideal-interface formulation is documented in
+[`objective_math.md`](objective_math.md). `H–R4` perpendicularity is the sole design
+objective. Full-workspace fixed-contact closure and sampled non-collision are hard
+constraints with smooth Adam guidance terms. Between-sample continuous collision
+certification and a multi-DOF stiffness/equilibrium hand model remain future work.

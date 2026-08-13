@@ -97,7 +97,7 @@ Reference: `index`; pose: `mildly_curled`.
 | hand_mcp | 1 | anatomical_revolute | 0.0, 0.0 |
 | hand_pip | 2 | anatomical_revolute | 39.993908, -0.698096 |
 | hand_dip | 3 | anatomical_revolute | 64.959646, -2.006495 |
-| hand_distal_slot_midpoint | RP4 | attachment_slot_reference | 76.540523, -13.057889 |
+| hand_distal_contact | R4 | attachment_revolute | 77.41208, -3.095942 |
 | hand_tip | — | terminal_reference | 89.864514, -4.185389 |
 
 | Segment | Joints | Length [mm] | Width [mm] | Shape |
@@ -112,7 +112,7 @@ Reference: `index`; pose: `mildly_curled`.
 | Attachment | Mechanism | Hand reference | Hand interface | Connector | Dorsal clearance [mm] |
 |---|---|---|---|---|---|
 | dorsal_input_mount | d | hand_mcp | fixed_dorsal_mount | upper_surface_of_first_joint | 1.0 |
-| distal_output_rod | h | hand_distal_slot_midpoint | revolute_prismatic_pin_in_slot | binary_rod | — |
+| distal_output_rod | h | hand_distal_contact | revolute | binary_rod | — |
 
 ## Model readiness
 
@@ -122,7 +122,7 @@ Reference: `index`; pose: `mildly_curled`.
 | combined_hand_abstraction | ready_assumed_nominal_index_attachment |
 | numeric_link_table | ready_remeasured_dimensions |
 | kinematic_sweep | ready_remeasured_geometry |
-| optimization | adam_skeleton_waiting_for_hand_coupled_kinematics |
+| optimization | adam_crank_driven_passive_hand_synergy_skeleton |
 | input_torque | ready_nominal_placeholder_mass_model |
 
 ## Workspace analysis settings
