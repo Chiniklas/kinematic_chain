@@ -134,6 +134,8 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
             )
             self.assertEqual(completed.stdout.count("independent Adam problem"), 4)
             self.assertEqual(completed.stdout.count("Analyzing materialized"), 4)
+            self.assertEqual(completed.stdout.count("starting Adam: 3 iterations"), 4)
+            self.assertEqual(completed.stdout.count("iteration    3/3"), 4)
             initial_variables = {
                 row["id"]: row["initial"]
                 for row in yaml.safe_load(
@@ -167,6 +169,9 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                     candidate["initialization"]["design_variables_shared_with_other_fingers"]
                 )
                 optimizer = candidate["optimizer"]
+                self.assertEqual(optimizer["name"], "torch.optim.Adam")
+                self.assertIn(optimizer["device"], {"cpu", "cuda"})
+                self.assertEqual(optimizer["geometry_evaluator_device"], "cpu")
                 self.assertTrue(math.isfinite(optimizer["final_total_loss"]))
                 self.assertEqual(
                     {

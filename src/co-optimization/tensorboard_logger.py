@@ -1,8 +1,9 @@
 """Minimal dependency-free TensorBoard scalar event writer.
 
 TensorBoard event files are TFRecord streams containing Event protobuf messages. This
-module writes the small subset required for scalar optimization telemetry so logging
-does not depend on TensorFlow, PyTorch, or tensorboard at training time.
+module writes the small subset required for scalar optimization telemetry. The writer
+does not itself depend on TensorFlow, PyTorch, or tensorboard; the optimizer separately
+depends on PyTorch for ``torch.optim.Adam``.
 """
 
 from __future__ import annotations

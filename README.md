@@ -20,6 +20,8 @@ The project currently contains:
 - four bounded, non-destructive Adam optimization jobs, each with its own copy of 11
   mechanism link lengths plus the `H–R4` output-rod length; the 54 mm grounded `AD`
   baseline remains fixed; and
+- a Dynamixel **XC330-M288-T** as the selected rotary input actuator for each
+  finger mechanism, driving crank coordinate `q` at joint `A`; and
 - one design objective, `H–R4` rod perpendicularity, plus hard full-workspace rod
   closure, downward-only hand motion, and sampled hand–mechanism non-collision
   constraints.
@@ -34,6 +36,11 @@ Adam toward the hard-feasible region but are not design objectives. It remains a
 early design tool: collision is sampled rather than continuously certified, and full
 joint-pose tracking, force, energy, singularity, and other safety metrics are still
 incomplete, so candidates are not yet physically validated.
+
+The XC330-M288-T selection is a hardware design input, not yet a validated sizing
+result. Available torque, speed, thermal duty cycle, horn/mount geometry, transmission
+losses, and achievable force-feedback bandwidth still need to be checked against the
+eventual coupled hand-load model.
 
 See [handover.md](handover.md) for the complete mental model, current contracts,
 limitations, and recommended next steps.
@@ -115,6 +122,32 @@ Run only one independent problem while developing its evaluator:
 ```bash
 ./run_optimization.sh --finger index --iterations 50
 ```
+
+Progress is flushed to the terminal every iteration. For a quieter long run:
+
+```bash
+./run_optimization.sh --progress-every 10
+```
+
+Optimization uses `torch.optim.Adam`. Device selection defaults to `--device auto`;
+use `--device cuda` to require CUDA or `--device cpu` to force CPU. The geometry and
+finite-difference collision evaluation is still CPU-bound, so meaningful GPU speedup
+requires a later differentiable batched PyTorch evaluator.
+
+Animate a self-contained nominal or optimized design and print its motion report:
+
+```bash
+python3 src/animate_design.py designs/mechanism_2/nominal --finger index
+
+python3 src/animate_design.py \
+  runs/co-optimization_<timestamp>/fingers/index/candidate_0001
+```
+
+The default GIF is written to the design's adjacent
+`artifacts/combined/fingers/<finger>/design_animation.gif`. Candidate YAMLs contain
+their recorded crank and passive-hand schedules, so their animations replay the same
+motion evaluated during optimization. Use `--output animation.mp4` or
+`--output animation.html` for another supported format.
 
 Run all tests:
 

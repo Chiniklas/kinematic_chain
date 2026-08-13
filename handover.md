@@ -74,6 +74,21 @@ The closed loops are `A-B-C-D-A` and `D-G-F-E-D`. Six bodies and seven equivalen
 lower pairs give planar mobility 1, matching the rotary actuator at A. Positive input
 is clockwise closing motion.
 
+### Selected input actuator
+
+Each finger mechanism is intended to use one Dynamixel **XC330-M288-T** as its input
+actuator. It commands the sole mechanism input coordinate `q` by driving the crank at
+joint `A`; the human finger remains the passive side of the current coupling model.
+This actuator choice is an upstream hardware requirement and is not an optimization
+variable.
+
+The repository does not yet model the XC330-M288-T motor curve, controller mode,
+current/torque calibration, horn and mounting geometry, gear compliance, backlash,
+communication latency, thermal limits, or duty cycle. Consequently, the present
+gravity-only torque report does not validate this actuator for the intended
+force-feedback load. Those properties must enter the quasi-static load model and later
+prototype tests before a candidate can be considered actuator-feasible.
+
 Current remeasured dimensions are:
 
 | Dimension | Value (mm) | Dimension | Value (mm) |
@@ -196,6 +211,8 @@ What remains provisional:
 - the placeholder mass and center-of-mass model;
 - torque without finger contact loads, friction, springs, or transmission losses;
 - continuously certified collision, packaging, singularity, and structural checks; and
+- whether the selected Dynamixel XC330-M288-T satisfies torque, speed, bandwidth,
+  thermal, and packaging requirements; and
 - any manufacturing or actuator-sizing conclusion.
 
 ## Co-optimization pipeline
@@ -360,8 +377,10 @@ acceptance thresholds separately to every finger candidate.
 
 Measure or estimate link masses, centers of mass, actuator/cable routing, friction,
 return springs, desired fingertip force, and external finger resistance. Then activate
-energy, peak torque, transmission, and thermal/duty-cycle objectives. The current
-gravity-only torque report is insufficient for actuator selection.
+energy, peak torque, transmission, and thermal/duty-cycle objectives. Add the selected
+Dynamixel XC330-M288-T torque–speed/current limits and operating duty cycle to this
+model. The current gravity-only torque report is insufficient to validate the selected
+actuator.
 
 ### 7. Compare the four independent designs
 

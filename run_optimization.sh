@@ -6,7 +6,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 project_dir="${script_dir}"
 entry_point="${project_dir}/src/co-optimization/run_adam.py"
 
-if ! python3 -c 'import matplotlib, numpy, yaml' >/dev/null 2>&1; then
+if ! python3 -c 'import matplotlib, numpy, torch, yaml' >/dev/null 2>&1; then
   printf '%s\n' 'Missing Python optimization dependencies.' >&2
   printf '%s\n' \
     "Run: conda env update --name kinematic-chain --file ${project_dir}/environment.yml" >&2

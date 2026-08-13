@@ -11,6 +11,11 @@ The wrapper forwards all options to `src/co-optimization/run_adam.py`.
 Use `--finger index` (or another long finger) to run only one independent job during
 development; omit it to run all four.
 
+Terminal progress is printed every Adam iteration by default. Reduce its frequency
+with `--progress-every 10`, or use `--progress-every 0` for TensorBoard-only logging.
+Each progress line reports the current and best loss, finite-difference gradient norm,
+three hard-constraint states, elapsed time, and estimated time remaining.
+
 It reads `config/objectives.yaml`, the four finger target YAMLs, and
 `config/optimizable_variables.yaml`. It creates four independent optimization
 problems. Each receives a fresh copy of the same nominal 12-value initialization;
@@ -33,8 +38,15 @@ runs/co-optimization_<UTC timestamp>/
                 └── combined/fingers/<that-finger>/
 ```
 
-The algorithm remains Adam internally, but algorithm names are not part of the output
-path. Each `mechanism.yaml` has a distinct ID such as `mechanism_2_index`, materializes
+The optimizer uses the standard `torch.optim.Adam` implementation. `--device auto`
+selects CUDA when `torch.cuda.is_available()` is true and otherwise selects CPU;
+`--device cuda` requires a working CUDA-capable PyTorch build and NVIDIA driver. The
+current finite-difference geometry and collision evaluator remains NumPy/Python on the
+CPU, so CUDA currently accelerates only the small Adam tensor update, not the dominant
+24 full geometry evaluations per iteration.
+
+Algorithm names are not part of the output path. Each `mechanism.yaml` has a distinct
+ID such as `mechanism_2_index`, materializes
 that finger's hand dimensions and analysis target, and records the shared nominal
 parent. It is therefore independently analyzable without reading optimization
 configuration. Its nested
@@ -52,8 +64,9 @@ gradients, and all 12 optimizable link-length trajectories and bounds. Launch it
 tensorboard --logdir runs/co-optimization_<UTC timestamp>/fingers
 ```
 
-The event writer has no training-time dependency on TensorFlow or PyTorch.
-`environment.yml` includes TensorBoard for reading and visualizing the logs.
+The event writer itself has no dependency on TensorFlow. PyTorch is required by the
+standard Adam optimizer, while `environment.yml` includes TensorBoard for reading and
+visualizing the logs.
 
 For each finger, the variables are eleven mechanism link lengths plus the external
 `L_tip_rod` length from TCP `H` to fixed revolute `R4` at the upper distal midpoint.

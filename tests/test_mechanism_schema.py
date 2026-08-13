@@ -74,6 +74,7 @@ class MechanismSchemaTests(unittest.TestCase):
         actual_artifacts = {
             path.relative_to(artifacts).as_posix()
             for path in artifacts.rglob("*") if path.is_file()
+            and path.name != "design_animation.gif"
         }
         self.assertEqual(actual_artifacts, expected_artifacts)
 

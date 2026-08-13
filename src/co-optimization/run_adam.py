@@ -7,6 +7,7 @@ import argparse
 import copy
 import csv
 import math
+import time
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
@@ -99,6 +100,8 @@ class OptimizationResult:
     iterations_completed: int
     converged: bool
     history: tuple[dict[str, float], ...]
+    optimizer_backend: str
+    optimizer_device: str
 
 
 @dataclass(frozen=True)
@@ -1468,11 +1471,78 @@ def _history_components(evaluation: Evaluation) -> dict[str, float]:
     }
 
 
+def _format_duration(seconds: float) -> str:
+    seconds = max(0, round(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours:
+        return f"{hours:d}h {minutes:02d}m {seconds:02d}s"
+    if minutes:
+        return f"{minutes:d}m {seconds:02d}s"
+    return f"{seconds:d}s"
+
+
+def _load_torch():
+    try:
+        import torch
+    except ImportError as error:
+        raise OptimizationConfigError(
+            "PyTorch is required for torch.optim.Adam. Update the environment with: "
+            "conda env update --name kinematic-chain --file environment.yml"
+        ) from error
+    return torch
+
+
+def _optimizer_device(torch, requested: str):
+    if requested == "auto":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if requested == "cuda" and not torch.cuda.is_available():
+        raise OptimizationConfigError(
+            "--device cuda was requested, but torch.cuda.is_available() is false; "
+            "check the PyTorch build and NVIDIA driver"
+        )
+    return torch.device(requested)
+
+
+def _constraint_status(evaluation: Evaluation) -> str:
+    status = lambda passed: "PASS" if passed else "REJECTED"
+    return (
+        f"collision={status(evaluation.collision_free)} "
+        f"closure={status(evaluation.rod_closure_feasible)} "
+        f"curl={status(evaluation.hand_motion_feasible)}"
+    )
+
+
+def _print_optimization_progress(
+    finger: str,
+    iteration: int,
+    iterations: int,
+    evaluation: Evaluation,
+    best_evaluation: Evaluation,
+    gradient_norm: float,
+    started_at: float,
+) -> None:
+    elapsed = time.perf_counter() - started_at
+    eta = elapsed / max(iteration, 1) * max(iterations - iteration, 0)
+    print(
+        f"[{finger}] iteration {iteration:4d}/{iterations} "
+        f"({100.0 * iteration / iterations:5.1f}%) · "
+        f"loss={evaluation.total_loss:.7g} · "
+        f"best={best_evaluation.total_loss:.7g} · "
+        f"|grad|={gradient_norm:.4g} · "
+        f"{_constraint_status(evaluation)} · "
+        f"elapsed={_format_duration(elapsed)} · eta={_format_duration(eta)}",
+        flush=True,
+    )
+
+
 def optimize(
     problem: Problem,
     iterations: int | None = None,
     learning_rate: float | None = None,
     tensorboard_logger: TensorBoardLogger | None = None,
+    progress_every: int = 1,
+    device: str = "auto",
 ) -> OptimizationResult:
     """Minimize the weighted scalarization while preserving per-objective metrics."""
     config = problem.adam_config
@@ -1493,16 +1563,50 @@ def optimize(
     )
     if not 0 <= beta1 < 1 or not 0 <= beta2 < 1:
         raise OptimizationConfigError("Adam beta1 and beta2 must be in [0, 1)")
+    if not isinstance(progress_every, int) or progress_every < 0:
+        raise OptimizationConfigError("progress_every must be a nonnegative integer")
 
+    torch = _load_torch()
+    optimizer_device = _optimizer_device(torch, device)
+
+    finger = problem.objectives[0].finger if len(problem.objectives) == 1 else "aggregate"
+    started_at = time.perf_counter()
+    if progress_every:
+        print(
+            f"[{finger}] starting Adam: {configured_iterations} iterations, "
+            f"{len(problem.variables)} variables, "
+            f"{2 * len(problem.variables)} full evaluations per finite-difference gradient, "
+            f"torch.optim.Adam device={optimizer_device}",
+            flush=True,
+        )
+        print(f"[{finger}] evaluating initial candidate ...", flush=True)
     values = np.asarray([variable.initial for variable in problem.variables], dtype=float)
     lower = np.asarray([variable.minimum for variable in problem.variables])
     upper = np.asarray([variable.maximum for variable in problem.variables])
-    first_moment = np.zeros_like(values)
-    second_moment = np.zeros_like(values)
+    parameter = torch.nn.Parameter(torch.as_tensor(
+        values, dtype=torch.float64, device=optimizer_device,
+    ))
+    optimizer = torch.optim.Adam(
+        [parameter],
+        lr=rate,
+        betas=(beta1, beta2),
+        eps=epsilon,
+        fused=optimizer_device.type == "cuda",
+    )
+    lower_tensor = torch.as_tensor(lower, dtype=torch.float64, device=optimizer_device)
+    upper_tensor = torch.as_tensor(upper, dtype=torch.float64, device=optimizer_device)
     initial_evaluation = evaluate(problem, values)
     best_values = values.copy()
     best_evaluation = initial_evaluation
     current_evaluation = initial_evaluation
+    if progress_every:
+        print(
+            f"[{finger}] iteration    0/{configured_iterations} (  0.0%) · "
+            f"loss={initial_evaluation.total_loss:.7g} · "
+            f"{_constraint_status(initial_evaluation)} · "
+            f"elapsed={_format_duration(time.perf_counter() - started_at)}",
+            flush=True,
+        )
     history: list[dict[str, float]] = [{
         "iteration": 0.0,
         "total_loss": initial_evaluation.total_loss,
@@ -1543,16 +1647,22 @@ def optimize(
                 and current_evaluation.total_loss < 1.0e5
             )
             completed = iteration - 1
+            if progress_every:
+                print(
+                    f"[{finger}] stopped before iteration {iteration}: "
+                    f"gradient norm {gradient_norm:.4g} <= {tolerance:.4g}; "
+                    f"converged={converged}",
+                    flush=True,
+                )
             break
-        first_moment = beta1 * first_moment + (1.0 - beta1) * gradient
-        second_moment = beta2 * second_moment + (1.0 - beta2) * gradient * gradient
-        corrected_first = first_moment / (1.0 - beta1 ** iteration)
-        corrected_second = second_moment / (1.0 - beta2 ** iteration)
-        candidate = np.clip(
-            values - rate * corrected_first / (np.sqrt(corrected_second) + epsilon),
-            lower,
-            upper,
+        optimizer.zero_grad(set_to_none=True)
+        parameter.grad = torch.as_tensor(
+            gradient, dtype=torch.float64, device=optimizer_device,
         )
+        optimizer.step()
+        with torch.no_grad():
+            parameter.clamp_(lower_tensor, upper_tensor)
+        candidate = parameter.detach().cpu().numpy().copy()
         step_norm = float(np.linalg.norm(candidate - values))
         values = candidate
         current_evaluation = evaluate(problem, values)
@@ -1593,6 +1703,20 @@ def optimize(
                 step=iteration,
             )
         completed = iteration
+        if progress_every and (
+            iteration == 1
+            or iteration % progress_every == 0
+            or iteration == configured_iterations
+        ):
+            _print_optimization_progress(
+                finger,
+                iteration,
+                configured_iterations,
+                current_evaluation,
+                best_evaluation,
+                gradient_norm,
+                started_at,
+            )
     return OptimizationResult(
         best_values,
         best_evaluation,
@@ -1600,6 +1724,8 @@ def optimize(
         completed,
         converged,
         tuple(history),
+        "torch.optim.Adam",
+        str(optimizer_device),
     )
 
 
@@ -1696,7 +1822,9 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
             },
         },
         "optimizer": {
-            "name": "adam",
+            "name": result.optimizer_backend,
+            "device": result.optimizer_device,
+            "geometry_evaluator_device": "cpu",
             "iterations_completed": result.iterations_completed,
             "converged": result.converged,
             "initial_total_loss": result.initial_evaluation.total_loss,
@@ -1854,7 +1982,9 @@ def _candidate_mechanism_document(
         "target_finger": finger,
         "optimization_scope": "independent_per_finger",
         "parent_nominal_design": str(problem.nominal_design_path),
-        "optimizer": "adam",
+        "optimizer": result.optimizer_backend,
+        "optimizer_device": result.optimizer_device,
+        "geometry_evaluator_device": "cpu",
         "objective_status": "perpendicularity_objective_with_hard_geometry_constraints",
         "collision_free": result.evaluation.collision_free,
         "minimum_signed_clearance_mm": result.evaluation.minimum_clearance_mm,
@@ -1933,6 +2063,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iterations", type=int, default=None)
     parser.add_argument("--learning-rate", type=float, default=None)
     parser.add_argument(
+        "--device",
+        choices=("auto", "cpu", "cuda"),
+        default="auto",
+        help="PyTorch Adam device (auto selects CUDA when available)",
+    )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=1,
+        metavar="N",
+        help="print progress every N Adam iterations (0 disables terminal progress)",
+    )
+    parser.add_argument(
         "--finger",
         choices=FINGERS,
         action="append",
@@ -1980,6 +2123,8 @@ def main() -> None:
                 args.iterations,
                 args.learning_rate,
                 tensorboard_logger,
+                args.progress_every,
+                args.device,
             )
         write_outputs(finger_dir, problem, result)
         print(
