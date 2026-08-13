@@ -1,0 +1,45 @@
+schema_version: 1
+
+objective:
+  id: little_finger_reachability
+  finger: little
+  source_image: little.jpg
+  task_space_reference: distal_phalanx_lower_slot_rp4
+
+measurement:
+  method: manual_polyline_estimate_from_pixels
+  nominal_pose: horizontal_extension
+  maximum_pose: curled_polyline
+  angular_uncertainty_deg: 5
+  angle_convention:
+    zero_deg: straight_horizontal
+    positive_direction: flexion_toward_curled_pose
+    mcp: proximal_phalanx_deviation_from_horizontal
+    pip_and_dip: relative_heading_change_between_adjacent_phalanges
+  notes:
+    - The horizontal drawing is treated as zero flexion at all three joints.
+    - Perspective and line-thickness effects are intentionally ignored.
+    - Handwritten centimetre lengths are converted to millimetres.
+
+phalanx_lengths_mm:
+  proximal: 34
+  middle: 23
+  distal: 23
+
+pixel_landmarks:
+  coordinate_system: {origin: top_left, x_direction: right, y_direction: down}
+  nominal:
+    mcp: [900, 629]
+    pip: [562, 647]
+    dip: [327, 659]
+    tip: [101, 674]
+  maximum_curled:
+    mcp: [900, 629]
+    pip: [749, 953]
+    dip: [814, 1147]
+    tip: [960, 1258]
+
+joint_flexion_ranges_deg:
+  mcp: {min: 0, max: 65}
+  pip: {min: 0, max: 44}
+  dip: {min: 0, max: 34}

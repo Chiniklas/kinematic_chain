@@ -1,0 +1,23 @@
+schema_version: 1
+analysis: combined_mechanism_hand_sweep
+motion_mapping: normalized_actuator_progress_to_linear_joint_flexion
+closure_tolerance_mm: 1.0
+rod_length_mm: 29.018154836137576
+dorsal_clearance_mm: 1.0
+mechanism_requested_q_range_deg:
+- 0.0
+- 90.0
+mechanism_solved_q_range_deg:
+- 0.0
+- 39.0
+mechanism_completed_requested_range: false
+fingers:
+- finger: middle
+  slot_length_mm: 27.0
+  horizontal_error_mm: 0.1152
+  synchronized_curled_error_mm: 7.346676
+  maximum_synchronized_error_mm: 9.617695
+  samples_within_1mm_fraction: 0.392405
+  best_static_curled_q_deg: 25.5
+  best_static_curled_error_mm: 0.0
+  best_static_curled_translation_mm: 17.673378

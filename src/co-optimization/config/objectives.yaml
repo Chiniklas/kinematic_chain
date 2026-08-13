@@ -1,0 +1,59 @@
+schema_version: 1
+
+scalarization:
+  method: weighted_sum
+  normalize_objective_weights: true
+
+loss_components:
+  task_space_reachability:
+    enabled: true
+    weight: 1.0
+    hand_reference: distal_phalanx_lower_slot_rp4
+    mechanism_reference: h
+    horizontal_input_deg: 0.0
+    curled_input_search_deg: [0.0, 90.0]
+    curled_input_samples: 91
+    normalization_mm: 5.0
+    soft_min_temperature: 0.02
+    metric: squared_pin_in_slot_rod_closure_residual
+  phalanx_lengths: {enabled: false, weight: 0.0}
+  joint_flexion_ranges: {enabled: false, weight: 0.0}
+
+placeholder_objectives:
+  pose_tracking_error: {enabled: false, weight: 1.0}
+  fingertip_path_error: {enabled: false, weight: 0.8}
+  actuation_energy: {enabled: false, weight: 0.3}
+  peak_motor_torque: {enabled: false, weight: 0.5}
+  cross_finger_error: {enabled: false, weight: 0.8}
+  link_length_regularization: {enabled: false, weight: 0.1}
+  compactness: {enabled: false, weight: 0.1}
+  motion_smoothness: {enabled: false, weight: 0.2}
+
+constraint_penalties:
+  closure_error: {enabled: false, weight: 10.0}
+  singularity_margin: {enabled: false, weight: 5.0}
+  joint_limit_penalty: {enabled: false, weight: 10.0}
+  collision_penalty: {enabled: false, weight: 10.0}
+
+objectives:
+  - id: index_finger_reachability
+    file: objectives/index.yaml
+    weight: 1.0
+  - id: middle_finger_reachability
+    file: objectives/middle.yaml
+    weight: 1.0
+  - id: ring_finger_reachability
+    file: objectives/ring.yaml
+    weight: 1.0
+  - id: little_finger_reachability
+    file: objectives/little.yaml
+    weight: 1.0
+
+adam:
+  iterations: 300
+  learning_rate: 0.4
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-8
+  finite_difference_relative_step: 1.0e-4
+  gradient_tolerance: 1.0e-8

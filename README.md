@@ -1,311 +1,101 @@
-# Kinematic-chain abstraction pipeline
+# Multi-finger exoskeleton co-optimization
 
-This repository turns a real planar mechanism into a validated, reusable body–joint
-abstraction. The current target is **mechanism 2**. Its topology, nominal geometry,
-joint incidence, actuation, and model-readiness state live in one YAML file:
+This repository is developing a hand-mounted exoskeleton from the planar
+`mechanism_2` linkage. The four long fingers have different phalanx lengths and
+intended curl ranges, so the design problem is treated as a multi-objective
+co-optimization rather than a fit to one representative finger.
 
-```text
-sources/mechanism_2/mechanism.yaml
-```
+The project currently contains:
 
-The tooling is mechanism-independent. Any planar mechanism represented with the same
-tables can use the same validation, reporting, and plotting pipeline without adding
-mechanism-specific joint names to the Python code.
+- a validated body–joint abstraction with remeasured nominal link lengths;
+- a combined mildly curled nominal index-finger abstraction, with the mechanism on
+  the dorsal side of a horizontal 90 × 25 mm palm, horizontal member
+  `A–D`, a manually defined dorsal clearance between `D` and indexed MCP joint `J1`,
+  and a rod from TCP `H` to an `RP4` rotating pin that translates along the lower
+  distal-phalanx surface;
+- mechanism-only workspace and nominal quasi-static torque analysis, plus a
+  synchronized mechanism–hand sweep for all four long fingers;
+- pixel-derived index, middle, ring, and little finger targets in millimetres and
+  degrees;
+- a bounded, non-destructive Adam optimization skeleton over all 12 mechanism link
+  lengths plus the `H–RP4` output-rod length; and
+- an active two-pose task-space reachability objective; all energy, torque, path,
+  regularization, collision, singularity, and joint-limit terms are currently disabled.
 
-## Quick start
+The optimizer analytically tracks the candidate linkage and minimizes the `H–RP4` rod
+closure error over the finite distal slot at each finger's horizontal and
+maximum-curled target. It remains an
+early design tool: full joint-pose tracking, force, energy, collision, singularity,
+and safety metrics are disabled, so candidates are not yet physically validated.
 
-From the repository root, create the environment and run the current analysis:
+See [handover.md](handover.md) for the complete mental model, current contracts,
+limitations, and recommended next steps.
+
+## Quick starts
+
+Create the environment:
 
 ```bash
 conda env create -f environment.yml
 conda activate kinematic-chain
-./src/run_analysis.sh
 ```
 
-If the environment already exists, update it instead:
+If it already exists:
 
 ```bash
 conda env update --name kinematic-chain --file environment.yml
 conda activate kinematic-chain
-./src/run_analysis.sh
 ```
 
-The analysis writes:
-
-```text
-runs/mechanism_2/
-├── abstraction.png       # topology with every declared nominal dimension
-├── link_lengths.csv      # machine-readable dimension table
-├── mechanism_tables.md   # complete human-readable abstraction report
-├── workspace_report.png  # swept poses, output path, and closure residuals
-├── workspace_samples.csv # solved node coordinates for every input sample
-├── torque_report.png     # nominal quasi-static gravity torque
-└── torque_samples.csv    # total and component torque samples
-```
-
-Open [the generated abstraction plot](runs/mechanism_2/abstraction.png) to inspect the
-current mechanism.
-
-Run the test suite with:
+Validate and analyze the nominal mechanism:
 
 ```bash
-PYTHONPATH=src MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
-  python3 -m unittest discover -s tests -v
+./run_analysis.sh
 ```
 
-Preview the reserved optimization entry point without treating its expected placeholder
-status as a shell failure:
+Each standalone run creates `runs/analysis_<UTC timestamp>/`, grouped into
+`mechanism/` and `combined/`. The aggregate four-finger abstraction and sweep are in
+`combined/`. Each of `combined/fingers/{index,middle,ring,little}/` contains a
+workspace-style `combined_workspace_report.png`, its individual abstraction, sample
+CSV, and YAML summary. The report overlays representative poses of the complete palm,
+three phalanges, mechanism, output rod, and RP4 slider from horizontal extension to
+the supplied maximum MCP/PIP/DIP curl; supporting panels report RP4 translation and
+rod-closure error.
+
+Run the current multi-objective Adam skeleton:
 
 ```bash
-./src/run_optimization.sh || [[ $? -eq 2 ]]
+./run_optimization.sh
 ```
 
-This validates the current abstraction and demonstrates the future override contract;
-it does not optimize or modify anything yet.
+Each run creates `runs/co-optimization_<UTC timestamp>/`; there is no algorithm-named
+`adam/` output layer. The retained result is stored under `candidate_0001/` as both a
+candidate record and a complete mechanism YAML. A timestamped `analysis_*` directory
+inside that candidate contains the same full analysis suite produced by
+`run_analysis.sh`.
 
-## Current mechanism
-
-Mechanism 2 currently has the following abstract topology:
-
-| Body | Type | Nodes | Purpose |
-|---|---|---|---|
-| `ground` | fixed rigid body | A–D–E | Base frame |
-| `input_crank` | binary link | A–B | Actuated input |
-| `loop_1_coupler` | binary link | B–C | First-loop coupler |
-| `central_body` | rigid body | C–D–F | Central ternary member |
-| `link_eh` | binary link | E–H | Lower distal coupler |
-| `distal_body` | rigid body | F–H–I | Output member and fingertip |
-
-Source labels **F and G refer to the same physical revolute joint**. The abstraction
-canonicalizes that joint as node `f`; there is no separate node `g`, FG link, or
-`L_fg` dimension. Original source points H and I remain nodes `h` and `i`.
-
-The two closed paths are A–B–C–D–A and D–F–H–E–D. Six bodies and seven equivalent
-lower pairs give planar Grübler mobility 1, matching the single rotary actuator at A.
-Positive input is clockwise closing motion. The configured workspace request is
-0–90°; with the present photo-derived lengths, the nominal distance constraints close
-only through approximately 66°. The workspace report marks 66–90° as infeasible
-instead of extrapolating nonexistent poses.
-
-The 12 current dimensions are nominal estimates derived from the source photograph.
-They include uncertainty and drive the generic distance-constraint workspace solver.
-The torque stage uses an explicitly declared nominal placeholder mass model. These
-results support pipeline development, but not manufacturing, rated-load, or actuator
-sizing decisions. Diagram coordinates under `nodes[*].layout` control only the plot
-layout and are never interpreted as physical lengths.
-
-## Pipeline contracts
-
-The repository deliberately separates inspection from mutation:
-
-| Pipeline | Entry point | Input mutation | Current status |
-|---|---|---|---|
-| Analysis | `src/run_analysis.sh` | Never | Operational |
-| Optimization | `src/run_optimization.sh` | Reserved for validated atomic replacement | Placeholder |
-
-### Analysis pipeline
-
-Use analysis to validate and render the current mechanism without modifying its YAML:
+Override optimizer settings:
 
 ```bash
-./src/run_analysis.sh [abstraction.yaml] [output-directory]
+./run_optimization.sh \
+  --iterations 500 \
+  --learning-rate 0.2 \
+  --output-dir /tmp/co-optimization
 ```
 
-With no arguments it reads `sources/mechanism_2/mechanism.yaml` and writes to
-`runs/mechanism_2`. A custom, read-only run looks like:
+Run all tests:
 
 ```bash
-./src/run_analysis.sh \
-  sources/mechanism_2/mechanism.yaml \
-  /tmp/mechanism_2-analysis
-```
-
-The pipeline performs these operations:
-
-1. Load and validate the YAML schema and all cross-table references.
-2. Calculate body count, equivalent lower pairs, independent loops, and planar mobility.
-3. Export the complete mechanism report as Markdown.
-4. Export the dimension table as CSV.
-5. Render the topology and annotate every declared nominal length and unit.
-6. Sweep the rotary input, solve the declared distance constraints, and report the
-   output workspace and closure residual at every feasible pose.
-7. Apply the YAML mass model to the solved poses and calculate nominal quasi-static
-   gravitational input torque by virtual work.
-
-The abstraction YAML is read-only throughout this flow. Invalid topology, incidence,
-dimensions, loops, actuators, or outputs stop the pipeline; artifacts completed by an
-earlier stage may remain in the selected output directory.
-
-### Optimization pipeline
-
-The optimization entry point reserves the future mutation workflow:
-
-```bash
-./src/run_optimization.sh [abstraction.yaml] [candidate-work-directory]
-```
-
-It currently validates the input, prints the intended workflow, leaves the YAML
-unchanged, and exits with status `2`. That exit status is expected while optimization
-is a placeholder.
-
-The implementation contract is:
-
-1. Load and validate the current abstraction.
-2. Copy parameters into an isolated candidate workspace.
-3. Optimize the candidate against an explicit objective and constraints.
-4. Validate the complete candidate with the same generic schema and kinematic checks.
-5. Atomically replace the current YAML only when every check succeeds.
-6. Regenerate the analysis report, dimension CSV, and abstraction plot.
-
-Optimization must not overwrite the current abstraction partially or replace it with
-an invalid candidate. A working optimizer still requires validated kinematics, design
-bounds, an objective function, and an acceptance criterion.
-
-## Editing the abstraction
-
-Edit only the YAML source of truth:
-
-```text
-sources/mechanism_2/mechanism.yaml
-```
-
-Its main tables are:
-
-| YAML section | Meaning |
-|---|---|
-| `mechanism` | Identity, units, coordinate convention, and readiness status |
-| `sources` | Photographs or other evidence used for the abstraction |
-| `photo_calibration` | Pixel scale and uncertainty for nominal photo geometry |
-| `nodes` | Revolute joints and reference/output points |
-| `bodies` | Binary links, multipoint rigid bodies, and ground |
-| `joints` | Joint-to-body incidence |
-| `dimensions` | Body-owned centre-to-centre distances |
-| `loops` | Closed node and body cycles |
-| `actuators` | Driven joints and positive direction |
-| `outputs` | Tracked points and their owning bodies |
-| `analysis` | Sweep range, sampling, and numerical solver settings |
-| `mass_model` | Body masses, point masses, and centre-of-mass node weights |
-| `model_readiness` | Availability of downstream analyses |
-
-After changing the YAML, regenerate and verify all derived files:
-
-```bash
-./src/run_analysis.sh
-PYTHONPATH=src MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
-  python3 -m unittest discover -s tests -v
-```
-
-Do not independently edit `runs/mechanism_2/mechanism_tables.md` or
-`runs/mechanism_2/link_lengths.csv`; they are generated views and will be overwritten.
-
-## Validation rules
-
-The generic validator currently enforces that:
-
-1. Exactly one ground body exists.
-2. Every body references known, non-repeated nodes.
-3. A binary link contains exactly two nodes.
-4. Every revolute node has one joint-incidence row.
-5. Joint incidence exactly matches body membership.
-6. Every dimension belongs to a body containing both endpoint nodes.
-7. Each binary link has a physical dimension.
-8. Multipoint rigid bodies have enough dimensions to define their planar shape.
-9. Photo-derived values agree with calibrated pixel distances and carry uncertainty.
-10. Every loop side belongs to its declared body.
-11. Actuators reference existing revolute joints and bodies, and output nodes belong to
-    their declared bodies.
-12. Planar mobility is derived from the validated body and lower-pair counts.
-13. Workspace ranges, tolerances, and iteration limits are numerically valid.
-14. Mass rows reference existing bodies/nodes and use valid centre weights.
-
-These checks validate the abstraction’s structure. They do not yet prove that every
-input angle has a feasible assembly configuration or that the mechanism avoids branch
-changes, singularities, interference, or excessive loads.
-
-## Direct tools
-
-The two shell entry points are the normal interface. The underlying tools are also
-available for focused work.
-
-Validate and print a summary:
-
-```bash
-python3 src/mechanism_table.py sources/mechanism_2/mechanism.yaml
-```
-
-Export selected tables:
-
-```bash
-python3 src/mechanism_table.py sources/mechanism_2/mechanism.yaml \
-  --markdown /tmp/mechanism_tables.md \
-  --csv /tmp/link_lengths.csv
-```
-
-Render a plot at a custom location:
-
-```bash
+PYTHONDONTWRITEBYTECODE=1 \
+PYTHONPATH=src/analysis \
 MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
-  python3 src/plot_linkage.py sources/mechanism_2/mechanism.yaml \
-  --output /tmp/abstraction.png
+python3 -m unittest discover -s tests -v
 ```
 
-Add `--show` to the plot command when an interactive graphical session is available.
-
-Run only the workspace sweep:
-
-```bash
-MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
-  python3 src/workspace_sweep.py sources/mechanism_2/mechanism.yaml \
-  --output /tmp/workspace_report.png \
-  --csv /tmp/workspace_samples.csv
-```
-
-Run only the nominal torque analysis:
-
-```bash
-MPLCONFIGDIR=/tmp/kinematic-chain-matplotlib \
-  python3 src/torque_analysis.py sources/mechanism_2/mechanism.yaml \
-  --output /tmp/torque_report.png \
-  --csv /tmp/torque_samples.csv
-```
-
-Both tools accept `--q-min`, `--q-max`, and `--steps` overrides. Without overrides,
-they use `analysis.workspace_sweep` from the YAML.
-
-## Repository layout
-
-```text
-environment.yml                         Conda environment
-sources/mechanism_2/
-  mechanism.yaml                        Editable abstraction source of truth
-  1224a3cf4f13d2e78e428296289e2e0c.jpg Source assembly photograph
-  mechanism_abstract.md                 Reference table snapshot
-  link_lengths.csv                      Reference dimension snapshot
-src/
-  mechanism_schema.py                   Generic loader, validator, and mobility summary
-  mechanism_table.py                    Markdown and CSV exporter
-  plot_linkage.py                       Dimensioned abstraction renderer
-  workspace_sweep.py                    Generic distance-constraint workspace solver
-  torque_analysis.py                    Generic quasi-static gravity analysis
-  run_analysis.sh                       Read-only analysis entry point
-  run_optimization.sh                   Reserved optimization/override entry point
-tests/test_mechanism_schema.py           Schema, workspace, torque, and plot tests
-runs/mechanism_2/                        Generated analysis artifacts
-```
-
-## Preparing for numerical optimization
-
-Before activating the optimization pipeline, replace or validate:
-
-- the photo-derived joint-centre dimensions with measurements or CAD geometry;
-- the current continuity-based assembly-mode selection with design-specific rules;
-- permitted input range and design-variable bounds;
-- the required output trajectory or workspace;
-- an objective function and candidate acceptance thresholds;
-- collision, singularity, packaging, and transmission constraints;
-- the nominal mass placeholders with measured masses and centres of mass;
-- external loads and drive limits if torque is part of the objective.
-
-Those additions should consume the same YAML abstraction. Mechanism-specific solvers
-or parameters should extend the schema explicitly rather than reintroducing hard-coded
-dependencies on a particular mechanism.
+Primary inputs are [the nominal mechanism](designs/mechanism_2/nominal/mechanism.yaml),
+[the objective manifest](src/co-optimization/config/objectives.yaml), and
+[the link-length variables](src/co-optimization/config/optimizable_variables.yaml).
+The active loss is specified in
+[objective_math.md](src/co-optimization/objective_math.md).
+The nominal [four-finger combined abstraction](designs/mechanism_2/nominal/combined_abstraction.png)
+and its adjacent finger-specific images show the current attachment assumptions.
