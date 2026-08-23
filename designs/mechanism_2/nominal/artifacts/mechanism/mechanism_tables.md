@@ -111,7 +111,7 @@ Reference: `index`; pose: `mildly_curled`.
 
 | Attachment | Mechanism | Hand reference | Hand interface | Connector | Dorsal clearance [mm] |
 |---|---|---|---|---|---|
-| dorsal_input_mount | d | hand_mcp | fixed_dorsal_mount | upper_surface_of_first_joint | 1.0 |
+| dorsal_input_mount | d | hand_mcp | fixed_dorsal_mount | upper_surface_of_first_joint | 2.0 |
 | distal_output_rod | h | hand_distal_contact | revolute | binary_rod | — |
 
 ## Model readiness

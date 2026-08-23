@@ -370,7 +370,7 @@ exoskeleton_attachments:
     hand_reference: hand_mcp
     hand_interface: fixed_dorsal_mount
     location: upper_surface_of_first_joint
-    dorsal_clearance_mm: 1.0
+    dorsal_clearance_mm: 2.0
     clearance_control: upstream_manual_design_parameter
     optimizable: false
     alignment_member: [a, d]

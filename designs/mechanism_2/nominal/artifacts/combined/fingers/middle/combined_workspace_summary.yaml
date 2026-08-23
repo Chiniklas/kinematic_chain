@@ -3,7 +3,7 @@ analysis: combined_mechanism_hand_sweep
 motion_mapping: normalized_actuator_progress_to_linear_joint_flexion
 closure_tolerance_mm: 1.0
 rod_length_mm: 28.0
-dorsal_clearance_mm: 1.0
+dorsal_clearance_mm: 2.0
 optimization_constraint_acceptance: {}
 mechanism_requested_q_range_deg:
 - 0.0
@@ -15,15 +15,15 @@ mechanism_completed_requested_range: false
 fingers:
 - finger: middle
   contact: fixed_R4_at_upper_distal_midpoint
-  horizontal_error_mm: 14.295585
-  synchronized_curled_error_mm: 2.455289
-  maximum_synchronized_error_mm: 21.570701
+  horizontal_error_mm: 13.445302
+  synchronized_curled_error_mm: 2.667746
+  maximum_synchronized_error_mm: 22.069064
   whole_workspace_rod_closure_feasible: false
   samples_within_closure_tolerance_fraction: 0.0
   samples_within_1mm_fraction: 0.0
   best_static_curled_q_deg: 47.0
-  best_static_curled_error_mm: 0.336251
-  maximum_perpendicular_deviation_deg: 89.813357
+  best_static_curled_error_mm: 0.007414
+  maximum_perpendicular_deviation_deg: 89.886774
   hand_motion:
     progress_bounds_satisfied: true
     monotonic_non_decreasing: true
