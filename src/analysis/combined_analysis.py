@@ -63,6 +63,7 @@ class CombinedAnalysisResult:
     mechanism_sweep: SweepResult
     rod_length_mm: float
     dorsal_clearance_mm: float
+    ad_tilt_deg: float
     fingers: tuple[FingerCombinedResult, ...]
 
 
@@ -73,19 +74,30 @@ def _attachment(data: dict[str, Any], attachment_id: str) -> dict[str, Any]:
 
 
 def _mechanism_frame(
-    positions: dict[str, Point],
+    positions: dict[str, Point], ad_tilt_deg: float = 0.0,
 ) -> Callable[[Point], Point]:
+    """Map mechanism coordinates into the hand frame with D at the origin.
+
+    The A-to-D member is placed sloping downward by ``ad_tilt_deg`` from the
+    hand's horizontal axis; zero keeps the historical horizontal mount.
+    """
     a, d = positions["a"], positions["d"]
     dx, dy = d[0] - a[0], d[1] - a[1]
     length = math.hypot(dx, dy)
     x_axis = (dx / length, dy / length)
     y_axis = (-x_axis[1], x_axis[0])
+    tilt = math.radians(-float(ad_tilt_deg))
+    cosine, sine = math.cos(tilt), math.sin(tilt)
 
     def transform(point: Point) -> Point:
         relative = (point[0] - d[0], point[1] - d[1])
-        return (
+        canonical = (
             relative[0] * x_axis[0] + relative[1] * x_axis[1],
             relative[0] * y_axis[0] + relative[1] * y_axis[1],
+        )
+        return (
+            cosine * canonical[0] - sine * canonical[1],
+            sine * canonical[0] + cosine * canonical[1],
         )
 
     return transform
@@ -163,12 +175,13 @@ def analyze_combined(
     input_mount = _attachment(data, "dorsal_input_mount")
     output_rod = _attachment(data, "distal_output_rod")
     clearance = float(input_mount["dorsal_clearance_mm"])
+    ad_tilt = float(input_mount.get("ad_tilt_deg", 0.0))
     rod_length = float(output_rod["assumed_length_mm"])
     distal_width = float(next(
         row["width_mm"] for row in data["human_hand_model"]["phalanges"]
         if row["id"] == "distal_phalanx"
     ))
-    transform = _mechanism_frame(sweep.poses[0].positions)
+    transform = _mechanism_frame(sweep.poses[0].positions, ad_tilt)
     q_start, q_end = sweep.poses[0].q_deg, sweep.poses[-1].q_deg
     q_span = q_end - q_start
     results: list[FingerCombinedResult] = []
@@ -227,7 +240,9 @@ def analyze_combined(
             best_q,
             best_error,
         ))
-    return CombinedAnalysisResult(data, sweep, rod_length, clearance, tuple(results))
+    return CombinedAnalysisResult(
+        data, sweep, rod_length, clearance, ad_tilt, tuple(results),
+    )
 
 
 def _draw_finger_axes(finger_result: FingerCombinedResult, axes: np.ndarray) -> None:
@@ -349,7 +364,9 @@ def _draw_combined_pose(
 ) -> None:
     pose = result.mechanism_sweep.poses[index]
     sample = finger.samples[index]
-    transform = _mechanism_frame(result.mechanism_sweep.poses[0].positions)
+    transform = _mechanism_frame(
+        result.mechanism_sweep.poses[0].positions, result.ad_tilt_deg,
+    )
     mechanism_positions = {
         node_id: transform(point) for node_id, point in pose.positions.items()
     }

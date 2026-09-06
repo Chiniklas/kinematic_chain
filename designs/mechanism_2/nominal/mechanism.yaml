@@ -13,7 +13,7 @@ mechanism:
   notes:
     - Layout coordinates are diagram coordinates only and are not dimensions.
     - Link lengths were overridden with the current design remeasurements supplied on 2026-08-13.
-    - The omitted AD measurement is 54 mm, rounded from the dimensioned plot value 53.845 mm.
+    - AD is 21.112 mm and slopes downward from A to D by 37.054 deg (2026-09 CAD revision).
     - Node IDs follow the dimensioned abstraction directly in the order A through H.
     - Rigid-body membership is ADE (ground), CDG (central), and FGH (distal).
     - Nodes F and G are distinct revolute joints; H is the fingertip/output reference.
@@ -210,17 +210,17 @@ dimensions:
   - id: L_ad
     body: ground
     nodes: [a, d]
-    value: 54
+    value: 21.112
     units: mm
-    value_source: dimensioned_plot_rounded
+    value_source: cad_remeasured_2026_09
     optimizable: false
-    design_role: fixed_horizontal_ground_mount_baseline
+    design_role: fixed_tilted_ground_mount_baseline
   - id: L_ae
     body: ground
     nodes: [a, e]
-    value: 66
+    value: 28.765
     units: mm
-    value_source: remeasured
+    value_source: derived_from_relocated_A_with_E_held_in_place
   - id: L_de
     body: ground
     nodes: [d, e]
@@ -370,13 +370,15 @@ exoskeleton_attachments:
     hand_reference: hand_mcp
     hand_interface: fixed_dorsal_mount
     location: upper_surface_of_first_joint
-    dorsal_clearance_mm: 2.0
+    dorsal_clearance_mm: 7.0
     clearance_control: upstream_manual_design_parameter
     optimizable: false
     alignment_member: [a, d]
-    alignment: horizontal
+    alignment: tilted
+    ad_tilt_deg: 37.054
     notes:
       - D is separated dorsally from J1 by the manually defined clearance.
+      - ad_tilt_deg slopes the A-to-D member downward from A to D; 0 is the legacy horizontal mount.
       - Change dorsal_clearance_mm in the upstream nominal design, not in Adam.
       - Phalanx widths extend from the shared dorsal surface toward the palmar side.
       - The mechanism is placed on the dorsal side of the mildly curled finger.

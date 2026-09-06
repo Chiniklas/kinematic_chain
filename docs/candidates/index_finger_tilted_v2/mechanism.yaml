@@ -1,0 +1,689 @@
+schema_version: 1
+mechanism:
+  id: mechanism_2_index
+  name: "Mechanism 2 \u2014 index finger candidate"
+  model_kind: planar_body_joint_graph
+  status: co_optimization_candidate
+  dimension_units: mm
+  coordinate_system:
+    plane: xy
+    x_direction: proximal_to_distal
+    y_direction: upward
+  notes:
+  - Layout coordinates are diagram coordinates only and are not dimensions.
+  - Link lengths were overridden with the current design remeasurements supplied on
+    2026-08-13.
+  - AD is 21.112 mm and slopes downward from A to D by 37.054 deg (2026-09 CAD revision).
+  - Node IDs follow the dimensioned abstraction directly in the order A through H.
+  - Rigid-body membership is ADE (ground), CDG (central), and FGH (distal).
+  - Nodes F and G are distinct revolute joints; H is the fingertip/output reference.
+  - The combined abstraction uses the index finger as the nominal human geometry.
+  - Human-hand bodies and attachment interfaces are external context and do not alter
+    mechanism mobility.
+sources:
+- file: sources/real_thing.jpg
+  kind: assembly_photograph
+- file: sources/abstraction.jpg
+  kind: dimensioned_abstraction
+photo_calibration:
+  image: sources/real_thing.jpg
+  image_orientation: exif_autorotated_landscape
+  image_size_pixels:
+  - 4032
+  - 3024
+  pixels_per_mm: 24.3
+  relative_uncertainty: 0.08
+  method: XL330 case and mounting geometry visible in the photograph
+  reference_component: DYNAMIXEL XL330-M288-T
+  reference_dimensions_mm:
+  - 20.0
+  - 34.0
+  - 26.0
+  reference_url: https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/
+nodes:
+- id: a
+  source_label: A
+  kind: revolute
+  role: actuated base pivot
+  fixed: true
+  layout:
+  - 0.0
+  - 0.0
+  initial_position_mm:
+  - -21.112
+  - 0.0
+  photo_pixel:
+  - 844
+  - 1679
+  confidence: high
+- id: b
+  source_label: B
+  kind: revolute
+  role: input crank endpoint
+  fixed: false
+  layout:
+  - 0.0
+  - 2.214286
+  initial_position_mm:
+  - -21.112
+  - 19.248320250251613
+  photo_pixel:
+  - 802
+  - 1091
+  confidence: high
+- id: c
+  source_label: C
+  kind: revolute
+  role: loop 1 / loop 2 junction
+  fixed: false
+  layout:
+  - 3.851185
+  - 1.999991
+  initial_position_mm:
+  - -5.059920791754397
+  - 12.837173209699932
+  photo_pixel:
+  - 1798
+  - 1315
+  confidence: high
+- id: d
+  source_label: D
+  kind: revolute
+  role: ADE-to-CDG revolute connection
+  fixed: true
+  layout:
+  - 3.857143
+  - 0.0
+  initial_position_mm:
+  - 0.0
+  - 0.0
+  photo_pixel:
+  - 1796
+  - 1808
+  confidence: high
+- id: e
+  source_label: E
+  kind: revolute
+  role: lower coupler ground pivot
+  fixed: true
+  layout:
+  - 4.679894
+  - 0.568401
+  initial_position_mm:
+  - 8.044338806885932
+  - 18.93652239053496
+  photo_pixel:
+  - 2036
+  - 1701
+  confidence: high
+- id: f
+  source_label: F
+  kind: revolute
+  role: lower coupler / distal-body joint
+  fixed: false
+  layout:
+  - 6.765627
+  - 0.076917
+  initial_position_mm:
+  - 26.332423427812607
+  - 40.19802916957504
+  photo_pixel:
+  - 2575
+  - 1775
+  confidence: high
+- id: g
+  source_label: G
+  kind: revolute
+  role: CDG-to-FGH revolute connection
+  fixed: false
+  layout:
+  - 7.422452
+  - 1.965986
+  initial_position_mm:
+  - 9.00955336955213
+  - 73.93811241197086
+  photo_pixel:
+  - 2668
+  - 1294
+  confidence: high
+- id: h
+  source_label: H
+  kind: reference
+  role: mechanism output TCP
+  fixed: false
+  layout:
+  - 10.780864
+  - 0.751008
+  initial_position_mm:
+  - 76.56808609808328
+  - 60.989527697806096
+  photo_pixel:
+  - 3464
+  - 1538
+  confidence: high
+bodies:
+- id: ground
+  kind: ground
+  nodes:
+  - a
+  - d
+  - e
+  role: fixed ADE frame
+  confidence: high
+  draw_order: 0
+  color: '#64748b'
+- id: input_crank
+  kind: binary_link
+  nodes:
+  - a
+  - b
+  role: actuated crank
+  confidence: high
+  draw_order: 2
+  color: '#2563eb'
+- id: loop_1_coupler
+  kind: binary_link
+  nodes:
+  - b
+  - c
+  role: first-stage coupler
+  confidence: high
+  draw_order: 2
+  color: '#2563eb'
+- id: central_body
+  kind: rigid_body
+  nodes:
+  - c
+  - d
+  - g
+  role: rigid CDG body
+  confidence: high
+  draw_order: 3
+  color: '#059669'
+- id: link_ef
+  kind: binary_link
+  nodes:
+  - e
+  - f
+  role: lower distal coupler
+  confidence: high
+  draw_order: 4
+  color: '#ea580c'
+- id: distal_body
+  kind: rigid_body
+  nodes:
+  - f
+  - g
+  - h
+  role: rigid FGH distal output body
+  render_shape: l_bracket
+  render_corner_node: g
+  render_arm_nodes:
+  - f
+  - h
+  render_flesh_scale: 1.8
+  confidence: high
+  draw_order: 1
+  color: '#dc2626'
+joints:
+- node: a
+  type: revolute
+  bodies:
+  - ground
+  - input_crank
+- node: b
+  type: revolute
+  bodies:
+  - input_crank
+  - loop_1_coupler
+- node: c
+  type: revolute
+  bodies:
+  - loop_1_coupler
+  - central_body
+- node: d
+  type: revolute
+  bodies:
+  - ground
+  - central_body
+- node: e
+  type: revolute
+  bodies:
+  - ground
+  - link_ef
+- node: f
+  type: revolute
+  bodies:
+  - link_ef
+  - distal_body
+- node: g
+  type: revolute
+  bodies:
+  - central_body
+  - distal_body
+dimensions:
+- id: L_ab
+  body: input_crank
+  nodes:
+  - a
+  - b
+  value: 19.248320250251613
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_bc
+  body: loop_1_coupler
+  nodes:
+  - b
+  - c
+  value: 17.2850239595832
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_cd
+  body: central_body
+  nodes:
+  - c
+  - d
+  value: 13.798398980847962
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_ad
+  body: ground
+  nodes:
+  - a
+  - d
+  value: 21.112
+  units: mm
+  value_source: fixed_nominal_design
+  optimizable: false
+  design_role: fixed_tilted_ground_mount_baseline
+- id: L_ae
+  body: ground
+  nodes:
+  - a
+  - e
+  value: 34.76613255553678
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_de
+  body: ground
+  nodes:
+  - d
+  - e
+  value: 20.57433515541153
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_cg
+  body: central_body
+  nodes:
+  - c
+  - g
+  value: 62.69987938246198
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_dg
+  body: central_body
+  nodes:
+  - d
+  - g
+  value: 74.48500868607084
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_ef
+  body: link_ef
+  nodes:
+  - e
+  - f
+  value: 28.044709119856137
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_fg
+  body: distal_body
+  nodes:
+  - f
+  - g
+  value: 37.92723354344708
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_gh
+  body: distal_body
+  nodes:
+  - g
+  - h
+  value: 68.78823439027866
+  units: mm
+  value_source: co_optimization_candidate
+- id: L_fh
+  body: distal_body
+  nodes:
+  - f
+  - h
+  value: 54.36826477799949
+  units: mm
+  value_source: co_optimization_candidate
+loops:
+- id: loop_1
+  nodes:
+  - a
+  - b
+  - c
+  - d
+  bodies:
+  - input_crank
+  - loop_1_coupler
+  - central_body
+  - ground
+- id: loop_2
+  nodes:
+  - d
+  - g
+  - f
+  - e
+  bodies:
+  - central_body
+  - distal_body
+  - link_ef
+  - ground
+actuators:
+- id: input_q
+  type: rotary
+  joint: a
+  body: input_crank
+  reference_body: ground
+  positive_direction: clockwise
+outputs:
+- id: mechanism_tcp
+  node: h
+  body: distal_body
+human_hand_model:
+  id: index_finger
+  reference_finger: index
+  source_objective: /home/bobo/kinematic_chain/src/co-optimization/config/objectives/index.yaml
+  pose: mildly_curled
+  nominal_flexion_deg:
+    mcp: 1.0
+    pip: 2.0
+    dip: 2.0
+  dimension_units: mm
+  coordinate_system:
+    origin: hand_mcp
+    x_direction: proximal_to_distal
+    y_direction: dorsal
+    joint_polyline_reference: dorsal_upper_surface
+  joints:
+  - id: hand_wrist_dorsal
+    position_mm:
+    - -90.0
+    - 0.0
+    kind: palm_reference
+  - id: hand_mcp
+    node_index: 1
+    position_mm:
+    - 0.0
+    - 0.0
+    kind: anatomical_revolute
+  - id: hand_pip
+    node_index: 2
+    position_mm:
+    - 39.99390780625565
+    - -0.6980962574913405
+    kind: anatomical_revolute
+  - id: hand_dip
+    node_index: 3
+    position_mm:
+    - 64.95964617512
+    - -2.0064951635649364
+    kind: anatomical_revolute
+  - id: hand_distal_contact
+    attachment_index: 4
+    position_mm:
+    - 77.41207990126682
+    - -3.0959419479106636
+    kind: attachment_revolute
+  - id: hand_tip
+    position_mm:
+    - 89.86451362741364
+    - -4.18538873225639
+    kind: terminal_reference
+  palm:
+    id: palm
+    joints:
+    - hand_wrist_dorsal
+    - hand_mcp
+    length_mm: 90.0
+    width_mm: 25.0
+    shape: rounded_rectangle
+    orientation: horizontal
+    status: assumed_placeholder
+  phalanges:
+  - id: proximal_phalanx
+    joints:
+    - hand_mcp
+    - hand_pip
+    length_mm: 40.0
+    width_mm: 20.0
+    shape: rounded_rectangle
+  - id: middle_phalanx
+    joints:
+    - hand_pip
+    - hand_dip
+    length_mm: 25.0
+    width_mm: 15.0
+    shape: rounded_rectangle
+  - id: distal_phalanx
+    joints:
+    - hand_dip
+    - hand_tip
+    length_mm: 25.0
+    width_mm: 10.0
+    shape: rounded_rectangle
+finger_analysis_targets:
+- objective:
+    id: index_finger_design
+    finger: index
+  phalanx_lengths_mm:
+    proximal: 40
+    middle: 25
+    distal: 25
+  joint_flexion_ranges_deg:
+    mcp:
+      min: 0
+      max: 46
+    pip:
+      min: 0
+      max: 67
+    dip:
+      min: 0
+      max: 27
+exoskeleton_attachments:
+- id: dorsal_input_mount
+  mechanism_node: d
+  mechanism_interface: fixed_ground_mount
+  hand_reference: hand_mcp
+  hand_interface: fixed_dorsal_mount
+  location: upper_surface_of_first_joint
+  dorsal_clearance_mm: 7.0
+  clearance_control: upstream_manual_design_parameter
+  optimizable: false
+  alignment_member:
+  - a
+  - d
+  alignment: tilted
+  ad_tilt_deg: 37.054
+  notes:
+  - D is separated dorsally from J1 by the manually defined clearance.
+  - ad_tilt_deg slopes the A-to-D member downward from A to D; 0 is the legacy horizontal
+    mount.
+  - Change dorsal_clearance_mm in the upstream nominal design, not in Adam.
+  - Phalanx widths extend from the shared dorsal surface toward the palmar side.
+  - The mechanism is placed on the dorsal side of the mildly curled finger.
+- id: distal_output_rod
+  mechanism_node: h
+  mechanism_interface: rigid_to_tcp
+  hand_reference: hand_distal_contact
+  hand_interface: revolute
+  connector: binary_rod
+  assumed_length_mm: 22.538830635822627
+  previous_assumption_mm: 15.0
+  value_source: co_optimization_candidate
+  surface: distal_phalanx_upper_dorsal
+  longitudinal_fraction: 0.5
+  rotation: free
+  pair_dofs:
+  - rotation
+  status: assumed_placeholder
+  notes:
+  - The rod is the only connection between TCP H and the human finger.
+  - R4 is a fixed revolute at the longitudinal midpoint of the upper distal surface.
+  - The physical interface is intended to be a retained distal cuff, not a sliding
+    skin contact.
+  - The 28 mm nominal predates fixed R4 and is retained only as the optimization initialization.
+  - Rod length stays fixed during one motion sweep but is optimizable between design
+    candidates.
+  - Rod length and attachment hardware require physical validation.
+analysis:
+  workspace_sweep:
+    q_min_deg: 0.0
+    q_max_deg: 90.0
+    steps: 181
+    solver_tolerance_mm: 1.0e-05
+    max_iterations: 100
+mass_model:
+  status: nominal_placeholder
+  gravity_m_s2: 9.80665
+  bodies:
+  - body: input_crank
+    mass_g: 5.0
+    center_node_weights:
+      a: 0.5
+      b: 0.5
+  - body: loop_1_coupler
+    mass_g: 4.0
+    center_node_weights:
+      b: 0.5
+      c: 0.5
+  - body: central_body
+    mass_g: 8.0
+    center_node_weights:
+      c: 0.333333
+      d: 0.333334
+      g: 0.333333
+  - body: link_ef
+    mass_g: 1.0
+    center_node_weights:
+      e: 0.5
+      f: 0.5
+  - body: distal_body
+    mass_g: 6.0
+    center_node_weights:
+      f: 0.333333
+      g: 0.333334
+      h: 0.333333
+  point_masses:
+  - id: joint_b
+    node: b
+    mass_g: 3.0
+  - id: joint_c
+    node: c
+    mass_g: 3.0
+  - id: joint_f
+    node: f
+    mass_g: 3.0
+  - id: joint_g
+    node: g
+    mass_g: 3.0
+  - id: output_payload
+    node: h
+    mass_g: 0.0
+model_readiness:
+  topology_plot: ready
+  combined_hand_abstraction: ready_assumed_nominal_index_attachment
+  numeric_link_table: ready_remeasured_dimensions
+  kinematic_sweep: ready_remeasured_geometry
+  optimization: adam_crank_driven_passive_hand_synergy_skeleton
+  input_torque: ready_nominal_placeholder_mass_model
+optimization_provenance:
+  candidate_id: candidate_0001
+  target_finger: index
+  optimization_scope: independent_per_finger
+  parent_nominal_design: /home/bobo/kinematic_chain/designs/mechanism_2/nominal/mechanism.yaml
+  optimizer: torch.optim.Adam
+  optimizer_device: cpu
+  geometry_evaluator_device: cpu
+  objective_status: perpendicularity_objective_with_hard_geometry_constraints
+  collision_free: true
+  minimum_signed_clearance_mm: 0.1968721712965822
+  rod_closure_feasible: true
+  maximum_rod_closure_error_mm: 0.05899637419004122
+  rod_closure_tolerance_mm: 0.1
+  hand_motion_feasible: true
+  intended_workspace_mapping: crank_driven_passive_monotone_hand_curl
+  prescribed_coordinate: mechanism_input_crank_q
+  passive_coordinate: hand_curl_progress_s
+  hand_crank_ratio: null
+  prescribed_input_schedule_deg:
+  - 0.0
+  - 1.2630814555856509
+  - 2.5261629111713018
+  - 3.789244366756953
+  - 5.0523258223426035
+  - 6.315407277928254
+  - 7.578488733513906
+  - 8.841570189099556
+  - 10.104651644685207
+  - 11.367733100270858
+  - 12.630814555856508
+  - 13.893896011442159
+  - 15.156977467027811
+  - 16.42005892261346
+  - 17.683140378199113
+  - 18.94622183378476
+  - 20.209303289370414
+  - 21.472384744956067
+  - 22.735466200541715
+  - 23.998547656127368
+  - 25.261629111713017
+  - 26.52471056729867
+  - 27.787792022884318
+  - 29.05087347846997
+  - 30.313954934055623
+  - 31.577036389641272
+  - 32.84011784522692
+  - 34.10319930081258
+  - 35.366280756398226
+  - 36.629362211983874
+  - 37.89244366756952
+  passive_hand_progress_schedule:
+  - 0.0
+  - 0.04175815499305961
+  - 0.08009147191418894
+  - 0.11684408338407727
+  - 0.15252727490009782
+  - 0.18748262069821792
+  - 0.2216934107978765
+  - 0.25530944120899507
+  - 0.2884729124910348
+  - 0.32129844739613145
+  - 0.3537711346239456
+  - 0.38595754419935985
+  - 0.41795077889844956
+  - 0.44978032487783504
+  - 0.48145336906358654
+  - 0.5130187710953514
+  - 0.544539510173907
+  - 0.5760244578865304
+  - 0.6075061102641582
+  - 0.6390220862169466
+  - 0.6706138521789984
+  - 0.7023105915188
+  - 0.7341521587199715
+  - 0.7661806916841923
+  - 0.7984317829270268
+  - 0.8309641592416435
+  - 0.8638348399079598
+  - 0.8970960306881132
+  - 0.9308113197589336
+  - 0.965079927799757
+  - 1.0
+  terminal_input_deg: 37.89244366756952
+  collision_evaluation_poses: 31
+  promoted_to_nominal: false

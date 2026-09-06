@@ -34,6 +34,7 @@ FIXED_MECHANISM_DIMENSION_IDS = ("L_ad",)
 FINGERS = ("index", "middle", "ring", "little")
 ACTIVE_COMPONENT_IDS = (
     "output_link_perpendicularity",
+    "output_rod_length",
 )
 CONSTRAINT_GUIDANCE_IDS = (
     "task_space_reachability",
@@ -68,6 +69,7 @@ class Problem:
     nominal_design_path: Path
     nominal_design: dict[str, Any]
     dorsal_clearance_mm: float
+    ad_tilt_deg: float
     distal_phalanx_width_mm: float
     fixed_mechanism_dimensions: dict[str, float]
     variables: tuple[Variable, ...]
@@ -234,6 +236,12 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         )
     if input_mount.get("clearance_control") != "upstream_manual_design_parameter":
         raise OptimizationConfigError("dorsal clearance must be controlled upstream")
+    ad_tilt = input_mount.get("ad_tilt_deg", 0.0)
+    if (not isinstance(ad_tilt, (int, float)) or not math.isfinite(ad_tilt)
+            or abs(float(ad_tilt)) >= 90.0):
+        raise OptimizationConfigError(
+            "dorsal_input_mount ad_tilt_deg must be a finite angle in (-90, 90)"
+        )
     phalanges = {
         row.get("id"): row
         for row in nominal_design.get("human_hand_model", {}).get("phalanges", [])
@@ -501,6 +509,7 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         ).resolve(),
         nominal_design=nominal_design,
         dorsal_clearance_mm=float(dorsal_clearance),
+        ad_tilt_deg=float(ad_tilt),
         distal_phalanx_width_mm=float(distal_width),
         fixed_mechanism_dimensions=fixed_mechanism_dimensions,
         variables=tuple(variables),
@@ -545,10 +554,26 @@ def _nearest(points: tuple[Point, ...], previous: Point) -> Point:
     return min(points, key=lambda point: math.dist(point, previous))
 
 
+def _rotate_about_origin(point: Point, cosine: float, sine: float) -> Point:
+    return (
+        cosine * point[0] - sine * point[1],
+        sine * point[0] + cosine * point[1],
+    )
+
+
 def _mechanism_workspace_poses(
-    lengths: dict[str, float], q_values_deg: np.ndarray,
+    lengths: dict[str, float],
+    q_values_deg: np.ndarray,
+    tilt_deg: float = 0.0,
 ) -> tuple[tuple[float, dict[str, Point]], ...]:
-    """Analytically track the nominal A-B-C-D-G-F-H assembly branch."""
+    """Analytically track the nominal A-B-C-D-G-F-H assembly branch.
+
+    The assembly is solved in the canonical frame where A-D is horizontal and D
+    is the origin, then rigidly rotated about D by ``-tilt_deg`` so that the
+    A-to-D member slopes downward by ``tilt_deg`` from the horizontal. Solving
+    first and rotating afterwards keeps every assembly-branch selection below
+    identical to the untilted mount.
+    """
     a = (-lengths["L_ad"], 0.0)
     d = (0.0, 0.0)
     e_candidates = _circle_intersections(
@@ -598,15 +623,32 @@ def _mechanism_workspace_poses(
             {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g, "h": h},
         ))
         previous = {"c": c, "g": g, "f": f, "h": h}
+    if tilt_deg:
+        angle = math.radians(-float(tilt_deg))
+        cosine, sine = math.cos(angle), math.sin(angle)
+        workspace = [
+            (
+                q_deg,
+                {
+                    node_id: _rotate_about_origin(point, cosine, sine)
+                    for node_id, point in positions.items()
+                },
+            )
+            for q_deg, positions in workspace
+        ]
     return tuple(workspace)
 
 
 def _mechanism_workspace(
-    lengths: dict[str, float], q_values_deg: np.ndarray,
+    lengths: dict[str, float],
+    q_values_deg: np.ndarray,
+    tilt_deg: float = 0.0,
 ) -> tuple[tuple[float, Point], ...]:
     return tuple(
         (q_deg, positions["h"])
-        for q_deg, positions in _mechanism_workspace_poses(lengths, q_values_deg)
+        for q_deg, positions in _mechanism_workspace_poses(
+            lengths, q_values_deg, tilt_deg,
+        )
     )
 
 
@@ -1001,7 +1043,9 @@ def _workspace_collision(
             or hand_progress_values.shape != (pose_count,)):
         mechanism_poses = ()
     else:
-        mechanism_poses = _mechanism_workspace_poses(design_lengths, q_values)
+        mechanism_poses = _mechanism_workspace_poses(
+            design_lengths, q_values, problem.ad_tilt_deg,
+        )
     if len(mechanism_poses) != pose_count:
         return WorkspaceMetrics(
             collision_loss=1.0e6,
@@ -1165,7 +1209,7 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
     config = problem.component_config["task_space_reachability"]
     q_min, q_max = (float(value) for value in config["curled_input_search_deg"])
     q_values = np.linspace(q_min, q_max, int(config["curled_input_samples"]))
-    workspace = _mechanism_workspace(design_lengths, q_values)
+    workspace = _mechanism_workspace(design_lengths, q_values, problem.ad_tilt_deg)
     normalization = float(config["normalization_mm"])
     rod_length = design_lengths[problem.model["tip_rod_variable"]]
 
@@ -1189,7 +1233,7 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
         else:
             q_schedule = hand_progress_schedule = np.asarray([], dtype=float)
         coupled_workspace = (
-            _mechanism_workspace(design_lengths, q_schedule)
+            _mechanism_workspace(design_lengths, q_schedule, problem.ad_tilt_deg)
             if len(q_schedule) else ()
         )
         requested_pose_count = int(
@@ -1242,11 +1286,22 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
         collision_weight = float(collision_config["guidance_weight"])
         perpendicular_config = problem.component_config["output_link_perpendicularity"]
         perpendicular_weight = float(perpendicular_config["weight"])
-        weight_sum = reachability_weight + collision_weight + perpendicular_weight
+        rod_config = problem.component_config.get("output_rod_length", {})
+        rod_weight = (
+            float(rod_config.get("weight", 0.0))
+            if rod_config.get("enabled") else 0.0
+        )
+        rod_normalization = float(rod_config.get("normalization_mm", 30.0))
+        rod_length_loss = (rod_length / rod_normalization) ** 2
+        weight_sum = (
+            reachability_weight + collision_weight
+            + perpendicular_weight + rod_weight
+        )
         weighted_loss = (
             reachability_weight * reachability_loss
             + collision_weight * workspace_metrics.collision_loss
             + perpendicular_weight * workspace_metrics.perpendicularity_loss
+            + rod_weight * rod_length_loss
         )
         objective_loss = (
             weighted_loss / weight_sum
@@ -1292,6 +1347,12 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
             "weighted_output_link_perpendicularity": (
                 perpendicular_weight * workspace_metrics.perpendicularity_loss
                 / weight_sum
+            ),
+            "output_rod_length": rod_length_loss,
+            "weight_output_rod_length": rod_weight,
+            "output_rod_length_mm": rod_length,
+            "weighted_output_rod_length": (
+                rod_weight * rod_length_loss / weight_sum
             ),
             "minimum_signed_clearance_mm": workspace_metrics.minimum_clearance_mm,
             "collision_free_pose_fraction": (
@@ -1770,6 +1831,7 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
         },
         "fixed_upstream_parameters": {
             "L_ad_mm": problem.fixed_mechanism_dimensions["L_ad"],
+            "ad_tilt_deg": problem.ad_tilt_deg,
             "dorsal_clearance_mm": problem.dorsal_clearance_mm,
             "distal_phalanx_width_mm": problem.distal_phalanx_width_mm,
         },

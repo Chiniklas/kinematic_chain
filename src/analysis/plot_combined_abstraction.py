@@ -115,20 +115,25 @@ def _attachment_by_id(data: dict[str, Any], attachment_id: str) -> dict[str, Any
     raise ValueError(f"missing exoskeleton attachment {attachment_id}")
 
 
-def _horizontal_fixed_contact_mount_transform(
+def _fixed_contact_mount_transform(
     source_a: Point,
     source_d: Point,
     source_h: Point,
     target_d: Point,
     hand_contact: Point,
     rod_length: float,
+    ad_tilt_deg: float = 0.0,
 ):
-    """Place horizontal AD and close the rod at the fixed upper-surface R4."""
+    """Place the A-D mount member and close the rod at the fixed R4 contact.
+
+    ``ad_tilt_deg`` slopes A-to-D downward from the horizontal; zero keeps the
+    historical horizontal mount.
+    """
     ad_dx = source_d[0] - source_a[0]
     ad_dy = source_d[1] - source_a[1]
     if math.hypot(ad_dx, ad_dy) == 0:
         raise ValueError("combined abstraction needs distinct A and D nodes")
-    angle = -math.atan2(ad_dy, ad_dx)
+    angle = -math.atan2(ad_dy, ad_dx) - math.radians(float(ad_tilt_deg))
     cosine, sine = math.cos(angle), math.sin(angle)
 
     def rotate_about_d(point: Point) -> Point:
@@ -161,7 +166,7 @@ def _horizontal_fixed_contact_mount_transform(
             + (hand_contact[1] - target_d[1]) * h_vector[1]
         ) / quadratic_a
         if scale <= 0:
-            raise ValueError("horizontal AD placement has no positive-scale assembly")
+            raise ValueError("A-D mount placement has no positive-scale assembly")
         projected_h = (
             target_d[0] + scale * h_vector[0],
             target_d[1] + scale * h_vector[1],
@@ -217,13 +222,14 @@ def draw_combined_abstraction(data: dict[str, Any]):
     (
         transform, target_h, hand_attachment, connector_length,
         rod_closure_feasible,
-    ) = _horizontal_fixed_contact_mount_transform(
+    ) = _fixed_contact_mount_transform(
         diagram_positions["a"],
         diagram_positions[input_mount["mechanism_node"]],
         diagram_positions[output_rod["mechanism_node"]],
         target_input,
         hand_contact,
         rod_length,
+        float(input_mount.get("ad_tilt_deg", 0.0)),
     )
     mechanism_positions = {
         node_id: transform(point) for node_id, point in diagram_positions.items()

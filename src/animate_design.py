@@ -76,7 +76,9 @@ def frame_indices(sample_count: int, requested_frames: int, ping_pong: bool) -> 
 
 
 def plot_limits(result, finger) -> tuple[tuple[float, float], tuple[float, float]]:
-    transform = _mechanism_frame(result.mechanism_sweep.poses[0].positions)
+    transform = _mechanism_frame(
+        result.mechanism_sweep.poses[0].positions, result.ad_tilt_deg,
+    )
     points: list[tuple[float, float]] = []
     for pose in result.mechanism_sweep.poses:
         points.extend(transform(point) for point in pose.positions.values())

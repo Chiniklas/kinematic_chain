@@ -112,13 +112,14 @@ class MechanismSchemaTests(unittest.TestCase):
         input_mount = attachments["dorsal_input_mount"]
         self.assertEqual(input_mount["mechanism_node"], "d")
         self.assertEqual(input_mount["hand_reference"], "hand_mcp")
-        self.assertEqual(input_mount["dorsal_clearance_mm"], 1.0)
+        self.assertEqual(input_mount["dorsal_clearance_mm"], 7.0)
         self.assertEqual(
             input_mount["clearance_control"], "upstream_manual_design_parameter"
         )
         self.assertFalse(input_mount["optimizable"])
         self.assertEqual(input_mount["alignment_member"], ["a", "d"])
-        self.assertEqual(input_mount["alignment"], "horizontal")
+        self.assertEqual(input_mount["alignment"], "tilted")
+        self.assertEqual(input_mount["ad_tilt_deg"], 37.054)
         output = attachments["distal_output_rod"]
         self.assertEqual(output["mechanism_node"], "h")
         self.assertEqual(output["hand_reference"], "hand_distal_contact")
@@ -164,8 +165,8 @@ class MechanismSchemaTests(unittest.TestCase):
             "L_ab": 31,
             "L_bc": 54,
             "L_cd": 28,
-            "L_ad": 54,
-            "L_ae": 66,
+            "L_ad": 21.112,
+            "L_ae": 28.765,
             "L_de": 14,
             "L_cg": 50,
             "L_dg": 57,
