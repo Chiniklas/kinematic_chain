@@ -5,6 +5,26 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 project_dir="${script_dir}"
 entry_point="${project_dir}/src/co-optimization/run_adam.py"
+config_root="${project_dir}/src/co-optimization/config"
+
+# Two mount variants live side by side; --design picks which one to optimise.
+#   long_ad  : the original 54 mm horizontal A-D baseline
+#   short_ad : the 2026-09 revision, 21.112 mm sloping 37.054 deg
+design="long_ad"
+forwarded=()
+while (($#)); do
+  case "$1" in
+    --design) design="${2:?--design needs long_ad or short_ad}"; shift 2 ;;
+    --design=*) design="${1#--design=}"; shift ;;
+    *) forwarded+=("$1"); shift ;;
+  esac
+done
+if [[ ! -d "${config_root}/${design}" ]]; then
+  printf 'Unknown design %s (expected a directory under %s)\n' \
+    "${design}" "${config_root}" >&2
+  exit 2
+fi
+set -- "${forwarded[@]+"${forwarded[@]}"}"
 
 if ! python3 -c 'import matplotlib, numpy, torch, yaml' >/dev/null 2>&1; then
   printf '%s\n' 'Missing Python optimization dependencies.' >&2
@@ -42,7 +62,10 @@ if [[ -z "${output_dir}" ]]; then
   arguments+=(--output-dir "${output_dir}")
 fi
 
-python3 "${entry_point}" "${arguments[@]}"
+python3 "${entry_point}" \
+  --objectives "${config_root}/${design}/objectives.yaml" \
+  --variables "${config_root}/${design}/optimizable_variables.yaml" \
+  "${arguments[@]}"
 
 if [[ "${output_dir}" != /* ]]; then
   output_dir="$(pwd)/${output_dir}"

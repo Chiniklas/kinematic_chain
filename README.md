@@ -90,6 +90,33 @@ By default, every input writes to an `artifacts/` folder beside its own
 artifact tree. Analysis does not read co-optimization configuration; hand targets and
 attachment assumptions required by a design are stored in that design's YAML.
 
+### Two mount variants
+
+The A-D mounting member exists in two revisions, each with its own nominal design
+and optimizer configuration. `--design` picks one; `long_ad` is the default.
+
+| Design | A-D baseline | Dorsal clearance | Config |
+|---|---|---|---|
+| `long_ad` | 54 mm, horizontal | 2.0 mm | `src/co-optimization/config/long_ad/` |
+| `short_ad` | 21.112 mm, sloping 37.054 deg | 7.0 mm | `src/co-optimization/config/short_ad/` |
+
+```bash
+./run_optimization.sh --design long_ad      # 54 mm horizontal mount (default)
+./run_optimization.sh --design short_ad     # 21.112 mm tilted mount
+```
+
+`short_ad` additionally optimises the H-R4 rod length as a weighted objective and
+carries the guidance weights that produced its 22.54 mm candidate; `long_ad` keeps
+the original single-objective setup. The two share the per-finger measurement files
+in `src/co-optimization/config/objectives/`.
+
+Analysis takes a mechanism path, so either variant can be analysed directly:
+
+```bash
+./run_analysis.sh designs/mechanism_2/nominal/mechanism.yaml    # long_ad
+./run_analysis.sh designs/mechanism_2/short_ad/mechanism.yaml   # short_ad
+```
+
 Run the current multi-objective Adam skeleton:
 
 ```bash

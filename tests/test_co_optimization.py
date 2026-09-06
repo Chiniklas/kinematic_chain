@@ -11,8 +11,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY_POINT = ROOT / "run_optimization.sh"
-VARIABLES = ROOT / "src" / "co-optimization" / "config" / "optimizable_variables.yaml"
-OBJECTIVES = ROOT / "src" / "co-optimization" / "config" / "objectives.yaml"
+CONFIG = ROOT / "src" / "co-optimization" / "config"
+VARIABLES = CONFIG / "long_ad" / "optimizable_variables.yaml"
+OBJECTIVES = CONFIG / "long_ad" / "objectives.yaml"
 NOMINAL = ROOT / "designs" / "mechanism_2" / "nominal" / "mechanism.yaml"
 
 
@@ -36,7 +37,6 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                 "task_space_reachability",
                 "hand_mechanism_non_collision",
                 "output_link_perpendicularity",
-                "output_rod_length",
             ],
         )
         collision = components["hand_mechanism_non_collision"]
@@ -47,9 +47,8 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
             components["output_link_perpendicularity"]["evaluation_poses"],
             collision["evaluation_poses"],
         )
-        self.assertEqual(components["task_space_reachability"]["guidance_weight"], 30.0)
-        self.assertEqual(collision["guidance_weight"], 1.0)
-        self.assertEqual(components["output_rod_length"]["weight"], 20.0)
+        self.assertEqual(components["task_space_reachability"]["guidance_weight"], 1.0)
+        self.assertEqual(collision["guidance_weight"], 5.0)
         self.assertEqual(components["output_link_perpendicularity"]["weight"], 1.0)
         self.assertEqual(
             components["output_link_perpendicularity"]["optimization_role"],
@@ -106,7 +105,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
         )
         self.assertNotIn("L_ad", configured)
         self.assertEqual(fixed_ids, ["L_ad"])
-        self.assertEqual(dimensions["L_ad"], 21.112)
+        self.assertEqual(dimensions["L_ad"], 54)
         self.assertFalse(next(
             row for row in nominal_data["dimensions"] if row["id"] == "L_ad"
         )["optimizable"])
@@ -119,6 +118,43 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
             configured["L_tip_rod"],
             attachments["distal_output_rod"]["assumed_length_mm"],
         )
+
+    def test_short_ad_profile_assembles_and_stays_feasible(self) -> None:
+        """The tilted 21.112 mm mount ships a starting geometry that already closes."""
+        variables = yaml.safe_load(
+            (CONFIG / "short_ad" / "optimizable_variables.yaml").read_text(encoding="utf-8")
+        )
+        nominal_path = (
+            CONFIG / "short_ad" / variables["model"]["nominal_design"]
+        ).resolve()
+        nominal = yaml.safe_load(nominal_path.read_text(encoding="utf-8"))
+        dimensions = {row["id"]: row["value"] for row in nominal["dimensions"]}
+        self.assertEqual(dimensions["L_ad"], 21.112)
+        mount = next(
+            row for row in nominal["exoskeleton_attachments"]
+            if row["id"] == "dorsal_input_mount"
+        )
+        self.assertEqual(mount["ad_tilt_deg"], 37.054)
+        self.assertEqual(mount["dorsal_clearance_mm"], 7.0)
+
+        # the starting lengths must match the nominal, or the run starts somewhere else
+        configured = {row["id"]: row["initial"] for row in variables["variables"]}
+        for variable_id, value in configured.items():
+            if variable_id == "L_tip_rod":
+                continue
+            self.assertAlmostEqual(value, dimensions[variable_id], places=3)
+
+        with tempfile.TemporaryDirectory(prefix="kinematic-chain-short-") as directory:
+            completed = subprocess.run(
+                [
+                    str(ENTRY_POINT), "--design", "short_ad",
+                    "--finger", "index", "--iterations", "2",
+                    "--output-dir", directory,
+                ],
+                cwd=ROOT, text=True, capture_output=True, check=True,
+            )
+        for constraint in ("collision", "rod-closure", "downward-curl"):
+            self.assertIn(f"index {constraint} constraint: PASS", completed.stdout)
 
     def test_adam_entry_point_builds_four_independent_finger_designs(self) -> None:
         with tempfile.TemporaryDirectory(prefix="kinematic-chain-adam-") as directory:
@@ -190,7 +226,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                 self.assertEqual(len(variables), 12)
                 self.assertEqual(set(variables), set(initial_variables))
                 self.assertNotIn("L_ad", variables)
-                self.assertEqual(candidate["fixed_upstream_parameters"]["L_ad_mm"], 21.112)
+                self.assertEqual(candidate["fixed_upstream_parameters"]["L_ad_mm"], 54.0)
                 self.assertTrue(all(row["units"] == "mm" for row in variables.values()))
                 materialized = yaml.safe_load(
                     (candidate_dir / "mechanism.yaml").read_text(encoding="utf-8")
@@ -198,7 +234,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                 materialized_ad = next(
                     row for row in materialized["dimensions"] if row["id"] == "L_ad"
                 )
-                self.assertEqual(materialized_ad["value"], 21.112)
+                self.assertEqual(materialized_ad["value"], 54.0)
                 self.assertEqual(materialized_ad["value_source"], "fixed_nominal_design")
                 components = candidate["component_losses"][
                     f"{finger}_finger_design"

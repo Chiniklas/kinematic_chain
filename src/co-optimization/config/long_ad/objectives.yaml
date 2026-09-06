@@ -15,7 +15,7 @@ loss_components:
     enabled: true
     optimization_role: hard_constraint_guidance
     implementation_status: active_full_intended_workspace_rod_closure
-    guidance_weight: 30.0
+    guidance_weight: 1.0
     hand_reference: distal_phalanx_upper_midpoint_r4
     mechanism_reference: h
     horizontal_input_deg: 0.0
@@ -27,7 +27,7 @@ loss_components:
     enabled: true
     optimization_role: hard_constraint_guidance
     implementation_status: active_full_intended_workspace_sampled_constraint
-    guidance_weight: 1.0
+    guidance_weight: 5.0
     passive_hand_progress_bounds: [0.0, 1.0]
     evaluation_poses: 31
     require_all_evaluation_poses: true
@@ -56,16 +56,6 @@ loss_components:
     target: perpendicular_to_distal_surface
     metric: squared_rod_dot_distal_surface_tangent
     smooth_max_temperature: 0.05
-  output_rod_length:
-    enabled: true
-    optimization_role: design_objective
-    objective_order: 2
-    weight: 20.0
-    normalization_mm: 30.0
-    metric: squared_normalized_output_rod_length
-    rationale: >-
-      The H-R4 rod is a physical part the wearer carries; without this term the
-      optimizer treats its length as a free by-product and lets it grow.
   phalanx_lengths: {enabled: false, weight: 0.0}
   joint_flexion_ranges: {enabled: false, weight: 0.0}
 
@@ -110,16 +100,16 @@ constraint_penalties:
 finger_problems:
   - finger: index
     id: index_finger_design
-    file: objectives/index.yaml
+    file: ../objectives/index.yaml
   - finger: middle
     id: middle_finger_design
-    file: objectives/middle.yaml
+    file: ../objectives/middle.yaml
   - finger: ring
     id: ring_finger_design
-    file: objectives/ring.yaml
+    file: ../objectives/ring.yaml
   - finger: little
     id: little_finger_design
-    file: objectives/little.yaml
+    file: ../objectives/little.yaml
 
 adam:
   iterations: 300

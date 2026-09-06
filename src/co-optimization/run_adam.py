@@ -20,8 +20,8 @@ from tensorboard_logger import TensorBoardLogger
 
 HERE = Path(__file__).resolve().parent
 PROJECT_ROOT = HERE.parents[1]
-DEFAULT_OBJECTIVES = HERE / "config" / "objectives.yaml"
-DEFAULT_VARIABLES = HERE / "config" / "optimizable_variables.yaml"
+DEFAULT_OBJECTIVES = HERE / "config" / "long_ad" / "objectives.yaml"
+DEFAULT_VARIABLES = HERE / "config" / "long_ad" / "optimizable_variables.yaml"
 MECHANISM_DIMENSION_IDS = (
     "L_ab", "L_bc", "L_cd", "L_ad", "L_ae", "L_de",
     "L_cg", "L_dg", "L_ef", "L_fg", "L_gh", "L_fh",
@@ -1529,6 +1529,7 @@ def _history_components(evaluation: Evaluation) -> dict[str, float]:
     return {
         component_id: components[component_id]
         for component_id in RECORDED_COMPONENT_IDS
+        if component_id in components
     }
 
 
@@ -1873,6 +1874,7 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
             "weights": {
                 component_id: float(problem.component_config[component_id]["weight"])
                 for component_id in ACTIVE_COMPONENT_IDS
+                if problem.component_config.get(component_id, {}).get("enabled")
             },
             "constraint_guidance_weights": {
                 "fixed_contact_rod_closure": float(
