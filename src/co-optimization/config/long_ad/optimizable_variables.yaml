@@ -14,20 +14,20 @@ model:
     - Every copy starts from these same nominal initial values; optimized values are never shared across fingers.
     - L_tip_rod is the external connector from TCP H to fixed upper-surface revolute R4.
     - Task-space reachability uses all mechanism dimensions and the tip-rod length.
-    - L_ad is the fixed 54 mm horizontal grounded mounting baseline from the nominal design.
+    - L_ad is the fixed 71.112 mm grounded baseline, tilted per ad_tilt_deg in the nominal design.
     - D-to-J1 dorsal clearance is read from the nominal design and remains fixed upstream.
     - Bounds are broad scaffolding limits, not validated design constraints.
 
 variables:
-  - {id: L_ab, body: input_crank, nodes: [a, b], initial: 31.0, min: 20.0, max: 45.0}
-  - {id: L_bc, body: loop_1_coupler, nodes: [b, c], initial: 54.0, min: 15.0, max: 70.0}
-  - {id: L_cd, body: central_body, nodes: [c, d], initial: 28.0, min: 18.0, max: 42.0}
-  - {id: L_ae, body: ground, nodes: [a, e], initial: 66.0, min: 45.0, max: 90.0}
-  - {id: L_de, body: ground, nodes: [d, e], initial: 14.0, min: 7.0, max: 25.0}
-  - {id: L_cg, body: central_body, nodes: [c, g], initial: 50.0, min: 15.0, max: 70.0}
-  - {id: L_dg, body: central_body, nodes: [d, g], initial: 57.0, min: 35.0, max: 80.0}
-  - {id: L_ef, body: link_ef, nodes: [e, f], initial: 30.0, min: 18.0, max: 45.0}
-  - {id: L_fg, body: distal_body, nodes: [f, g], initial: 28.0, min: 18.0, max: 42.0}
-  - {id: L_gh, body: distal_body, nodes: [g, h], initial: 50.0, min: 15.0, max: 70.0}
-  - {id: L_fh, body: distal_body, nodes: [f, h], initial: 57.0, min: 35.0, max: 80.0}
-  - {id: L_tip_rod, category: attachment_link, attachment: distal_output_rod, nodes: [h, hand_distal_contact], initial: 28.0, min: 5.0, max: 45.0}
+  - {id: L_ab, body: input_crank, nodes: [a, b], initial: 31.574, min: 20.0, max: 45.0}
+  - {id: L_bc, body: loop_1_coupler, nodes: [b, c], initial: 51.994, min: 15.0, max: 70.0}
+  - {id: L_cd, body: central_body, nodes: [c, d], initial: 27.068, min: 18.0, max: 42.0}
+  - {id: L_ae, body: ground, nodes: [a, e], initial: 64.8, min: 45.0, max: 90.0}
+  - {id: L_de, body: ground, nodes: [d, e], initial: 15.184, min: 7.0, max: 25.0}
+  - {id: L_cg, body: central_body, nodes: [c, g], initial: 47.881, min: 15.0, max: 70.0}
+  - {id: L_dg, body: central_body, nodes: [d, g], initial: 58.327, min: 35.0, max: 80.0}
+  - {id: L_ef, body: link_ef, nodes: [e, f], initial: 40.0, min: 18.0, max: 45.0}
+  - {id: L_fg, body: distal_body, nodes: [f, g], initial: 26.675, min: 18.0, max: 42.0}
+  - {id: L_gh, body: distal_body, nodes: [g, h], initial: 51.082, min: 15.0, max: 70.0}
+  - {id: L_fh, body: distal_body, nodes: [f, h], initial: 55.872, min: 35.0, max: 80.0}
+  - {id: L_tip_rod, category: attachment_link, attachment: distal_output_rod, nodes: [h, hand_distal_contact], initial: 29.3, min: 5.0, max: 45.0}

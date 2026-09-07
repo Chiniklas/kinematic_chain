@@ -1,8 +1,8 @@
 schema_version: 1
 
 mechanism:
-  id: mechanism_2
-  name: Mechanism 2 source abstraction
+  id: mechanism_2_long_ad
+  name: Mechanism 2 - long tilted A-D mount
   model_kind: planar_body_joint_graph
   status: remeasured_geometry
   dimension_units: mm
@@ -13,11 +13,12 @@ mechanism:
   notes:
     - Layout coordinates are diagram coordinates only and are not dimensions.
     - Link lengths were overridden with the current design remeasurements supplied on 2026-08-13.
-    - The omitted AD measurement is 54 mm, rounded from the dimensioned plot value 53.845 mm.
+    - AD is 71.112 mm sloping 10.305 deg downward from A to D; it is the short_ad
+      mount extended by 50 mm at unchanged A height, so the two variants align in CAD.
     - Node IDs follow the dimensioned abstraction directly in the order A through H.
     - Rigid-body membership is ADE (ground), CDG (central), and FGH (distal).
     - Nodes F and G are distinct revolute joints; H is the fingertip/output reference.
-    - The combined abstraction uses the index finger as the nominal human geometry.
+    - The combined abstraction uses the middle finger as the nominal human geometry.
     - Human-hand bodies and attachment interfaces are external context and do not alter mechanism mobility.
 
 sources:
@@ -53,8 +54,8 @@ nodes:
     kind: revolute
     role: input crank endpoint
     fixed: false
-    layout: [0.0, 2.214286]
-    initial_position_mm: [0.0, 31.0]
+    layout: [0.0, 2.255318]
+    initial_position_mm: [0.0, 31.57445]
     photo_pixel: [802, 1091]
     confidence: high
   - id: c
@@ -62,8 +63,8 @@ nodes:
     kind: revolute
     role: loop 1 / loop 2 junction
     fixed: false
-    layout: [3.851185, 1.999991]
-    initial_position_mm: [53.916595, 27.999876]
+    layout: [3.559097, 1.194453]
+    initial_position_mm: [49.827358, 16.722342]
     photo_pixel: [1798, 1315]
     confidence: high
   - id: d
@@ -71,8 +72,8 @@ nodes:
     kind: revolute
     role: ADE-to-CDG revolute connection
     fixed: true
-    layout: [3.857143, 0.0]
-    initial_position_mm: [54.0, 0.0]
+    layout: [5.079429, 0.0]
+    initial_position_mm: [71.112, 0.0]
     photo_pixel: [1796, 1808]
     confidence: high
   - id: e
@@ -80,8 +81,8 @@ nodes:
     kind: revolute
     role: lower coupler ground pivot
     fixed: true
-    layout: [4.679894, 0.568401]
-    initial_position_mm: [65.518519, 7.957621]
+    layout: [4.532829, 0.936729]
+    initial_position_mm: [63.459603, 13.114208]
     photo_pixel: [2036, 1701]
     confidence: high
   - id: f
@@ -89,8 +90,8 @@ nodes:
     kind: revolute
     role: lower coupler / distal-body joint
     fixed: false
-    layout: [6.765627, 0.076917]
-    initial_position_mm: [94.718773, 1.076843]
+    layout: [6.647559, 2.857973]
+    initial_position_mm: [93.065831, 40.011628]
     photo_pixel: [2575, 1775]
     confidence: high
   - id: g
@@ -98,8 +99,8 @@ nodes:
     kind: revolute
     role: CDG-to-FGH revolute connection
     fixed: false
-    layout: [7.422452, 1.965986]
-    initial_position_mm: [103.914329, 27.523804]
+    layout: [5.258658, 4.162352]
+    initial_position_mm: [73.621207, 58.272925]
     photo_pixel: [2668, 1294]
     confidence: high
   - id: h
@@ -107,8 +108,8 @@ nodes:
     kind: reference
     role: mechanism output TCP
     fixed: false
-    layout: [10.780864, 0.751008]
-    initial_position_mm: [150.932098, 10.514118]
+    layout: [7.94431, 6.632276]
+    initial_position_mm: [111.220336, 92.851861]
     photo_pixel: [3464, 1538]
     confidence: high
 
@@ -192,75 +193,75 @@ dimensions:
   - id: L_ab
     body: input_crank
     nodes: [a, b]
-    value: 31
+    value: 31.574
     units: mm
     value_source: remeasured
   - id: L_bc
     body: loop_1_coupler
     nodes: [b, c]
-    value: 54
+    value: 51.994
     units: mm
     value_source: remeasured
   - id: L_cd
     body: central_body
     nodes: [c, d]
-    value: 28
+    value: 27.068
     units: mm
     value_source: remeasured
   - id: L_ad
     body: ground
     nodes: [a, d]
-    value: 54
+    value: 71.112
     units: mm
-    value_source: dimensioned_plot_rounded
+    value_source: cad_remeasured_2026_09
     optimizable: false
-    design_role: fixed_horizontal_ground_mount_baseline
+    design_role: fixed_tilted_ground_mount_baseline
   - id: L_ae
     body: ground
     nodes: [a, e]
-    value: 66
+    value: 64.8
     units: mm
     value_source: remeasured
   - id: L_de
     body: ground
     nodes: [d, e]
-    value: 14
+    value: 15.184
     units: mm
     value_source: remeasured
   - id: L_cg
     body: central_body
     nodes: [c, g]
-    value: 50
+    value: 47.881
     units: mm
     value_source: remeasured
   - id: L_dg
     body: central_body
     nodes: [d, g]
-    value: 57
+    value: 58.327
     units: mm
     value_source: remeasured
   - id: L_ef
     body: link_ef
     nodes: [e, f]
-    value: 30
+    value: 40.0
     units: mm
     value_source: remeasured
   - id: L_fg
     body: distal_body
     nodes: [f, g]
-    value: 28
+    value: 26.675
     units: mm
     value_source: remeasured
   - id: L_gh
     body: distal_body
     nodes: [g, h]
-    value: 50
+    value: 51.082
     units: mm
     value_source: remeasured
   - id: L_fh
     body: distal_body
     nodes: [f, h]
-    value: 57
+    value: 55.872
     units: mm
     value_source: remeasured
 
@@ -289,8 +290,8 @@ outputs:
 # Nominal human context for the combined exoskeleton abstraction. The finger is
 # represented by three rounded rectangles in its horizontal reference pose.
 human_hand_model:
-  id: nominal_index_finger
-  reference_finger: index
+  id: nominal_middle_finger
+  reference_finger: middle
   source_objective: ../../../src/co-optimization/config/objectives/index.yaml
   pose: mildly_curled
   nominal_flexion_deg:
@@ -306,10 +307,10 @@ human_hand_model:
   joints:
     - {id: hand_wrist_dorsal, position_mm: [-90.0, 0.0], kind: palm_reference}
     - {id: hand_mcp, node_index: 1, position_mm: [0.0, 0.0], kind: anatomical_revolute}
-    - {id: hand_pip, node_index: 2, position_mm: [39.993908, -0.698096], kind: anatomical_revolute}
-    - {id: hand_dip, node_index: 3, position_mm: [64.959646, -2.006495], kind: anatomical_revolute}
-    - {id: hand_distal_contact, attachment_index: 4, position_mm: [77.41208, -3.095942], kind: attachment_revolute}
-    - {id: hand_tip, position_mm: [89.864514, -4.185389], kind: terminal_reference}
+    - {id: hand_pip, node_index: 2, position_mm: [48.992537, -0.855168], kind: anatomical_revolute}
+    - {id: hand_dip, node_index: 3, position_mm: [75.955535, -2.268239], kind: anatomical_revolute}
+    - {id: hand_distal_contact, attachment_index: 4, position_mm: [89.404163, -3.444841], kind: attachment_revolute}
+    - {id: hand_tip, position_mm: [102.852791, -4.621444], kind: terminal_reference}
   palm:
     id: palm
     joints: [hand_wrist_dorsal, hand_mcp]
@@ -321,17 +322,17 @@ human_hand_model:
   phalanges:
     - id: proximal_phalanx
       joints: [hand_mcp, hand_pip]
-      length_mm: 40.0
+      length_mm: 49.0
       width_mm: 20.0
       shape: rounded_rectangle
     - id: middle_phalanx
       joints: [hand_pip, hand_dip]
-      length_mm: 25.0
+      length_mm: 27.0
       width_mm: 15.0
       shape: rounded_rectangle
     - id: distal_phalanx
       joints: [hand_dip, hand_tip]
-      length_mm: 25.0
+      length_mm: 27.0
       width_mm: 10.0
       shape: rounded_rectangle
 
@@ -370,11 +371,12 @@ exoskeleton_attachments:
     hand_reference: hand_mcp
     hand_interface: fixed_dorsal_mount
     location: upper_surface_of_first_joint
-    dorsal_clearance_mm: 2.0
+    dorsal_clearance_mm: 7.0
     clearance_control: upstream_manual_design_parameter
     optimizable: false
     alignment_member: [a, d]
-    alignment: horizontal
+    alignment: tilted
+    ad_tilt_deg: 10.305
     notes:
       - D is separated dorsally from J1 by the manually defined clearance.
       - Change dorsal_clearance_mm in the upstream nominal design, not in Adam.
@@ -386,7 +388,7 @@ exoskeleton_attachments:
     hand_reference: hand_distal_contact
     hand_interface: revolute
     connector: binary_rod
-    assumed_length_mm: 28.0
+    assumed_length_mm: 29.3
     previous_assumption_mm: 15.0
     value_source: retained_pre_fixed_R4_baseline
     surface: distal_phalanx_upper_dorsal

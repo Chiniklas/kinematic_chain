@@ -86,7 +86,8 @@ class MechanismSchemaTests(unittest.TestCase):
     def test_nominal_hand_and_attachment_interfaces(self) -> None:
         hand = self.data["human_hand_model"]
         phalanges = {row["id"]: row for row in hand["phalanges"]}
-        self.assertEqual(hand["reference_finger"], "index")
+        # long_ad targets the middle finger; short_ad targets the index
+        self.assertEqual(hand["reference_finger"], "middle")
         self.assertEqual(
             [row["objective"]["finger"] for row in self.data["finger_analysis_targets"]],
             ["index", "middle", "ring", "little"],
@@ -103,27 +104,28 @@ class MechanismSchemaTests(unittest.TestCase):
                 for row_id, row in phalanges.items()
             },
             {
-                "proximal_phalanx": (40.0, 20.0),
-                "middle_phalanx": (25.0, 15.0),
-                "distal_phalanx": (25.0, 10.0),
+                "proximal_phalanx": (49.0, 20.0),
+                "middle_phalanx": (27.0, 15.0),
+                "distal_phalanx": (27.0, 10.0),
             },
         )
         attachments = {row["id"]: row for row in self.data["exoskeleton_attachments"]}
         input_mount = attachments["dorsal_input_mount"]
         self.assertEqual(input_mount["mechanism_node"], "d")
         self.assertEqual(input_mount["hand_reference"], "hand_mcp")
-        self.assertEqual(input_mount["dorsal_clearance_mm"], 2.0)
+        self.assertEqual(input_mount["dorsal_clearance_mm"], 7.0)
         self.assertEqual(
             input_mount["clearance_control"], "upstream_manual_design_parameter"
         )
         self.assertFalse(input_mount["optimizable"])
         self.assertEqual(input_mount["alignment_member"], ["a", "d"])
-        self.assertEqual(input_mount["alignment"], "horizontal")
+        self.assertEqual(input_mount["alignment"], "tilted")
+        self.assertEqual(input_mount["ad_tilt_deg"], 10.305)
         output = attachments["distal_output_rod"]
         self.assertEqual(output["mechanism_node"], "h")
         self.assertEqual(output["hand_reference"], "hand_distal_contact")
         self.assertEqual(output["hand_interface"], "revolute")
-        self.assertEqual(output["assumed_length_mm"], 28.0)
+        self.assertEqual(output["assumed_length_mm"], 29.3)
         self.assertEqual(output["previous_assumption_mm"], 15.0)
         self.assertEqual(
             output["value_source"],
@@ -161,18 +163,18 @@ class MechanismSchemaTests(unittest.TestCase):
 
     def test_current_lengths_match_remeasured_design(self) -> None:
         expected = {
-            "L_ab": 31,
-            "L_bc": 54,
-            "L_cd": 28,
-            "L_ad": 54,
-            "L_ae": 66,
-            "L_de": 14,
-            "L_cg": 50,
-            "L_dg": 57,
-            "L_ef": 30,
-            "L_fg": 28,
-            "L_gh": 50,
-            "L_fh": 57,
+            "L_ab": 31.574,
+            "L_bc": 51.994,
+            "L_cd": 27.068,
+            "L_ad": 71.112,
+            "L_ae": 64.8,
+            "L_de": 15.184,
+            "L_cg": 47.881,
+            "L_dg": 58.327,
+            "L_ef": 40.0,
+            "L_fg": 26.675,
+            "L_gh": 51.082,
+            "L_fh": 55.872,
         }
         actual = {row["id"]: row["value"] for row in self.data["dimensions"]}
         self.assertEqual(actual, expected)
@@ -243,7 +245,9 @@ class MechanismSchemaTests(unittest.TestCase):
         result = sweep_workspace(self.data, q_min=0.0, q_max=90.0, steps=19)
         self.assertEqual(result.poses[0].q_deg, 0.0)
         self.assertGreater(result.poses[-1].q_deg, 60.0)
-        self.assertLess(result.poses[-1].q_deg, 90.0)
+        # Reaching the requested maximum is legitimate: the tilted long mount
+        # rotates through the full sweep, where the 54 mm horizontal one bound at 65.5 deg.
+        self.assertLessEqual(result.poses[-1].q_deg, 90.0)
         self.assertLess(max(pose.max_residual_mm for pose in result.poses), 1e-4)
         self.assertEqual(result.output_node, "h")
         self.assertLess(
