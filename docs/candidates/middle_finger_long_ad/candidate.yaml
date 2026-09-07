@@ -9,44 +9,44 @@ initialization:
   design_variables_shared_with_other_fingers: false
 initial_candidate_variables:
   L_ab:
-    value: 35.169536459893045
+    value: 34.530622170922875
     units: mm
   L_bc:
-    value: 57.08495829237751
+    value: 54.19328880084561
     units: mm
   L_cd:
-    value: 34.05869964139311
+    value: 26.287337027841403
     units: mm
   L_ae:
-    value: 83.65606158198719
+    value: 84.14795864736591
     units: mm
   L_de:
-    value: 17.627945550773713
+    value: 16.82145594829494
     units: mm
   L_cg:
-    value: 52.690157900342584
+    value: 55.41450837255654
     units: mm
   L_dg:
-    value: 59.861829066421876
+    value: 65.5324828979752
     units: mm
   L_ef:
-    value: 35.126957676920235
+    value: 36.549110534497245
     units: mm
   L_fg:
-    value: 18.0
+    value: 26.983190232676872
     units: mm
   L_gh:
-    value: 65.90294952439656
+    value: 58.49293663261707
     units: mm
   L_fh:
-    value: 59.53648126169097
+    value: 44.5232662856443
     units: mm
   L_tip_rod:
-    value: 31.63421996795834
+    value: 35.494330795138424
     units: mm
 fixed_upstream_parameters:
-  L_ad_mm: 71.112
-  ad_tilt_deg: 10.305
+  L_ad_mm: 68.0485
+  ad_tilt_deg: 10.7746
   dorsal_clearance_mm: 7.0
   distal_phalanx_width_mm: 10.0
 warning: Output-rod perpendicularity is the sole design objective. Fixed-contact rod
@@ -57,9 +57,9 @@ warning: Output-rod perpendicularity is the sole design objective. Fixed-contact
   and structural objectives remain disabled.
 constraint_acceptance:
   collision_free: true
-  minimum_signed_clearance_mm: 0.7976896145720254
+  minimum_signed_clearance_mm: 0.8026942746275214
   rod_closure_feasible: true
-  maximum_rod_closure_error_mm: 0.0773928419491341
+  maximum_rod_closure_error_mm: 0.09535848896238264
   rod_closure_tolerance_mm: 0.1
   hand_motion_feasible: true
   hand_motion_rule: 0 <= s <= 1, s[k+1] >= s[k], s[0]=0, and terminal s=1 within configured
@@ -82,172 +82,172 @@ optimizer:
   geometry_evaluator_device: cpu
   iterations_completed: 0
   converged: false
-  initial_total_loss: 0.5039211831853198
-  final_total_loss: 0.5039211831853198
+  initial_total_loss: 0.6298154281400434
+  final_total_loss: 0.6298154281400434
 motion_solution:
   middle_finger_design:
     prescribed_input_crank_deg:
     - 0.0
-    - 1.7002275810454217
-    - 3.4004551620908434
-    - 5.100682743136265
-    - 6.800910324181687
-    - 8.50113790522711
-    - 10.20136548627253
-    - 11.901593067317952
-    - 13.601820648363374
-    - 15.302048229408795
-    - 17.00227581045422
-    - 18.70250339149964
-    - 20.40273097254506
-    - 22.102958553590483
-    - 23.803186134635904
-    - 25.503413715681326
-    - 27.203641296726747
-    - 28.90386887777217
-    - 30.60409645881759
-    - 32.30432403986301
-    - 34.00455162090844
-    - 35.704779201953855
-    - 37.40500678299928
-    - 39.1052343640447
-    - 40.80546194509012
-    - 42.50568952613554
-    - 44.205917107180966
-    - 45.906144688226384
-    - 47.60637226927181
-    - 49.30659985031723
-    - 51.00682743136265
+    - 1.8008749835615512
+    - 3.6017499671231024
+    - 5.402624950684654
+    - 7.203499934246205
+    - 9.004374917807755
+    - 10.805249901369308
+    - 12.606124884930859
+    - 14.40699986849241
+    - 16.207874852053962
+    - 18.00874983561551
+    - 19.809624819177063
+    - 21.610499802738616
+    - 23.411374786300165
+    - 25.212249769861717
+    - 27.013124753423266
+    - 28.81399973698482
+    - 30.61487472054637
+    - 32.415749704107924
+    - 34.21662468766947
+    - 36.01749967123102
+    - 37.81837465479258
+    - 39.61924963835413
+    - 41.420124621915676
+    - 43.22099960547723
+    - 45.02187458903878
+    - 46.82274957260033
+    - 48.62362455616188
+    - 50.424499539723435
+    - 52.225374523284984
+    - 54.02624950684653
     passive_hand_curl_progress:
     - 0.0
-    - 0.0351438346785207
-    - 0.06941845250913596
-    - 0.10361149399156597
-    - 0.13780655897737648
-    - 0.17197360058016392
-    - 0.2060958887525649
-    - 0.24020712070215205
-    - 0.27432283280161135
-    - 0.30840697332612516
-    - 0.3424676730983944
-    - 0.37653566519899856
-    - 0.410569510297983
-    - 0.44457150925440525
-    - 0.4785454598499466
-    - 0.5124728624849506
-    - 0.5463455920888993
-    - 0.5801526728212414
-    - 0.6138703633277756
-    - 0.6474902485590776
-    - 0.6809967384970099
-    - 0.7143287877309618
-    - 0.7474883402317967
-    - 0.7804428678379037
-    - 0.8131191987519928
-    - 0.845470969259661
-    - 0.877470100590962
-    - 0.9090193519866
-    - 0.9399930220526824
-    - 0.9703570631143713
+    - 0.034214232425128575
+    - 0.06704017175411511
+    - 0.09951390799946837
+    - 0.1317951567565937
+    - 0.163994370270916
+    - 0.19622758371347926
+    - 0.22851920423436545
+    - 0.26091357490006684
+    - 0.2934456222209747
+    - 0.326139723299306
+    - 0.35904057964148
+    - 0.3921301576442665
+    - 0.425410995525934
+    - 0.4588866852597799
+    - 0.49255163840292665
+    - 0.5264123767782489
+    - 0.5604342046703804
+    - 0.5945983122863459
+    - 0.6288808496739315
+    - 0.6632514767287737
+    - 0.697678951157898
+    - 0.7321109959030443
+    - 0.7664984238050716
+    - 0.8007853503159571
+    - 0.8349081893089721
+    - 0.8687854085826417
+    - 0.9023316584505002
+    - 0.9354530951096924
+    - 0.9680512540790865
     - 1.0
 candidate_variables:
   L_ab:
-    value: 35.169536459893045
+    value: 34.530622170922875
     units: mm
     bounds:
     - 20.0
     - 45.0
   L_bc:
-    value: 57.08495829237751
+    value: 54.19328880084561
     units: mm
     bounds:
     - 15.0
     - 70.0
   L_cd:
-    value: 34.05869964139311
+    value: 26.287337027841403
     units: mm
     bounds:
     - 18.0
     - 42.0
   L_ae:
-    value: 83.65606158198719
+    value: 84.14795864736591
     units: mm
     bounds:
     - 45.0
     - 90.0
   L_de:
-    value: 17.627945550773713
+    value: 16.82145594829494
     units: mm
     bounds:
     - 7.0
     - 25.0
   L_cg:
-    value: 52.690157900342584
+    value: 55.41450837255654
     units: mm
     bounds:
     - 15.0
     - 70.0
   L_dg:
-    value: 59.861829066421876
+    value: 65.5324828979752
     units: mm
     bounds:
     - 35.0
     - 80.0
   L_ef:
-    value: 35.126957676920235
+    value: 36.549110534497245
     units: mm
     bounds:
     - 18.0
     - 45.0
   L_fg:
-    value: 18.0
+    value: 26.983190232676872
     units: mm
     bounds:
     - 18.0
     - 42.0
   L_gh:
-    value: 65.90294952439656
+    value: 58.49293663261707
     units: mm
     bounds:
     - 15.0
     - 70.0
   L_fh:
-    value: 59.53648126169097
+    value: 44.5232662856443
     units: mm
     bounds:
     - 35.0
     - 80.0
   L_tip_rod:
-    value: 31.63421996795834
+    value: 35.494330795138424
     units: mm
     bounds:
     - 5.0
     - 45.0
 objective_losses:
-  middle_finger_design: 0.5039211831853198
+  middle_finger_design: 0.6298154281400434
 component_losses:
   middle_finger_design:
-    task_space_reachability: 7.887250186171487e-06
-    endpoint_reachability_diagnostic: 0.00011979344253346625
-    hand_mechanism_non_collision: 0.020556925899778866
-    output_link_perpendicularity: 0.5308881838076569
+    task_space_reachability: 1.180286294608867e-05
+    endpoint_reachability_diagnostic: 0.00018186751540247273
+    hand_mechanism_non_collision: 0.02132397253485807
+    output_link_perpendicularity: 0.5483597051031799
     guidance_weight_task_space_reachability: 5.0
     guidance_weight_hand_mechanism_non_collision: 20.0
     weight_output_link_perpendicularity: 1.0
-    weighted_closure_constraint_guidance: 8.573098028447269e-07
-    weighted_collision_constraint_guidance: 0.008937793869469073
-    weighted_output_link_perpendicularity: 0.011541047474079498
-    output_rod_length: 1.111915414423527
+    weighted_closure_constraint_guidance: 1.2829198854444207e-06
+    weighted_collision_constraint_guidance: 0.009271292406460031
+    weighted_output_link_perpendicularity: 0.011920863154416953
+    output_rod_length: 1.3998305762163463
     weight_output_rod_length: 20.0
-    output_rod_length_mm: 31.63421996795834
-    weighted_output_rod_length: 0.4834414845319683
-    minimum_signed_clearance_mm: 0.7976896145720254
+    output_rod_length_mm: 35.494330795138424
+    weighted_output_rod_length: 0.608621989659281
+    minimum_signed_clearance_mm: 0.8026942746275214
     collision_free_pose_fraction: 1.0
     collision_evaluated_pose_count: 31.0
     collision_requested_pose_count: 31.0
     whole_intended_workspace_collision_free: 1.0
-    maximum_perpendicular_deviation_deg: 54.6023020033929
-    maximum_workspace_rod_closure_error_mm: 0.0773928419491341
+    maximum_perpendicular_deviation_deg: 54.85318372326767
+    maximum_workspace_rod_closure_error_mm: 0.09535848896238264
     rod_closure_within_tolerance_fraction: 1.0
     rod_closure_tolerance_mm: 0.1
     whole_intended_workspace_rod_closure_feasible: 1.0
@@ -258,6 +258,6 @@ component_losses:
     horizontal_r4_y_mm: -7.0
     curled_r4_x_mm: 16.5155396433738
     curled_r4_y_mm: -68.88087819708053
-    horizontal_fixed_contact_rod_error_mm: 0.0773928419491341
-    curled_fixed_contact_rod_error_mm: 0.000141921491195518
-    curled_best_input_deg: 51.00682743136265
+    horizontal_fixed_contact_rod_error_mm: 0.09535848896238264
+    curled_fixed_contact_rod_error_mm: 0.00036654185952755824
+    curled_best_input_deg: 54.02624950684653

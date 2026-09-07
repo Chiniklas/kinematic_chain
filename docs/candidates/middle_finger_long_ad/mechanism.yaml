@@ -13,8 +13,10 @@ mechanism:
   - Layout coordinates are diagram coordinates only and are not dimensions.
   - Link lengths were overridden with the current design remeasurements supplied on
     2026-08-13.
-  - AD is 71.112 mm sloping 10.305 deg downward from A to D; it is the short_ad mount
-    extended by 50 mm at unchanged A height, so the two variants align in CAD.
+  - AD is 68.0485 mm sloping 10.7746 deg downward from A to D. It sits 50 mm further
+    back HORIZONTALLY than the short_ad mount at unchanged A height, which is what
+    the two variants share in CAD; the A-D lengths themselves differ by 46.94 mm,
+    not 50.
   - Node IDs follow the dimensioned abstraction directly in the order A through H.
   - Rigid-body membership is ADE (ground), CDG (central), and FGH (distal).
   - Nodes F and G are distinct revolute joints; H is the fingertip/output reference.
@@ -51,7 +53,7 @@ nodes:
   - 0.0
   - 0.0
   initial_position_mm:
-  - -71.112
+  - -68.0485
   - 0.0
   photo_pixel:
   - 844
@@ -66,8 +68,8 @@ nodes:
   - 0.0
   - 2.255318
   initial_position_mm:
-  - -71.112
-  - 35.169536459893045
+  - -68.0485
+  - 34.530622170922875
   photo_pixel:
   - 802
   - 1091
@@ -81,8 +83,8 @@ nodes:
   - 3.559097
   - 1.194453
   initial_position_mm:
-  - -14.182053232251263
-  - 30.96553547704645
+  - -15.51518572081109
+  - 21.22034637003037
   photo_pixel:
   - 1798
   - 1315
@@ -111,8 +113,8 @@ nodes:
   - 4.532829
   - 0.936729
   initial_position_mm:
-  - 11.465544711639325
-  - 13.389762836078983
+  - 15.924812538471642
+  - 5.418646125644679
   photo_pixel:
   - 2036
   - 1701
@@ -126,8 +128,8 @@ nodes:
   - 6.647559
   - 2.857973
   initial_position_mm:
-  - 41.764987254371775
-  - 31.16184592264485
+  - 34.0312452491455
+  - 37.167576428203496
   photo_pixel:
   - 2575
   - 1775
@@ -141,8 +143,8 @@ nodes:
   - 5.258658
   - 4.162352
   initial_position_mm:
-  - 35.64756219476809
-  - 48.09043448283298
+  - 22.483416280184894
+  - 61.55487232661058
   photo_pixel:
   - 2668
   - 1294
@@ -156,8 +158,8 @@ nodes:
   - 7.94431
   - 6.632276
   initial_position_mm:
-  - 100.84817193493612
-  - 38.49464136681251
+  - 78.10747390881718
+  - 43.46101013983713
   photo_pixel:
   - 3464
   - 1538
@@ -268,7 +270,7 @@ dimensions:
   nodes:
   - a
   - b
-  value: 35.169536459893045
+  value: 34.530622170922875
   units: mm
   value_source: co_optimization_candidate
 - id: L_bc
@@ -276,7 +278,7 @@ dimensions:
   nodes:
   - b
   - c
-  value: 57.08495829237751
+  value: 54.19328880084561
   units: mm
   value_source: co_optimization_candidate
 - id: L_cd
@@ -284,7 +286,7 @@ dimensions:
   nodes:
   - c
   - d
-  value: 34.05869964139311
+  value: 26.287337027841403
   units: mm
   value_source: co_optimization_candidate
 - id: L_ad
@@ -292,7 +294,7 @@ dimensions:
   nodes:
   - a
   - d
-  value: 71.112
+  value: 68.0485
   units: mm
   value_source: fixed_nominal_design
   optimizable: false
@@ -302,7 +304,7 @@ dimensions:
   nodes:
   - a
   - e
-  value: 83.65606158198719
+  value: 84.14795864736591
   units: mm
   value_source: co_optimization_candidate
 - id: L_de
@@ -310,7 +312,7 @@ dimensions:
   nodes:
   - d
   - e
-  value: 17.627945550773713
+  value: 16.82145594829494
   units: mm
   value_source: co_optimization_candidate
 - id: L_cg
@@ -318,7 +320,7 @@ dimensions:
   nodes:
   - c
   - g
-  value: 52.690157900342584
+  value: 55.41450837255654
   units: mm
   value_source: co_optimization_candidate
 - id: L_dg
@@ -326,7 +328,7 @@ dimensions:
   nodes:
   - d
   - g
-  value: 59.861829066421876
+  value: 65.5324828979752
   units: mm
   value_source: co_optimization_candidate
 - id: L_ef
@@ -334,7 +336,7 @@ dimensions:
   nodes:
   - e
   - f
-  value: 35.126957676920235
+  value: 36.549110534497245
   units: mm
   value_source: co_optimization_candidate
 - id: L_fg
@@ -342,7 +344,7 @@ dimensions:
   nodes:
   - f
   - g
-  value: 18.0
+  value: 26.983190232676872
   units: mm
   value_source: co_optimization_candidate
 - id: L_gh
@@ -350,7 +352,7 @@ dimensions:
   nodes:
   - g
   - h
-  value: 65.90294952439656
+  value: 58.49293663261707
   units: mm
   value_source: co_optimization_candidate
 - id: L_fh
@@ -358,7 +360,7 @@ dimensions:
   nodes:
   - f
   - h
-  value: 59.53648126169097
+  value: 44.5232662856443
   units: mm
   value_source: co_optimization_candidate
 loops:
@@ -509,7 +511,7 @@ exoskeleton_attachments:
   - a
   - d
   alignment: tilted
-  ad_tilt_deg: 10.305
+  ad_tilt_deg: 10.7746
   notes:
   - D is separated dorsally from J1 by the manually defined clearance.
   - Change dorsal_clearance_mm in the upstream nominal design, not in Adam.
@@ -521,7 +523,7 @@ exoskeleton_attachments:
   hand_reference: hand_distal_contact
   hand_interface: revolute
   connector: binary_rod
-  assumed_length_mm: 31.63421996795834
+  assumed_length_mm: 35.494330795138424
   previous_assumption_mm: 15.0
   value_source: co_optimization_candidate
   surface: distal_phalanx_upper_dorsal
@@ -610,9 +612,9 @@ optimization_provenance:
   geometry_evaluator_device: cpu
   objective_status: perpendicularity_objective_with_hard_geometry_constraints
   collision_free: true
-  minimum_signed_clearance_mm: 0.7976896145720254
+  minimum_signed_clearance_mm: 0.8026942746275214
   rod_closure_feasible: true
-  maximum_rod_closure_error_mm: 0.0773928419491341
+  maximum_rod_closure_error_mm: 0.09535848896238264
   rod_closure_tolerance_mm: 0.1
   hand_motion_feasible: true
   intended_workspace_mapping: crank_driven_passive_monotone_hand_curl
@@ -621,68 +623,68 @@ optimization_provenance:
   hand_crank_ratio: null
   prescribed_input_schedule_deg:
   - 0.0
-  - 1.7002275810454217
-  - 3.4004551620908434
-  - 5.100682743136265
-  - 6.800910324181687
-  - 8.50113790522711
-  - 10.20136548627253
-  - 11.901593067317952
-  - 13.601820648363374
-  - 15.302048229408795
-  - 17.00227581045422
-  - 18.70250339149964
-  - 20.40273097254506
-  - 22.102958553590483
-  - 23.803186134635904
-  - 25.503413715681326
-  - 27.203641296726747
-  - 28.90386887777217
-  - 30.60409645881759
-  - 32.30432403986301
-  - 34.00455162090844
-  - 35.704779201953855
-  - 37.40500678299928
-  - 39.1052343640447
-  - 40.80546194509012
-  - 42.50568952613554
-  - 44.205917107180966
-  - 45.906144688226384
-  - 47.60637226927181
-  - 49.30659985031723
-  - 51.00682743136265
+  - 1.8008749835615512
+  - 3.6017499671231024
+  - 5.402624950684654
+  - 7.203499934246205
+  - 9.004374917807755
+  - 10.805249901369308
+  - 12.606124884930859
+  - 14.40699986849241
+  - 16.207874852053962
+  - 18.00874983561551
+  - 19.809624819177063
+  - 21.610499802738616
+  - 23.411374786300165
+  - 25.212249769861717
+  - 27.013124753423266
+  - 28.81399973698482
+  - 30.61487472054637
+  - 32.415749704107924
+  - 34.21662468766947
+  - 36.01749967123102
+  - 37.81837465479258
+  - 39.61924963835413
+  - 41.420124621915676
+  - 43.22099960547723
+  - 45.02187458903878
+  - 46.82274957260033
+  - 48.62362455616188
+  - 50.424499539723435
+  - 52.225374523284984
+  - 54.02624950684653
   passive_hand_progress_schedule:
   - 0.0
-  - 0.0351438346785207
-  - 0.06941845250913596
-  - 0.10361149399156597
-  - 0.13780655897737648
-  - 0.17197360058016392
-  - 0.2060958887525649
-  - 0.24020712070215205
-  - 0.27432283280161135
-  - 0.30840697332612516
-  - 0.3424676730983944
-  - 0.37653566519899856
-  - 0.410569510297983
-  - 0.44457150925440525
-  - 0.4785454598499466
-  - 0.5124728624849506
-  - 0.5463455920888993
-  - 0.5801526728212414
-  - 0.6138703633277756
-  - 0.6474902485590776
-  - 0.6809967384970099
-  - 0.7143287877309618
-  - 0.7474883402317967
-  - 0.7804428678379037
-  - 0.8131191987519928
-  - 0.845470969259661
-  - 0.877470100590962
-  - 0.9090193519866
-  - 0.9399930220526824
-  - 0.9703570631143713
+  - 0.034214232425128575
+  - 0.06704017175411511
+  - 0.09951390799946837
+  - 0.1317951567565937
+  - 0.163994370270916
+  - 0.19622758371347926
+  - 0.22851920423436545
+  - 0.26091357490006684
+  - 0.2934456222209747
+  - 0.326139723299306
+  - 0.35904057964148
+  - 0.3921301576442665
+  - 0.425410995525934
+  - 0.4588866852597799
+  - 0.49255163840292665
+  - 0.5264123767782489
+  - 0.5604342046703804
+  - 0.5945983122863459
+  - 0.6288808496739315
+  - 0.6632514767287737
+  - 0.697678951157898
+  - 0.7321109959030443
+  - 0.7664984238050716
+  - 0.8007853503159571
+  - 0.8349081893089721
+  - 0.8687854085826417
+  - 0.9023316584505002
+  - 0.9354530951096924
+  - 0.9680512540790865
   - 1.0
-  terminal_input_deg: 51.00682743136265
+  terminal_input_deg: 54.02624950684653
   collision_evaluation_poses: 31
   promoted_to_nominal: false

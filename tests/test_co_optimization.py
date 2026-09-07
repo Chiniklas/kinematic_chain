@@ -105,7 +105,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
         )
         self.assertNotIn("L_ad", configured)
         self.assertEqual(fixed_ids, ["L_ad"])
-        self.assertEqual(dimensions["L_ad"], 71.112)
+        self.assertEqual(dimensions["L_ad"], 68.049)
         self.assertFalse(next(
             row for row in nominal_data["dimensions"] if row["id"] == "L_ad"
         )["optimizable"])
@@ -226,7 +226,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                 self.assertEqual(len(variables), 12)
                 self.assertEqual(set(variables), set(initial_variables))
                 self.assertNotIn("L_ad", variables)
-                self.assertEqual(candidate["fixed_upstream_parameters"]["L_ad_mm"], 71.112)
+                self.assertEqual(candidate["fixed_upstream_parameters"]["L_ad_mm"], 68.049)
                 self.assertTrue(all(row["units"] == "mm" for row in variables.values()))
                 materialized = yaml.safe_load(
                     (candidate_dir / "mechanism.yaml").read_text(encoding="utf-8")
@@ -234,7 +234,7 @@ class CoOptimizationSkeletonTests(unittest.TestCase):
                 materialized_ad = next(
                     row for row in materialized["dimensions"] if row["id"] == "L_ad"
                 )
-                self.assertEqual(materialized_ad["value"], 71.112)
+                self.assertEqual(materialized_ad["value"], 68.049)
                 self.assertEqual(materialized_ad["value_source"], "fixed_nominal_design")
                 components = candidate["component_losses"][
                     f"{finger}_finger_design"

@@ -113,7 +113,10 @@ finger_problems:
 
 adam:
   iterations: 300
-  learning_rate: 0.4
+  # 0.4 overshoots: from the shipped geometry the first step lands outside the
+  # assembling region, where the finite-difference gradient is flat and the run
+  # stops immediately. Every feasible design found so far used 0.05.
+  learning_rate: 0.05
   beta1: 0.9
   beta2: 0.999
   epsilon: 1.0e-8

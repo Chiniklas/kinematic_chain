@@ -120,12 +120,12 @@ class MechanismSchemaTests(unittest.TestCase):
         self.assertFalse(input_mount["optimizable"])
         self.assertEqual(input_mount["alignment_member"], ["a", "d"])
         self.assertEqual(input_mount["alignment"], "tilted")
-        self.assertEqual(input_mount["ad_tilt_deg"], 10.305)
+        self.assertEqual(input_mount["ad_tilt_deg"], 10.7746)
         output = attachments["distal_output_rod"]
         self.assertEqual(output["mechanism_node"], "h")
         self.assertEqual(output["hand_reference"], "hand_distal_contact")
         self.assertEqual(output["hand_interface"], "revolute")
-        self.assertEqual(output["assumed_length_mm"], 29.3)
+        self.assertEqual(output["assumed_length_mm"], 35.494)
         self.assertEqual(output["previous_assumption_mm"], 15.0)
         self.assertEqual(
             output["value_source"],
@@ -163,18 +163,18 @@ class MechanismSchemaTests(unittest.TestCase):
 
     def test_current_lengths_match_remeasured_design(self) -> None:
         expected = {
-            "L_ab": 31.574,
-            "L_bc": 51.994,
-            "L_cd": 27.068,
-            "L_ad": 71.112,
-            "L_ae": 64.8,
-            "L_de": 15.184,
-            "L_cg": 47.881,
-            "L_dg": 58.327,
-            "L_ef": 40.0,
-            "L_fg": 26.675,
-            "L_gh": 51.082,
-            "L_fh": 55.872,
+            "L_ab": 34.531,
+            "L_bc": 54.193,
+            "L_cd": 26.287,
+            "L_ad": 68.049,
+            "L_ae": 84.148,
+            "L_de": 16.821,
+            "L_cg": 55.415,
+            "L_dg": 65.532,
+            "L_ef": 36.549,
+            "L_fg": 26.983,
+            "L_gh": 58.493,
+            "L_fh": 44.523,
         }
         actual = {row["id"]: row["value"] for row in self.data["dimensions"]}
         self.assertEqual(actual, expected)

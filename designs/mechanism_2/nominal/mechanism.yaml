@@ -13,8 +13,9 @@ mechanism:
   notes:
     - Layout coordinates are diagram coordinates only and are not dimensions.
     - Link lengths were overridden with the current design remeasurements supplied on 2026-08-13.
-    - AD is 71.112 mm sloping 10.305 deg downward from A to D; it is the short_ad
-      mount extended by 50 mm at unchanged A height, so the two variants align in CAD.
+    - AD is 68.0485 mm sloping 10.7746 deg downward from A to D. It sits 50 mm further
+      back HORIZONTALLY than the short_ad mount at unchanged A height, which is what the
+      two variants share in CAD; the A-D lengths themselves differ by 46.94 mm, not 50.
     - Node IDs follow the dimensioned abstraction directly in the order A through H.
     - Rigid-body membership is ADE (ground), CDG (central), and FGH (distal).
     - Nodes F and G are distinct revolute joints; H is the fingertip/output reference.
@@ -54,8 +55,8 @@ nodes:
     kind: revolute
     role: input crank endpoint
     fixed: false
-    layout: [0.0, 2.255318]
-    initial_position_mm: [0.0, 31.57445]
+    layout: [0.0, 2.466473]
+    initial_position_mm: [0.0, 34.530622]
     photo_pixel: [802, 1091]
     confidence: high
   - id: c
@@ -63,8 +64,8 @@ nodes:
     kind: revolute
     role: loop 1 / loop 2 junction
     fixed: false
-    layout: [3.559097, 1.194453]
-    initial_position_mm: [49.827358, 16.722342]
+    layout: [3.75238, 1.515739]
+    initial_position_mm: [52.533314, 21.220346]
     photo_pixel: [1798, 1315]
     confidence: high
   - id: d
@@ -72,8 +73,8 @@ nodes:
     kind: revolute
     role: ADE-to-CDG revolute connection
     fixed: true
-    layout: [5.079429, 0.0]
-    initial_position_mm: [71.112, 0.0]
+    layout: [4.860607, 0.0]
+    initial_position_mm: [68.0485, 0.0]
     photo_pixel: [1796, 1808]
     confidence: high
   - id: e
@@ -81,8 +82,8 @@ nodes:
     kind: revolute
     role: lower coupler ground pivot
     fixed: true
-    layout: [4.532829, 0.936729]
-    initial_position_mm: [63.459603, 13.114208]
+    layout: [5.998094, 0.387046]
+    initial_position_mm: [83.973313, 5.418646]
     photo_pixel: [2036, 1701]
     confidence: high
   - id: f
@@ -90,8 +91,8 @@ nodes:
     kind: revolute
     role: lower coupler / distal-body joint
     fixed: false
-    layout: [6.647559, 2.857973]
-    initial_position_mm: [93.065831, 40.011628]
+    layout: [7.29141, 2.654827]
+    initial_position_mm: [102.079745, 37.167576]
     photo_pixel: [2575, 1775]
     confidence: high
   - id: g
@@ -99,8 +100,8 @@ nodes:
     kind: revolute
     role: CDG-to-FGH revolute connection
     fixed: false
-    layout: [5.258658, 4.162352]
-    initial_position_mm: [73.621207, 58.272925]
+    layout: [6.466565, 4.396777]
+    initial_position_mm: [90.531916, 61.554872]
     photo_pixel: [2668, 1294]
     confidence: high
   - id: h
@@ -108,8 +109,8 @@ nodes:
     kind: reference
     role: mechanism output TCP
     fixed: false
-    layout: [7.94431, 6.632276]
-    initial_position_mm: [111.220336, 92.851861]
+    layout: [10.439712, 3.104358]
+    initial_position_mm: [146.155974, 43.46101]
     photo_pixel: [3464, 1538]
     confidence: high
 
@@ -193,25 +194,25 @@ dimensions:
   - id: L_ab
     body: input_crank
     nodes: [a, b]
-    value: 31.574
+    value: 34.531
     units: mm
     value_source: remeasured
   - id: L_bc
     body: loop_1_coupler
     nodes: [b, c]
-    value: 51.994
+    value: 54.193
     units: mm
     value_source: remeasured
   - id: L_cd
     body: central_body
     nodes: [c, d]
-    value: 27.068
+    value: 26.287
     units: mm
     value_source: remeasured
   - id: L_ad
     body: ground
     nodes: [a, d]
-    value: 71.112
+    value: 68.049
     units: mm
     value_source: cad_remeasured_2026_09
     optimizable: false
@@ -219,49 +220,49 @@ dimensions:
   - id: L_ae
     body: ground
     nodes: [a, e]
-    value: 64.8
+    value: 84.148
     units: mm
     value_source: remeasured
   - id: L_de
     body: ground
     nodes: [d, e]
-    value: 15.184
+    value: 16.821
     units: mm
     value_source: remeasured
   - id: L_cg
     body: central_body
     nodes: [c, g]
-    value: 47.881
+    value: 55.415
     units: mm
     value_source: remeasured
   - id: L_dg
     body: central_body
     nodes: [d, g]
-    value: 58.327
+    value: 65.532
     units: mm
     value_source: remeasured
   - id: L_ef
     body: link_ef
     nodes: [e, f]
-    value: 40.0
+    value: 36.549
     units: mm
     value_source: remeasured
   - id: L_fg
     body: distal_body
     nodes: [f, g]
-    value: 26.675
+    value: 26.983
     units: mm
     value_source: remeasured
   - id: L_gh
     body: distal_body
     nodes: [g, h]
-    value: 51.082
+    value: 58.493
     units: mm
     value_source: remeasured
   - id: L_fh
     body: distal_body
     nodes: [f, h]
-    value: 55.872
+    value: 44.523
     units: mm
     value_source: remeasured
 
@@ -376,7 +377,7 @@ exoskeleton_attachments:
     optimizable: false
     alignment_member: [a, d]
     alignment: tilted
-    ad_tilt_deg: 10.305
+    ad_tilt_deg: 10.7746
     notes:
       - D is separated dorsally from J1 by the manually defined clearance.
       - Change dorsal_clearance_mm in the upstream nominal design, not in Adam.
@@ -388,7 +389,7 @@ exoskeleton_attachments:
     hand_reference: hand_distal_contact
     hand_interface: revolute
     connector: binary_rod
-    assumed_length_mm: 29.3
+    assumed_length_mm: 35.494
     previous_assumption_mm: 15.0
     value_source: retained_pre_fixed_R4_baseline
     surface: distal_phalanx_upper_dorsal
