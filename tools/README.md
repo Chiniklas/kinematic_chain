@@ -81,6 +81,18 @@ Writes a real candidate directory with a self-contained `mechanism.yaml`, which
 GIF — note that `run_optimization.sh` runs the analysis but not the animation, so
 its output directories contain no GIF unless you render one.
 
+## `stack_gifs.py` — compare two designs side by side
+
+```bash
+python3 tools/stack_gifs.py --out runs/compare.gif \
+    --gif runs/a/design_animation.gif --label "short_ad" \
+    --gif runs/b/design_animation.gif --label "long_ad"
+```
+
+Pairs frames by index and stacks them vertically. Inputs are centred rather than
+scaled, so both mechanisms keep the same millimetre scale on screen and the
+comparison is not visually misleading.
+
 ## Two behaviours worth knowing before you tune anything
 
 **A feasible design is a trap.** Candidate ranking prefers "most constraints
