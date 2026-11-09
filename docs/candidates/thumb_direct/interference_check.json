@@ -1,0 +1,9 @@
+{
+  "sampled_poses": 13,
+  "narrow_phase_pair_checks": 517,
+  "interference_volume_threshold_mm3": 0.0001,
+  "interferences": [],
+  "maximum_joint_pitch_error_mm": 8.526512829121202e-14,
+  "excluded": "human context; no real threads, deformation, joint tolerances, continuous swept-volume certification",
+  "note": "Hardware pins / spacers and motor envelope are conceptual dimensions."
+}

@@ -1,0 +1,33 @@
+{
+  "mcp_range": [
+    1.9999999999977276,
+    45.000862657032926
+  ],
+  "ip_range": [
+    3.0000000000056355,
+    59.99757041251932
+  ],
+  "endpoint_angles": [
+    45.000862657032926,
+    59.99757041251932
+  ],
+  "minimum_mcp_increment": 0.04114247391240511,
+  "minimum_ip_increment": 0.006835982571332444,
+  "r_range": [
+    43.589494919106684,
+    49.98355171159291
+  ],
+  "circle_violation": 0.0,
+  "maximum_target_position_error": 0.07686001050523861,
+  "sample_count": 1001,
+  "maximum_direct_closure_error_mm": 1.5888218580782548e-14,
+  "maximum_rigid_pitch_error_mm": 9.947598300641403e-14,
+  "minimum_transmission_triangle_sine": {
+    "BCD": 0.8496121676592028,
+    "EFG": 0.9045423813382604
+  },
+  "motor_travel_deg": 60.39209996375397,
+  "thumb_minimum_jacobian_determinant_mm2": 31.40157374582523,
+  "model": "fixed MCP root; distal cuff midpoint; downward continuous 2R branch; no HR4 rod",
+  "initial_AB_angle_relative_AD_deg": 115.08972150565054
+}

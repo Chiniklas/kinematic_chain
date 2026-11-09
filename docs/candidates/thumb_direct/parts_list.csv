@@ -1,0 +1,26 @@
+name,kind,info,volume_mm3,valid,color
+01_servo_carrier_ADE_and_hinge_rotor,custom,new ADE hole pattern; provisional orthogonal palm-hinge interface,4338.78544048265,True,#aeb5bf
+02_input_AB_servo_disc,custom,AB pitch; reference horn pattern radius 6 mm,512.3556975501164,True,#426da9
+03_coupler_BC,custom,,577.3419275856497,True,#74a2b5
+04_rocker_CDG,custom,,1795.375696715464,True,#ced4dc
+05_coupler_EF,custom,,1761.2541086194299,True,#e4ac62
+06_output_FGH,custom,,2045.5837478209326,True,#ce714d
+08_distal_saddle_R4,custom,22 mm provisional inner width; strap slots,2304.6832163535714,True,#b18dc3
+09_DC15_A01_reference_envelope,reference_envelope,23 mm axial x 34 x 20 mm envelope measured from source STL; not exact case detail,16016.796069199834,True,#e7b633
+10_servo_horn_reference,reference_envelope,"simplified horn, spline omitted",388.2812170296134,True,#3c4149
+11_palm_hinge_clevis_interface,custom,provisional 3 mm hinge pin and two 3.2 mm mounting holes; palm placement undecided,2062.3501118885556,True,#aeb5bf
+12_palm_hinge_pin,hardware_placeholder,,127.23450247038666,True,#8d97a0
+pin_B,hardware_placeholder,,112.39047718217483,True,#8d97a0
+pin_C,hardware_placeholder,,82.93804605477055,True,#8d97a0
+pin_D,hardware_placeholder,,198.54865570687488,True,#8d97a0
+pin_E,hardware_placeholder,,120.63715789784806,True,#8d97a0
+pin_F,hardware_placeholder,,207.34511513692638,True,#8d97a0
+pin_G,hardware_placeholder,,129.4336173278995,True,#8d97a0
+pin_H_direct_R4,hardware_placeholder,,76.65486074759097,True,#8d97a0
+spacer_D,hardware_placeholder,,217.27411871859692,True,#b5a071
+spacer_E,hardware_placeholder,,73.9656574361181,True,#b5a071
+spacer_G,hardware_placeholder,,99.39135217978384,True,#b5a071
+motor_standoff_1,hardware_placeholder,,32.986722862692844,True,#8d97a0
+motor_standoff_2,hardware_placeholder,,32.98672286269281,True,#8d97a0
+motor_standoff_3,hardware_placeholder,,32.986722862692844,True,#8d97a0
+motor_standoff_4,hardware_placeholder,,32.98672286269284,True,#8d97a0

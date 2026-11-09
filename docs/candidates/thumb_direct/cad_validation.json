@@ -1,0 +1,226 @@
+{
+  "units": "mm",
+  "reference_commit": "4d44b5aa750dcf5d5705079bb691e2836ea306ec",
+  "states": {
+    "straight": {
+      "q_deg": 0.0,
+      "curl_progress": 0.0,
+      "closure_error_mm": 0.0,
+      "hardware_solids": 25
+    },
+    "half_curl": {
+      "q_deg": 30.196049981876985,
+      "curl_progress": 0.5,
+      "closure_error_mm": 1.0048591735576161e-14,
+      "hardware_solids": 25
+    },
+    "full_curl": {
+      "q_deg": 60.39209996375397,
+      "curl_progress": 1.0,
+      "closure_error_mm": 1.4210854715202004e-14,
+      "hardware_solids": 25
+    }
+  },
+  "parts": [
+    {
+      "name": "01_servo_carrier_ADE_and_hinge_rotor",
+      "color": "#aeb5bf",
+      "kind": "custom",
+      "info": "new ADE hole pattern; provisional orthogonal palm-hinge interface",
+      "volume_mm3": 4338.78544048265,
+      "valid": true
+    },
+    {
+      "name": "02_input_AB_servo_disc",
+      "color": "#426da9",
+      "kind": "custom",
+      "info": "AB pitch; reference horn pattern radius 6 mm",
+      "volume_mm3": 512.3556975501164,
+      "valid": true
+    },
+    {
+      "name": "03_coupler_BC",
+      "color": "#74a2b5",
+      "kind": "custom",
+      "info": "",
+      "volume_mm3": 577.3419275856497,
+      "valid": true
+    },
+    {
+      "name": "04_rocker_CDG",
+      "color": "#ced4dc",
+      "kind": "custom",
+      "info": "",
+      "volume_mm3": 1795.375696715464,
+      "valid": true
+    },
+    {
+      "name": "05_coupler_EF",
+      "color": "#e4ac62",
+      "kind": "custom",
+      "info": "",
+      "volume_mm3": 1761.2541086194299,
+      "valid": true
+    },
+    {
+      "name": "06_output_FGH",
+      "color": "#ce714d",
+      "kind": "custom",
+      "info": "",
+      "volume_mm3": 2045.5837478209326,
+      "valid": true
+    },
+    {
+      "name": "08_distal_saddle_R4",
+      "color": "#b18dc3",
+      "kind": "custom",
+      "info": "22 mm provisional inner width; strap slots",
+      "volume_mm3": 2304.6832163535714,
+      "valid": true
+    },
+    {
+      "name": "09_DC15_A01_reference_envelope",
+      "color": "#e7b633",
+      "kind": "reference_envelope",
+      "info": "23 mm axial x 34 x 20 mm envelope measured from source STL; not exact case detail",
+      "volume_mm3": 16016.796069199834,
+      "valid": true
+    },
+    {
+      "name": "10_servo_horn_reference",
+      "color": "#3c4149",
+      "kind": "reference_envelope",
+      "info": "simplified horn, spline omitted",
+      "volume_mm3": 388.2812170296134,
+      "valid": true
+    },
+    {
+      "name": "11_palm_hinge_clevis_interface",
+      "color": "#aeb5bf",
+      "kind": "custom",
+      "info": "provisional 3 mm hinge pin and two 3.2 mm mounting holes; palm placement undecided",
+      "volume_mm3": 2062.3501118885556,
+      "valid": true
+    },
+    {
+      "name": "12_palm_hinge_pin",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 127.23450247038666,
+      "valid": true
+    },
+    {
+      "name": "pin_B",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 112.39047718217483,
+      "valid": true
+    },
+    {
+      "name": "pin_C",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 82.93804605477055,
+      "valid": true
+    },
+    {
+      "name": "pin_D",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 198.54865570687488,
+      "valid": true
+    },
+    {
+      "name": "pin_E",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 120.63715789784806,
+      "valid": true
+    },
+    {
+      "name": "pin_F",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 207.34511513692638,
+      "valid": true
+    },
+    {
+      "name": "pin_G",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 129.4336173278995,
+      "valid": true
+    },
+    {
+      "name": "pin_H_direct_R4",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 76.65486074759097,
+      "valid": true
+    },
+    {
+      "name": "spacer_D",
+      "color": "#b5a071",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 217.27411871859692,
+      "valid": true
+    },
+    {
+      "name": "spacer_E",
+      "color": "#b5a071",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 73.9656574361181,
+      "valid": true
+    },
+    {
+      "name": "spacer_G",
+      "color": "#b5a071",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 99.39135217978384,
+      "valid": true
+    },
+    {
+      "name": "motor_standoff_1",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 32.986722862692844,
+      "valid": true
+    },
+    {
+      "name": "motor_standoff_2",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 32.98672286269281,
+      "valid": true
+    },
+    {
+      "name": "motor_standoff_3",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 32.986722862692844,
+      "valid": true
+    },
+    {
+      "name": "motor_standoff_4",
+      "color": "#8d97a0",
+      "kind": "hardware_placeholder",
+      "info": "",
+      "volume_mm3": 32.98672286269284,
+      "valid": true
+    }
+  ]
+}
