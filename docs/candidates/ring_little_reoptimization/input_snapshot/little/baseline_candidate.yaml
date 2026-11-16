@@ -1,0 +1,262 @@
+schema_version: 1
+status: rejected_rod_closure
+model: mechanism_and_attachment_link_length_skeleton
+optimization_scope: independent_per_finger
+target_finger: little
+initialization:
+  source: C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\kinematic_chain\designs\mechanism_2\nominal\mechanism.yaml
+  shared_nominal_initial_vector: true
+  design_variables_shared_with_other_fingers: false
+initial_candidate_variables:
+  L_ab:
+    value: 34.531
+    units: mm
+  L_bc:
+    value: 54.193
+    units: mm
+  L_cd:
+    value: 26.287
+    units: mm
+  L_ae:
+    value: 84.148
+    units: mm
+  L_de:
+    value: 16.821
+    units: mm
+  L_cg:
+    value: 55.415
+    units: mm
+  L_dg:
+    value: 65.532
+    units: mm
+  L_ef:
+    value: 36.549
+    units: mm
+  L_fg:
+    value: 26.983
+    units: mm
+  L_gh:
+    value: 58.493
+    units: mm
+  L_fh:
+    value: 44.523
+    units: mm
+  L_tip_rod:
+    value: 35.494
+    units: mm
+fixed_upstream_parameters:
+  L_ad_mm: 68.049
+  ad_tilt_deg: 10.7746
+  dorsal_clearance_mm: 7.0
+  distal_phalanx_width_mm: 10.0
+warning: Output-rod perpendicularity is the sole design objective. Fixed-contact rod
+  closure, downward monotone hand curl, and sampled hand-mechanism clearance are hard
+  constraints. The crank is the sole prescribed input; the ideal compliant hand progress
+  is solved from closure without a motion ratio. Collision is not continuously certified
+  between samples. Energy, torque, transmission, singularity, joint-limit, smoothness,
+  and structural objectives remain disabled.
+constraint_acceptance:
+  collision_free: true
+  minimum_signed_clearance_mm: 1.976905416792727
+  rod_closure_feasible: false
+  maximum_rod_closure_error_mm: 2.6878053195321314
+  rod_closure_tolerance_mm: 0.1
+  hand_motion_feasible: true
+  hand_motion_rule: 0 <= s <= 1, s[k+1] >= s[k], s[0]=0, and terminal s=1 within configured
+    tolerance
+  rules:
+  - all sampled intended-workspace poses require signed clearance >= 0
+  - all sampled intended-workspace poses require rod closure within tolerance
+  - the passive finger may only curl downward and may never reverse
+scalarization:
+  method: normalized_weighted_sum
+  weights:
+    output_link_perpendicularity: 1.0
+  constraint_guidance_weights:
+    fixed_contact_rod_closure: 1.0
+    hand_mechanism_clearance: 5.0
+optimizer:
+  name: torch.optim.Adam
+  device: cpu
+  geometry_evaluator_device: cpu
+  iterations_completed: 64
+  converged: false
+  initial_total_loss: 0.04642878926371922
+  final_total_loss: 0.022490457597166832
+motion_solution:
+  little_finger_design:
+    prescribed_input_crank_deg:
+    - 0.0
+    - 2.274149188266985
+    - 4.54829837653397
+    - 6.822447564800955
+    - 9.09659675306794
+    - 11.370745941334926
+    - 13.64489512960191
+    - 15.919044317868895
+    - 18.19319350613588
+    - 20.467342694402866
+    - 22.74149188266985
+    - 25.015641070936837
+    - 27.28979025920382
+    - 29.563939447470805
+    - 31.83808863573779
+    - 34.11223782400478
+    - 36.38638701227176
+    - 38.66053620053874
+    - 40.93468538880573
+    - 43.208834577072714
+    - 45.4829837653397
+    - 47.757132953606686
+    - 50.031282141873675
+    - 52.30543133014066
+    - 54.57958051840764
+    - 56.85372970667463
+    - 59.12787889494161
+    - 61.4020280832086
+    - 63.67617727147558
+    - 65.95032645974257
+    - 68.22447564800956
+    passive_hand_curl_progress:
+    - 0.0
+    - 0.03970792936360357
+    - 0.05972524025555345
+    - 0.08235092130686975
+    - 0.10690274948310116
+    - 0.13309278700923705
+    - 0.16058569166080572
+    - 0.18927930856221886
+    - 0.219244597185861
+    - 0.25032494534373806
+    - 0.2823861156842485
+    - 0.3153899895591179
+    - 0.34939777863353183
+    - 0.3841746089085287
+    - 0.41964822936609447
+    - 0.4557934389182129
+    - 0.4925490685888169
+    - 0.5297527516748874
+    - 0.5673039134615182
+    - 0.6052062122308718
+    - 0.6432801720929053
+    - 0.6814050320656714
+    - 0.7194709643516894
+    - 0.7573828999438535
+    - 0.7949341887335913
+    - 0.8319475780090941
+    - 0.8682292627174041
+    - 0.9035143457161516
+    - 0.9375044127880731
+    - 0.9698470433499017
+    - 1.0
+candidate_variables:
+  L_ab:
+    value: 35.80705719720952
+    units: mm
+    bounds:
+    - 20.0
+    - 45.0
+  L_bc:
+    value: 54.08008579140138
+    units: mm
+    bounds:
+    - 15.0
+    - 70.0
+  L_cd:
+    value: 25.20716047245464
+    units: mm
+    bounds:
+    - 18.0
+    - 42.0
+  L_ae:
+    value: 84.27122122199705
+    units: mm
+    bounds:
+    - 45.0
+    - 90.0
+  L_de:
+    value: 16.24707757172381
+    units: mm
+    bounds:
+    - 7.0
+    - 25.0
+  L_cg:
+    value: 55.16105907231119
+    units: mm
+    bounds:
+    - 15.0
+    - 70.0
+  L_dg:
+    value: 65.05675842750807
+    units: mm
+    bounds:
+    - 35.0
+    - 80.0
+  L_ef:
+    value: 36.990503734090886
+    units: mm
+    bounds:
+    - 18.0
+    - 45.0
+  L_fg:
+    value: 27.277346831119683
+    units: mm
+    bounds:
+    - 18.0
+    - 42.0
+  L_gh:
+    value: 58.536104585989975
+    units: mm
+    bounds:
+    - 15.0
+    - 70.0
+  L_fh:
+    value: 45.024710353891514
+    units: mm
+    bounds:
+    - 35.0
+    - 80.0
+  L_tip_rod:
+    value: 35.608376940624154
+    units: mm
+    bounds:
+    - 5.0
+    - 45.0
+objective_losses:
+  little_finger_design: 0.022490457597166832
+component_losses:
+  little_finger_design:
+    task_space_reachability: 0.009323387627397834
+    endpoint_reachability_diagnostic: 0.14448644699640803
+    hand_mechanism_non_collision: 5.474876860384753e-05
+    output_link_perpendicularity: 0.14783607170975074
+    guidance_weight_task_space_reachability: 1.0
+    guidance_weight_hand_mechanism_non_collision: 5.0
+    weight_output_link_perpendicularity: 1.0
+    weighted_closure_constraint_guidance: 0.0013319125181996906
+    weighted_collision_constraint_guidance: 3.910626328846252e-05
+    weighted_output_link_perpendicularity: 0.021119438815678678
+    output_rod_length: 1.4088405648284157
+    weight_output_rod_length: 0.0
+    output_rod_length_mm: 35.608376940624154
+    weighted_output_rod_length: 0.0
+    minimum_signed_clearance_mm: 1.976905416792727
+    collision_free_pose_fraction: 1.0
+    collision_evaluated_pose_count: 31.0
+    collision_requested_pose_count: 31.0
+    whole_intended_workspace_collision_free: 1.0
+    maximum_perpendicular_deviation_deg: 29.63113903875113
+    maximum_workspace_rod_closure_error_mm: 2.6878053195321314
+    rod_closure_within_tolerance_fraction: 0.967741935483871
+    rod_closure_tolerance_mm: 0.1
+    whole_intended_workspace_rod_closure_feasible: 0.0
+    hand_motion_admissible: 1.0
+    hand_motion_monotonic_non_decreasing: 1.0
+    terminal_hand_curl_progress: 1.0
+    horizontal_r4_x_mm: 68.5
+    horizontal_r4_y_mm: -7.0
+    curled_r4_x_mm: -2.3033550188746914
+    curled_r4_y_mm: -66.48226476427894
+    horizontal_fixed_contact_rod_error_mm: 2.6878053195321314
+    curled_fixed_contact_rod_error_mm: 0.004991404128844579
+    curled_best_input_deg: 68.22447564800956
