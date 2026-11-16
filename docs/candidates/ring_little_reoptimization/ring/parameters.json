@@ -1,0 +1,73 @@
+{
+  "finger": "ring",
+  "status": "2d_sampled_feasible_candidate_not_cad_release",
+  "lengths_mm": {
+    "L_ad": 21.112,
+    "L_ab": 12.206800764749381,
+    "L_bc": 17.112892252583077,
+    "L_cd": 12.500142411290291,
+    "L_ae": 34.766,
+    "L_de": 20.574,
+    "L_cg": 49.98714092312612,
+    "L_dg": 54.80859856275691,
+    "L_ef": 39.71305555811308,
+    "L_fg": 13.31966547991975,
+    "L_gh": 52.438512584599266,
+    "L_fh": 53.44293658924051,
+    "L_tip_rod": 28.96268909567807
+  },
+  "mount_tilt_deg": 37.054,
+  "dorsal_clearance_mm": 7.0,
+  "phase_deg": 0.732924017646274,
+  "phase_convention": "original model q = relative commanded q + phase; canonical crank direction = 90deg - original q; then rotate all nodes by -mount_tilt",
+  "relative_input_range_deg": [
+    0,
+    39.95226673363985
+  ],
+  "phalanx_lengths_mm": {
+    "proximal": 44,
+    "middle": 26,
+    "distal": 26
+  },
+  "joint_flexion_ranges_deg": {
+    "mcp": {
+      "min": 0,
+      "max": 39
+    },
+    "pip": {
+      "min": 0,
+      "max": 52
+    },
+    "dip": {
+      "min": 0,
+      "max": 50
+    }
+  },
+  "validation": {
+    "passed": true,
+    "samples": 1201,
+    "assembly_samples": 1201,
+    "exact_passive_root_missing_indices": [],
+    "maximum_closure_mm": 2.084021843984374e-11,
+    "minimum_clearance_mm": 0.39790893084744816,
+    "worst_pose": {
+      "index": 1200,
+      "q_relative_deg": 39.95226673363985,
+      "q_original_deg": 40.68519075128613,
+      "curl_s": 1.0,
+      "closure_mm": 7.105427357601002e-15,
+      "minimum_clearance_mm": 0.39790893084744816,
+      "nearest_mechanism_part": "output_rod",
+      "nearest_hand_part": "middle_phalanx"
+    },
+    "terminal_curl_s": 1.0,
+    "maximum_progress_step": 0.0009337450087048072,
+    "minimum_progress_step": 0.0007561006863474606,
+    "phase_deg": 0.732924017646274,
+    "stroke_deg": 39.95226673363985,
+    "reverse_tracking_error_mm": 0.0,
+    "maximum_dimension_error_mm": 3.375077994860476e-14,
+    "mount_polygon_preservation_passed": true
+  },
+  "cad_or_hardware_modified": false
+}

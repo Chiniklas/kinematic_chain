@@ -1,0 +1,92 @@
+[
+  {
+    "tag": "feasibility",
+    "phase_deg": -1.7179760684841014,
+    "validation": {
+      "passed": true,
+      "samples": 1201,
+      "assembly_samples": 1201,
+      "exact_passive_root_missing_indices": [],
+      "maximum_closure_mm": 2.0371260234242072e-11,
+      "minimum_clearance_mm": 0.9242783077316314,
+      "worst_pose": {
+        "index": 1200,
+        "q_relative_deg": 35.91961511701783,
+        "q_original_deg": 34.20163904853373,
+        "curl_s": 1.0,
+        "closure_mm": 2.842170943040401e-14,
+        "minimum_clearance_mm": 0.9242783077316314,
+        "nearest_mechanism_part": "output_rod",
+        "nearest_hand_part": "middle_phalanx"
+      },
+      "terminal_curl_s": 1.0,
+      "maximum_progress_step": 0.0009374412517012808,
+      "minimum_progress_step": 0.0007964054761295802,
+      "phase_deg": -1.7179760684841014,
+      "stroke_deg": 35.91961511701783,
+      "reverse_tracking_error_mm": 0.0,
+      "maximum_dimension_error_mm": 4.263256414560601e-14,
+      "mount_polygon_preservation_passed": true
+    }
+  },
+  {
+    "tag": "shorten",
+    "phase_deg": -1.7363877481050296,
+    "validation": {
+      "passed": true,
+      "samples": 1201,
+      "assembly_samples": 1201,
+      "exact_passive_root_missing_indices": [],
+      "maximum_closure_mm": 2.05773176276125e-11,
+      "minimum_clearance_mm": 0.9479635876433843,
+      "worst_pose": {
+        "index": 1200,
+        "q_relative_deg": 35.93330721614564,
+        "q_original_deg": 34.19691946804061,
+        "curl_s": 1.0,
+        "closure_mm": 4.263256414560601e-14,
+        "minimum_clearance_mm": 0.9479635876433843,
+        "nearest_mechanism_part": "output_rod",
+        "nearest_hand_part": "middle_phalanx"
+      },
+      "terminal_curl_s": 1.0,
+      "maximum_progress_step": 0.0009379308706117806,
+      "minimum_progress_step": 0.0007955405767051671,
+      "phase_deg": -1.7363877481050296,
+      "stroke_deg": 35.93330721614564,
+      "reverse_tracking_error_mm": 0.0,
+      "maximum_dimension_error_mm": 3.552713678800501e-14,
+      "mount_polygon_preservation_passed": true
+    }
+  },
+  {
+    "tag": "compact",
+    "phase_deg": 0.732924017646274,
+    "validation": {
+      "passed": true,
+      "samples": 1201,
+      "assembly_samples": 1201,
+      "exact_passive_root_missing_indices": [],
+      "maximum_closure_mm": 2.084021843984374e-11,
+      "minimum_clearance_mm": 0.39790893084744816,
+      "worst_pose": {
+        "index": 1200,
+        "q_relative_deg": 39.95226673363985,
+        "q_original_deg": 40.68519075128613,
+        "curl_s": 1.0,
+        "closure_mm": 7.105427357601002e-15,
+        "minimum_clearance_mm": 0.39790893084744816,
+        "nearest_mechanism_part": "output_rod",
+        "nearest_hand_part": "middle_phalanx"
+      },
+      "terminal_curl_s": 1.0,
+      "maximum_progress_step": 0.0009337450087048072,
+      "minimum_progress_step": 0.0007561006863474606,
+      "phase_deg": 0.732924017646274,
+      "stroke_deg": 39.95226673363985,
+      "reverse_tracking_error_mm": 0.0,
+      "maximum_dimension_error_mm": 3.375077994860476e-14,
+      "mount_polygon_preservation_passed": true
+    }
+  }
+]

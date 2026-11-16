@@ -1,0 +1,42 @@
+{"finger": "ring", "stage": "feasibility", "calls": 1, "cost": 157.61541667995644, "closure": 0.0061806875703922515, "clearance": -1.5546463127061427, "phase": -2.1789087011401636, "elapsed_s": 0.00952768325805664}
+{"finger": "ring", "stage": "feasibility", "calls": 1675, "cost": 1.3614125793689071, "closure": 0.005960116226340517, "clearance": 0.778670223832842, "phase": -1.6432850898079627, "elapsed_s": 25.01423478126526}
+STAGE_RESULT {"tag": "feasibility", "solver": "scipy.optimize.least_squares / direct collocation", "nfev": 160, "calls": 3082, "solver_message": "The maximum number of function evaluations is exceeded.", "shortening_weight": 0, "collocation_samples": 13, "phase_deg": -1.7186135784212753, "elapsed_s": 47.68196988105774} {"collision_free": true, "minimum_clearance_mm": 0.9242796834681499, "rod_closure_feasible": true, "maximum_rod_closure_error_mm": 0.001255615438871871, "hand_motion_feasible": true}
+{"finger": "ring", "stage": "shorten", "calls": 1, "cost": 5.995418521798383, "closure": 0.0485076308964878, "clearance": 0.9243541849524082, "phase": -1.7186135784212753, "elapsed_s": 47.70301675796509}
+{"finger": "ring", "stage": "shorten", "calls": 885, "cost": 5.216360531569306, "closure": 0.0012255855021408024, "clearance": 0.9348090786183896, "phase": -1.7255848887977183, "elapsed_s": 72.72271823883057}
+{"finger": "ring", "stage": "shorten", "calls": 2197, "cost": 5.189296584285549, "closure": 0.0008401424022466131, "clearance": 0.9404001169144287, "phase": -1.7306059554942095, "elapsed_s": 97.73538875579834}
+{"finger": "ring", "stage": "shorten", "calls": 3534, "cost": 5.172083453615906, "closure": 0.0007168242859094676, "clearance": 0.9443963638676713, "phase": -1.7342901417286685, "elapsed_s": 122.74473786354065}
+STAGE_RESULT {"tag": "shorten", "solver": "scipy.optimize.least_squares / direct collocation", "nfev": 160, "calls": 4816, "solver_message": "The maximum number of function evaluations is exceeded.", "shortening_weight": 0.015, "collocation_samples": 25, "phase_deg": -1.736707932736871, "elapsed_s": 147.28545355796814} {"collision_free": true, "minimum_clearance_mm": 0.9479647456088038, "rod_closure_feasible": true, "maximum_rod_closure_error_mm": 0.0007704008710121002, "hand_motion_feasible": true}
+DONE ring
+{"finger": "ring", "stage": "compact", "calls": 1, "cost": 144.73276379982306, "closure": 5.430964755248624e-06, "clearance": 0.9479635876433843, "phase": -1.7363877481050296, "elapsed_s": 0.03745555877685547}
+{"finger": "ring", "stage": "compact", "calls": 1335, "cost": 120.51319350799817, "closure": 0.026579346637433332, "clearance": 0.6011978414205217, "phase": -2.6399908198484425, "elapsed_s": 25.045735120773315}
+Traceback (most recent call last):
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\reoptimize_fingers.py", line 137, in <module>
+    a=parser.parse_args();run(a.finger,a.max_nfev,a.resume)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\reoptimize_fingers.py", line 120, in run
+    vals,q,s,v=optimize(np.array(prior['values']),qs,25,.08,'compact')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\reoptimize_fingers.py", line 108, in optimize
+    result=least_squares(fun,x0,bounds=(lo,hi),x_scale='jac',max_nfev=max_nfev,ftol=1e-7,xtol=1e-7,gtol=1e-7,diff_step=1e-5)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\optimization-env\Lib\site-packages\scipy\_lib\_util.py", line 662, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\optimization-env\Lib\site-packages\scipy\optimize\_lsq\least_squares.py", line 1019, in least_squares
+    result = trf(vector_fun.fun, vector_fun.jac, x0, f0, J0, lb, ub, ftol, xtol,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\optimization-env\Lib\site-packages\scipy\optimize\_lsq\trf.py", line 124, in trf
+    return trf_bounds(
+           ^^^^^^^^^^^
+  File "C:\Users\JohannJ\Documents\Codex\2026-11-13\https-github-com-zjn6060-modular-teleoperation\work\optimization-env\Lib\site-packages\scipy\optimize\_lsq\trf.py", line 298, in trf_bounds
+    f_augmented[:m] = f
+    ~~~~~~~~~~~^^^^
+ValueError: could not broadcast input array from shape (1070,) into shape (1270,)
+{"finger": "ring", "stage": "compact", "calls": 1, "cost": 144.73276379982306, "closure": 5.430964755248624e-06, "clearance": 0.9479635876433843, "phase": -1.7363877481050296, "elapsed_s": 0.030534744262695312}
+{"finger": "ring", "stage": "compact", "calls": 1360, "cost": 119.34428773285745, "closure": 0.004872777782601645, "clearance": 0.5909659035047561, "phase": -2.6197691990407255, "elapsed_s": 25.038702964782715}
+{"finger": "ring", "stage": "compact", "calls": 1, "cost": 144.73276379982306, "closure": 5.430964755248624e-06, "clearance": 0.9479635876433843, "phase": -1.7363877481050296, "elapsed_s": 0.03256392478942871}
+{"finger": "ring", "stage": "compact", "calls": 1339, "cost": 121.29877073022678, "closure": 0.04880457966571328, "clearance": 0.5986847445484678, "phase": -2.440146763223405, "elapsed_s": 25.047632455825806}
+{"finger": "ring", "stage": "compact", "calls": 2613, "cost": 106.70099690568298, "closure": 0.010063350061944476, "clearance": 0.40969907488972446, "phase": -1.1934089664851621, "elapsed_s": 50.06411170959473}
+{"finger": "ring", "stage": "compact", "calls": 3916, "cost": 100.96106182888336, "closure": 0.009407861585394528, "clearance": 0.3999437753793451, "phase": -0.3559857861008169, "elapsed_s": 75.07249641418457}
+STAGE_RESULT {"tag": "compact", "solver": "scipy.optimize.least_squares / direct collocation", "nfev": 160, "calls": 5026, "solver_message": "The maximum number of function evaluations is exceeded.", "shortening_weight": 0.08, "collocation_samples": 25, "phase_deg": 0.72701335226217, "elapsed_s": 96.04990339279175} {"collision_free": true, "minimum_clearance_mm": 0.39791352512657774, "rod_closure_feasible": true, "maximum_rod_closure_error_mm": 0.010045729028004047, "hand_motion_feasible": true}
+DONE ring
