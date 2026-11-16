@@ -1,0 +1,12 @@
+本目录包含独立参考模型、优化脚本和全部42个搜索起点记录，无需修改原仓库。
+依赖：Python + numpy、scipy、matplotlib、Pillow。本次环境版本见上级provenance.json。
+从此目录运行：
+python thumb_no_return.py straight --trials 15
+python thumb_no_return.py gentle --trials 18
+python thumb_no_return.py relayout --trials 9
+以上读取已有搜索记录并重新验证最终候选；提高trials会继续搜索。
+python render_thumb_no_return.py
+重新生成文件写入generated/thumb_no_return。绘图默认使用Windows微软雅黑字体。
+work/thumb_no_return保存所有尝试。部分失败尝试存在闭环无解，不能用于制造。
+本实验的z是13参数格式，不能直接写入原项目的11参数direct_synthesis。
+原参考optimize_direct.py仅用于函数导入；不要单独运行其main来覆盖参考数据。

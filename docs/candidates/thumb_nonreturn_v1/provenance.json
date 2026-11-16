@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-16",
+  "repository": "Chiniklas/kinematic_chain",
+  "branch": "wanwan",
+  "reference_commit": "c5f78f986a250de8734399cc0cc3326632b38930",
+  "reference_candidate": "docs/candidates/thumb_direct",
+  "trials": {
+    "straight": 15,
+    "gentle": 18,
+    "relayout": 9
+  },
+  "versions": {
+    "numpy": "2.2.0",
+    "scipy": "1.14.1",
+    "matplotlib": "3.9.3",
+    "Pillow": "11.0.0"
+  },
+  "delivery": "isolated experiments and preview, not production CAD update"
+}

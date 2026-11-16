@@ -1,0 +1,227 @@
+{
+  "format": "thumb_nonreturn_experiment_v1_NOT_direct_synthesis",
+  "status": "preview_only",
+  "z_parameter_order": [
+    "AB_mm",
+    "input_initial_rad",
+    "Cx",
+    "Cy",
+    "Ex",
+    "Ey",
+    "GH_mm",
+    "HG_initial_rad",
+    "FG_mm",
+    "bend_rad",
+    "motor_travel_rad",
+    "Dx",
+    "Dy"
+  ],
+  "z": [
+    23.517842066492587,
+    1.2791772596624311,
+    10.167406601575207,
+    21.47430647871196,
+    5.565935558354406,
+    13.631668729557946,
+    9.135493600400892,
+    1.67791969294626,
+    17.219475807666655,
+    0.0,
+    1.0221874434852363,
+    10.213700081659331,
+    5.0944013998793025
+  ],
+  "world_pivots_mm": {
+    "a": [
+      -16.84881073214355,
+      12.721404046425228
+    ],
+    "b": [
+      2.1200696804788173,
+      26.623579104887114
+    ],
+    "c": [
+      21.053999564188583,
+      11.011407634564819
+    ],
+    "d": [
+      11.220947240114443,
+      -2.0887647104803513
+    ],
+    "e": [
+      12.655994718915679,
+      7.525146421627975
+    ],
+    "f": [
+      63.44640910020813,
+      12.820327258929417
+    ],
+    "g": [
+      54.59929917357432,
+      -1.952586909807735
+    ],
+    "h": [
+      49.90561877240778,
+      -9.79009975602819
+    ]
+  },
+  "lengths_mm": {
+    "L_ab": 23.517842066492587,
+    "L_bc": 24.540448220437685,
+    "L_cd": 16.37997049685579,
+    "L_ad": 31.737240132518824,
+    "L_ae": 29.95888245592813,
+    "L_de": 9.720424297451741,
+    "L_cg": 35.96320731567161,
+    "L_dg": 43.37856568463852,
+    "L_ef": 51.06569428807488,
+    "L_fg": 17.219475807666658,
+    "L_gh": 9.13549360040089,
+    "L_fh": 26.35496940806755
+  },
+  "validation": {
+    "kind": "relayout",
+    "z": [
+      23.517842066492587,
+      1.2791772596624311,
+      10.167406601575207,
+      21.47430647871196,
+      5.565935558354406,
+      13.631668729557946,
+      9.135493600400892,
+      1.67791969294626,
+      17.219475807666655,
+      0.0,
+      1.0221874434852363,
+      10.213700081659331,
+      5.0944013998793025
+    ],
+    "passed": true,
+    "checks": {
+      "assembly": true,
+      "rigid_lengths": true,
+      "direct_closure": true,
+      "endpoint": true,
+      "trajectory": true,
+      "monotone_mcp": true,
+      "monotone_ip": true,
+      "continuous_branches": true,
+      "intersection_margin": true,
+      "length_bounds": true,
+      "no_return": true,
+      "initial_HG_direction": true,
+      "all_pose_HG_direction": true,
+      "vibration_and_strap_reserve": true,
+      "layered_clearance": true,
+      "ground_bounds": true
+    },
+    "samples": 5001,
+    "lengths_mm": {
+      "L_ab": 23.517842066492587,
+      "L_bc": 24.540448220437685,
+      "L_cd": 16.37997049685579,
+      "L_ad": 31.737240132518824,
+      "L_ae": 29.95888245592813,
+      "L_de": 9.720424297451741,
+      "L_cg": 35.96320731567161,
+      "L_dg": 43.37856568463852,
+      "L_ef": 51.06569428807488,
+      "L_fg": 17.219475807666658,
+      "L_gh": 9.13549360040089,
+      "L_fh": 26.35496940806755
+    },
+    "FGH_angle_deg": 179.99999879258172,
+    "minimum_FGH_angle_deg": 179.99999809090409,
+    "trajectory_max_error_mm": 0.23953616637703903,
+    "trajectory_rms_mm": 0.1660740799109638,
+    "endpoint_deg": [
+      45.000168768527864,
+      59.999209617554015
+    ],
+    "motor_travel_deg": 58.56702638297139,
+    "maximum_closure_mm": 1.7763568394002505e-14,
+    "maximum_dimension_error_mm": 7.105427357601002e-14,
+    "minimum_intersection_sine": 0.13901711835036962,
+    "minimum_mcp_step_deg": 0.007920583300533579,
+    "minimum_ip_step_deg": 0.00013025749303974266,
+    "initial_HG_deviation_deg": 14.899626229611197,
+    "maximum_HG_deviation_deg": 14.899626229611197,
+    "collision_screen": {
+      "minimum_clearance_mm": 0.29984890888363047,
+      "worst_pair": "ADE / hand_proximal",
+      "worst_pose_index": 0,
+      "passed": true,
+      "sampled_poses": 5001,
+      "exclusions": "servo/carrier boxes, cuff, spacers, screw heads, tolerances and continuous swept solids"
+    },
+    "reserve_clearance_mm": 2.1999552909504914,
+    "reserve_worst_pair": "CDG/strap",
+    "reserve_worst_index": 5000,
+    "ground_E_shift_mm": 10.804459396479194,
+    "ground_D_shift_mm": 11.413702071684718,
+    "physical_moving_link_sum_mm": 177.82213179560011,
+    "bounds_mm": {
+      "x": [
+        -16.84881073214355,
+        63.72168893441093
+      ],
+      "y": [
+        -47.531838604690996,
+        26.623579104887114
+      ]
+    },
+    "trials": 9,
+    "selected_trial": 1,
+    "residual_norm": 2.4078469297740774
+  },
+  "constraints": {
+    "scope": "red rigid F-G-H output part; does not prohibit every projected crossing of the whole mechanism",
+    "parameterization": "G=H+GH*u(phi), F=G+FG*u(phi+bend); positive GH and FG; bend=0 or bounded +/-30deg",
+    "straight": {
+      "bend_deg": 0,
+      "ground": "A,D fixed; E displacement <=5mm"
+    },
+    "gentle": {
+      "bend_deg": [
+        -30,
+        30
+      ],
+      "ground": "A,D fixed; E displacement <=5mm"
+    },
+    "relayout": {
+      "bend_deg": 0,
+      "ground": "A fixed; D displacement <=25mm, E displacement <=50mm; existing connectivity retained"
+    },
+    "common": {
+      "initial_HG_deviation_deg_max": 15,
+      "all_pose_HG_deviation_deg_max": 25,
+      "initial_HG_forward_projection_mm_min": 3,
+      "all_pose_HG_dorsal_projection_mm_min": 3,
+      "hole_center_distances_mm_range": [
+        8,
+        85
+      ],
+      "target_trajectory_max_error_mm": 1,
+      "MCP_IP_endpoint_tolerance_deg": 0.25,
+      "minimum_circle_intersection_sine": 0.04,
+      "sampled_layered_clearance_gate_mm": 0.1,
+      "sampled_layered_clearance_optimization_target_mm": 0.3,
+      "module_strap_reserve_gate_mm": 2,
+      "verification_samples": 5001,
+      "module_dimensions_assumed_mm": [
+        14,
+        12,
+        6
+      ],
+      "module_location": "distal palmar pad midpoint",
+      "strap_width_assumed_mm": 8,
+      "strap_thickness_assumed_mm": 1,
+      "thumb_phalanges_mm": [
+        30,
+        40
+      ]
+    },
+    "validation_exclusions": "full motor/carrier/cuff solids, actual strap routing and forces, screw heads, tolerances, continuous swept-volume CAD",
+    "search": "deterministic multistart bounded nonlinear least squares; failure to find a valid solution is not proof of impossibility"
+  }
+}

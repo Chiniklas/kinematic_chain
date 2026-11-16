@@ -1,5 +1,7 @@
 # Multi-finger exoskeleton co-optimization
 
+[Thumb non-return candidate: straight F-G-H output with relocated D/E pivots (scheme 3, kinematic preview)](docs/candidates/thumb_nonreturn_v1/README.md)
+
 [Standalone direct-drive thumb candidate and CAD files](docs/candidates/thumb_direct/README.md)
 
 [Ring and little finger length/starting-angle optimization results](docs/candidates/ring_little_reoptimization/README.md)

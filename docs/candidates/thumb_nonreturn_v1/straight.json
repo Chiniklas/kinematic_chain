@@ -1,0 +1,95 @@
+{
+  "kind": "straight",
+  "z": [
+    13.239346227333781,
+    3.474520842584685,
+    -21.247476604637278,
+    0.04409524250326409,
+    6.740501170837449,
+    3.881383527186889,
+    8.740075155925403,
+    1.9846668052532217,
+    63.170521551971206,
+    0.0,
+    1.799999782054235,
+    0.0,
+    0.0
+  ],
+  "passed": false,
+  "checks": {
+    "assembly": true,
+    "rigid_lengths": true,
+    "direct_closure": true,
+    "endpoint": true,
+    "trajectory": false,
+    "monotone_mcp": false,
+    "monotone_ip": true,
+    "continuous_branches": true,
+    "intersection_margin": true,
+    "length_bounds": false,
+    "no_return": true,
+    "initial_HG_direction": false,
+    "all_pose_HG_direction": true,
+    "vibration_and_strap_reserve": false,
+    "layered_clearance": true,
+    "ground_bounds": true
+  },
+  "samples": 5001,
+  "lengths_mm": {
+    "L_ab": 13.239346227333778,
+    "L_bc": 13.12600096887718,
+    "L_cd": 21.247522360384043,
+    "L_ad": 21.112,
+    "L_ae": 28.121645747655297,
+    "L_de": 7.7781420737332105,
+    "L_cg": 70.28646018671479,
+    "L_dg": 51.938272397504846,
+    "L_ef": 84.81583681005233,
+    "L_fg": 63.170521551971206,
+    "L_gh": 8.740075155925403,
+    "L_fh": 71.91059670789662
+  },
+  "FGH_angle_deg": 179.99999852122068,
+  "minimum_FGH_angle_deg": 179.99999809090409,
+  "trajectory_max_error_mm": 9.533945790942969,
+  "trajectory_rms_mm": 5.79121890346986,
+  "endpoint_deg": [
+    45.059917717308025,
+    59.871379429992736
+  ],
+  "motor_travel_deg": 103.13239063617569,
+  "maximum_closure_mm": 1.4210854715202004e-14,
+  "maximum_dimension_error_mm": 4.263256414560601e-14,
+  "minimum_intersection_sine": 0.07387412123650534,
+  "minimum_mcp_step_deg": -0.0037310490005217356,
+  "minimum_ip_step_deg": 0.002156813700374016,
+  "initial_HG_deviation_deg": 2.675688683403927,
+  "maximum_HG_deviation_deg": 11.538137051800861,
+  "collision_screen": {
+    "minimum_clearance_mm": 0.7445663691378339,
+    "worst_pair": "ADE / hand_proximal",
+    "worst_pose_index": 5000,
+    "passed": true,
+    "sampled_poses": 5001,
+    "exclusions": "servo/carrier boxes, cuff, spacers, screw heads, tolerances and continuous swept solids"
+  },
+  "reserve_clearance_mm": 1.6722919028140435,
+  "reserve_worst_pair": "CDG/strap",
+  "reserve_worst_index": 5000,
+  "ground_E_shift_mm": 1.1572989456137492,
+  "ground_D_shift_mm": 0.0,
+  "physical_moving_link_sum_mm": 274.6257632612587,
+  "bounds_mm": {
+    "x": [
+      -29.441702994980012,
+      92.53400982613275
+    ],
+    "y": [
+      -47.56008537002468,
+      60.17992701475784
+    ]
+  },
+  "trials": 15,
+  "selected_trial": 4,
+  "residual_norm": 148.06888010021754
+}

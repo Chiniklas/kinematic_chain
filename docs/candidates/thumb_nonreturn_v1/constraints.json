@@ -1,0 +1,50 @@
+{
+  "scope": "red rigid F-G-H output part; does not prohibit every projected crossing of the whole mechanism",
+  "parameterization": "G=H+GH*u(phi), F=G+FG*u(phi+bend); positive GH and FG; bend=0 or bounded +/-30deg",
+  "straight": {
+    "bend_deg": 0,
+    "ground": "A,D fixed; E displacement <=5mm"
+  },
+  "gentle": {
+    "bend_deg": [
+      -30,
+      30
+    ],
+    "ground": "A,D fixed; E displacement <=5mm"
+  },
+  "relayout": {
+    "bend_deg": 0,
+    "ground": "A fixed; D displacement <=25mm, E displacement <=50mm; existing connectivity retained"
+  },
+  "common": {
+    "initial_HG_deviation_deg_max": 15,
+    "all_pose_HG_deviation_deg_max": 25,
+    "initial_HG_forward_projection_mm_min": 3,
+    "all_pose_HG_dorsal_projection_mm_min": 3,
+    "hole_center_distances_mm_range": [
+      8,
+      85
+    ],
+    "target_trajectory_max_error_mm": 1,
+    "MCP_IP_endpoint_tolerance_deg": 0.25,
+    "minimum_circle_intersection_sine": 0.04,
+    "sampled_layered_clearance_gate_mm": 0.1,
+    "sampled_layered_clearance_optimization_target_mm": 0.3,
+    "module_strap_reserve_gate_mm": 2,
+    "verification_samples": 5001,
+    "module_dimensions_assumed_mm": [
+      14,
+      12,
+      6
+    ],
+    "module_location": "distal palmar pad midpoint",
+    "strap_width_assumed_mm": 8,
+    "strap_thickness_assumed_mm": 1,
+    "thumb_phalanges_mm": [
+      30,
+      40
+    ]
+  },
+  "validation_exclusions": "full motor/carrier/cuff solids, actual strap routing and forces, screw heads, tolerances, continuous swept-volume CAD",
+  "search": "deterministic multistart bounded nonlinear least squares; failure to find a valid solution is not proof of impossibility"
+}
