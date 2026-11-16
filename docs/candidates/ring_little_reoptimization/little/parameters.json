@@ -1,0 +1,73 @@
+{
+  "finger": "little",
+  "status": "2d_sampled_feasible_candidate_not_cad_release",
+  "lengths_mm": {
+    "L_ad": 68.049,
+    "L_ab": 35.65826516757131,
+    "L_bc": 53.890231477002075,
+    "L_cd": 25.026154781774917,
+    "L_ae": 84.27122122199705,
+    "L_de": 16.24707757172381,
+    "L_cg": 54.99794179336296,
+    "L_dg": 64.25927185873584,
+    "L_ef": 36.806934538363066,
+    "L_fg": 27.16731655391255,
+    "L_gh": 58.036314135428455,
+    "L_fh": 44.806497615142256,
+    "L_tip_rod": 35.194740097689106
+  },
+  "mount_tilt_deg": 10.7746,
+  "dorsal_clearance_mm": 7.0,
+  "phase_deg": -1.0784955526116757,
+  "phase_convention": "original model q = relative commanded q + phase; canonical crank direction = 90deg - original q; then rotate all nodes by -mount_tilt",
+  "relative_input_range_deg": [
+    0,
+    69.39890823384533
+  ],
+  "phalanx_lengths_mm": {
+    "proximal": 34,
+    "middle": 23,
+    "distal": 23
+  },
+  "joint_flexion_ranges_deg": {
+    "mcp": {
+      "min": 0,
+      "max": 65
+    },
+    "pip": {
+      "min": 0,
+      "max": 44
+    },
+    "dip": {
+      "min": 0,
+      "max": 34
+    }
+  },
+  "validation": {
+    "passed": true,
+    "samples": 1201,
+    "assembly_samples": 1201,
+    "exact_passive_root_missing_indices": [],
+    "maximum_closure_mm": 2.4073187887552194e-11,
+    "minimum_clearance_mm": 1.987311495776611,
+    "worst_pose": {
+      "index": 1200,
+      "q_relative_deg": 69.39890823384533,
+      "q_original_deg": 68.32041268123366,
+      "curl_s": 1.0,
+      "closure_mm": 3.552713678800501e-14,
+      "minimum_clearance_mm": 1.987311495776611,
+      "nearest_mechanism_part": "output_rod",
+      "nearest_hand_part": "distal_phalanx"
+    },
+    "terminal_curl_s": 1.0,
+    "maximum_progress_step": 0.0009763102268738333,
+    "minimum_progress_step": 0.0001290374801141065,
+    "phase_deg": -1.0784955526116757,
+    "stroke_deg": 69.39890823384533,
+    "reverse_tracking_error_mm": 0.0,
+    "maximum_dimension_error_mm": 3.907985046680551e-14,
+    "mount_polygon_preservation_passed": true
+  },
+  "cad_or_hardware_modified": false
+}
