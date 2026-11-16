@@ -2,6 +2,8 @@
 
 [Standalone direct-drive thumb candidate and CAD files](docs/candidates/thumb_direct/README.md)
 
+[Ring and little finger length/starting-angle optimization results](docs/candidates/ring_little_reoptimization/README.md)
+
 This repository is developing a hand-mounted exoskeleton from the planar
 `mechanism_2` linkage. The index, middle, ring, and little fingers are four independent
 design problems: each starts from the same nominal mechanism, then optimizes its own
