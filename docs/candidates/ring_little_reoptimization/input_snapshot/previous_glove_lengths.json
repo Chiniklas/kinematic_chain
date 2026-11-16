@@ -1,0 +1,59 @@
+{
+  "source": "zjn6060/modular_teleoperation_glove @ d258e913a08f7d7f32bcdd5c92855d7b9d37d2f4, simulation/glove/robot.xml",
+  "method": "Joint centers and connect anchors at qpos=0, projected perpendicular to crank joint axis. GH/FH: circular hole fits on part_1__12.stl (ring) and part_1__6.stl (little); F/G checked against XML to <0.001 mm; H is the remaining third hole. mm.",
+  "limitations": "Snapshot of previous repository model, not verified against current Onshape. External H-R4 rod is absent; no previous output-rod length claimed.",
+  "fingers": {
+    "index": {
+      "L_ab": 19.247974815769176,
+      "L_bc": 17.285000000000004,
+      "L_cd": 13.798000000000002,
+      "L_ad": 20.714982150417125,
+      "L_ae": 28.925983282163465,
+      "L_de": 15.183659121440394,
+      "L_cg": 62.70007977942301,
+      "L_dg": 74.48506243946277,
+      "L_ef": 28.045000000000012,
+      "L_fg": 37.927000000000014
+    },
+    "middle": {
+      "L_ab": 34.530941982555575,
+      "L_bc": 54.193,
+      "L_cd": 26.287,
+      "L_ad": 67.55785741128562,
+      "L_ae": 83.65180586622382,
+      "L_de": 16.820988799901144,
+      "L_cg": 55.414980574985606,
+      "L_dg": 65.53197349939883,
+      "L_ef": 36.549,
+      "L_fg": 26.983
+    },
+    "ring": {
+      "L_ab": 17.747942072711517,
+      "L_bc": 17.2849930080981,
+      "L_cd": 13.798,
+      "L_ad": 20.714982150417125,
+      "L_ae": 36.774971682518,
+      "L_de": 20.57400576436441,
+      "L_cg": 62.70002908826733,
+      "L_dg": 74.48501039356402,
+      "L_ef": 32.654999999999994,
+      "L_fg": 35.596999999999994,
+      "L_gh": 70.07799924817024,
+      "L_fh": 59.15799961817367
+    },
+    "little": {
+      "L_ab": 36.70102586258146,
+      "L_bc": 53.69204734857947,
+      "L_cd": 25.786999999999995,
+      "L_ad": 67.55774790166114,
+      "L_ae": 84.20393184642627,
+      "L_de": 16.820918755656592,
+      "L_cg": 56.16521209490185,
+      "L_dg": 65.98222519402404,
+      "L_ef": 38.898,
+      "L_fg": 26.583000000000002,
+      "L_gh": 59.9926731769327,
+      "L_fh": 48.22237379650663
+    }
+  }
+}
