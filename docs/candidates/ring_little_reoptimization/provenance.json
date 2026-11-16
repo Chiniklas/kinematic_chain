@@ -1,0 +1,23 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "matplotlib": "3.11.2",
+  "pyyaml": "6.0.3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "upstream_commit": "879f499cdf6fa16e822807b4534cc1cc403f4ab5",
+  "commands": [
+    "python work/reoptimize_fingers.py ring --max-nfev 160",
+    "python work/reoptimize_fingers.py little --max-nfev 160",
+    "python work/validate_reoptimization.py",
+    "python work/reoptimize_fingers.py ring --resume --max-nfev 160",
+    "python work/reoptimize_fingers.py little --resume --max-nfev 160",
+    "python work/validate_reoptimization.py",
+    "python work/report_reoptimization.py"
+  ],
+  "sha256": {
+    "reoptimize_fingers.py": "7d1ddf8ac42b995a2373a1fd9c5aa19015fc4b460b5f189734d6de90b7c894a8",
+    "validate_reoptimization.py": "75e3f5e070e219f3628544ae30ba144892cb4b225a8aef85096a63ca1969bae9",
+    "report_reoptimization.py": "11554e3fb0c03bf6e0946e01e7ee24839d3f95d8123a0402da8c0ab118ab4723"
+  }
+}

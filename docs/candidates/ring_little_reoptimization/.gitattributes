@@ -1,0 +1,4 @@
+# Preserve the exact archived bytes covered by provenance.json.
+reoptimize_fingers.py -text
+validate_reoptimization.py -text
+report_reoptimization.py -text

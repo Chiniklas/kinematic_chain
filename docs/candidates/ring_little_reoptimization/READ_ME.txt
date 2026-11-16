@@ -1,0 +1,1 @@
+先打开 report.html 查看结果。两指 parameters.json 是包含起始角度的最终候选参数，exact_sweep.csv 是 1201 姿态检查。all_length_comparison.csv 含旧仓库、上次优化和本次三方尺寸。源码仍需同目录 work/kinematic_chain 与 outputs/finger_optimization 的已有输入；本包并非独立安装程序。二维数值候选，未更新 CAD/硬件。
