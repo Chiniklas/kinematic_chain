@@ -1,0 +1,15 @@
+MOUNT {"finger": "middle", "motor_offset_mm": 50, "root_offset_mm": 6, "horizontal_mm": 72.84881073214355, "vertical_mm_unchanged": 12.721404046425228, "AD_mm": 73.95122274851227, "tilt_deg": 9.905534457902052}
+BASELINE previous candidate | 2/3 rod= 35.49 clear= +0.803 PASS closure=  2.0268 FAIL curl=PASS
+INITIAL          new mount | 3/3 rod= 35.49 clear= +0.803 PASS closure=  0.0941 PASS curl=PASS
+ITER {"poses": 7, "calls": 1, "cost": 3.6402454203858916, "closure_mm": 0.09408624850313885, "clearance_mm": 0.802759824583462, "elapsed_s": 0.0}
+STAGE 7 nfev 60 cost 0.038984680215324426
+CHECK          candidate | 3/3 rod= 34.84 clear= +0.497 PASS closure=  0.0039 PASS curl=PASS
+ITER {"poses": 17, "calls": 1, "cost": 30.26797736778807, "closure_mm": 0.188104353787935, "clearance_mm": 0.49989240675074953, "elapsed_s": 19.9}
+ITER {"poses": 17, "calls": 514, "cost": 0.07776128171297256, "closure_mm": 0.0008301462112498825, "clearance_mm": 0.4997549712561131, "elapsed_s": 39.9}
+ITER {"poses": 17, "calls": 1032, "cost": 0.08028238601884831, "closure_mm": 0.0011505331336607583, "clearance_mm": 0.49933319996085324, "elapsed_s": 60.0}
+ITER {"poses": 17, "calls": 1547, "cost": 0.0894603707225281, "closure_mm": 0.001334645682263158, "clearance_mm": 0.4992210876942753, "elapsed_s": 80.0}
+STAGE 17 nfev 60 cost 0.03872633927099901
+CHECK          candidate | 3/3 rod= 34.73 clear= +0.497 PASS closure=  0.0040 PASS curl=PASS
+SELECTED optimized 17 poses
+DENSE             middle | 3/3 rod= 34.73 clear= +0.500 PASS closure=  0.0003 PASS curl=PASS
+DONE middle

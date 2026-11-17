@@ -78,6 +78,7 @@ class Problem:
     constraint_config: dict[str, Any]
     adam_config: dict[str, Any]
     normalize_objective_weights: bool
+    input_phase_deg: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -242,6 +243,10 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         raise OptimizationConfigError(
             "dorsal_input_mount ad_tilt_deg must be a finite angle in (-90, 90)"
         )
+    input_phase = input_mount.get("input_phase_deg", 0.0)
+    if (not isinstance(input_phase, (int, float)) or not math.isfinite(input_phase)
+            or abs(float(input_phase)) >= 90):
+        raise OptimizationConfigError("input_phase_deg must be finite and within (-90, 90)")
     phalanges = {
         row.get("id"): row
         for row in nominal_design.get("human_hand_model", {}).get("phalanges", [])
@@ -260,7 +265,10 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         "design_variable_sharing": "none",
         "aggregate_reports_are_postprocessing_only": True,
     }
+    independent_mount = scope.get("initialization") == "independent_measured_finger_mount"
     for key, expected in expected_scope.items():
+        if key == "initialization" and independent_mount:
+            continue
         if scope.get(key) != expected:
             raise OptimizationConfigError(
                 f"optimization_scope.{key} must be {expected!r}"
@@ -325,7 +333,7 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         seen_objective_ids.add(objective_id)
 
     configured_fingers = tuple(objective.finger for objective in objectives)
-    if configured_fingers != FINGERS:
+    if (independent_mount and len(configured_fingers) != 1) or (not independent_mount and configured_fingers != FINGERS):
         raise OptimizationConfigError(
             f"finger_problems must list {FINGERS} in order, got {configured_fingers}"
         )
@@ -510,6 +518,7 @@ def load_problem(objectives_path: Path, variables_path: Path) -> Problem:
         nominal_design=nominal_design,
         dorsal_clearance_mm=float(dorsal_clearance),
         ad_tilt_deg=float(ad_tilt),
+        input_phase_deg=float(input_phase),
         distal_phalanx_width_mm=float(distal_width),
         fixed_mechanism_dimensions=fixed_mechanism_dimensions,
         variables=tuple(variables),
@@ -637,6 +646,39 @@ def _mechanism_workspace_poses(
             for q_deg, positions in workspace
         ]
     return tuple(workspace)
+
+
+def _phase_workspace_poses(lengths, q_values_deg, tilt_deg=0.0, phase_deg=0.0):
+    """Keep relative input labels while continuously tracking an installed phase.
+
+    Prefix tracking from canonical q=0 fixes the assembly branch for negative and
+    positive phases. Preserve the original function's partial-workspace behavior:
+    a late assembly failure must not discard earlier valid poses.
+    """
+    if phase_deg == 0:
+        return _mechanism_workspace_poses(lengths, q_values_deg, tilt_deg)
+    requested = np.asarray(q_values_deg, dtype=float)
+    if not len(requested):
+        return ()
+    original = requested + phase_deg
+    first = float(original[0])
+    path = (list(np.linspace(0, first, max(2, int(math.ceil(abs(first) / .25)) + 1))[:-1])
+            if abs(first) > 1e-12 else [])
+    keep = []
+    for q in original:
+        if path:
+            path.extend(np.linspace(path[-1], q,
+                        max(1, int(math.ceil(abs(q - path[-1]) / .25))) + 1)[1:].tolist())
+        else:
+            path.append(float(q))
+        keep.append(len(path) - 1)
+    poses = _mechanism_workspace_poses(lengths, np.asarray(path), tilt_deg)
+    return tuple((float(q), poses[i][1]) for q, i in zip(requested, keep) if i < len(poses))
+
+
+def _problem_workspace(problem, lengths, q_values_deg):
+    return tuple((q, positions["h"]) for q, positions in _phase_workspace_poses(
+        lengths, q_values_deg, problem.ad_tilt_deg, problem.input_phase_deg))
 
 
 def _mechanism_workspace(
@@ -1043,8 +1085,8 @@ def _workspace_collision(
             or hand_progress_values.shape != (pose_count,)):
         mechanism_poses = ()
     else:
-        mechanism_poses = _mechanism_workspace_poses(
-            design_lengths, q_values, problem.ad_tilt_deg,
+        mechanism_poses = _phase_workspace_poses(
+            design_lengths, q_values, problem.ad_tilt_deg, problem.input_phase_deg,
         )
     if len(mechanism_poses) != pose_count:
         return WorkspaceMetrics(
@@ -1209,7 +1251,7 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
     config = problem.component_config["task_space_reachability"]
     q_min, q_max = (float(value) for value in config["curled_input_search_deg"])
     q_values = np.linspace(q_min, q_max, int(config["curled_input_samples"]))
-    workspace = _mechanism_workspace(design_lengths, q_values, problem.ad_tilt_deg)
+    workspace = _problem_workspace(problem, design_lengths, q_values)
     normalization = float(config["normalization_mm"])
     rod_length = design_lengths[problem.model["tip_rod_variable"]]
 
@@ -1233,7 +1275,7 @@ def evaluate(problem: Problem, values: np.ndarray) -> Evaluation:
         else:
             q_schedule = hand_progress_schedule = np.asarray([], dtype=float)
         coupled_workspace = (
-            _mechanism_workspace(design_lengths, q_schedule, problem.ad_tilt_deg)
+            _problem_workspace(problem, design_lengths, q_schedule)
             if len(q_schedule) else ()
         )
         requested_pose_count = int(
@@ -1823,7 +1865,7 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
         "target_finger": finger,
         "initialization": {
             "source": str(problem.nominal_design_path),
-            "shared_nominal_initial_vector": True,
+            "shared_nominal_initial_vector": problem.model.get("initialization") != "independent_measured_finger_mount",
             "design_variables_shared_with_other_fingers": False,
         },
         "initial_candidate_variables": {
@@ -1833,6 +1875,7 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
         "fixed_upstream_parameters": {
             "L_ad_mm": problem.fixed_mechanism_dimensions["L_ad"],
             "ad_tilt_deg": problem.ad_tilt_deg,
+            "input_phase_deg": problem.input_phase_deg,
             "dorsal_clearance_mm": problem.dorsal_clearance_mm,
             "distal_phalanx_width_mm": problem.distal_phalanx_width_mm,
         },
@@ -1918,8 +1961,13 @@ def _result_document(problem: Problem, result: OptimizationResult) -> dict[str, 
     }
 
 
-def _candidate_initial_positions(lengths: dict[str, float]) -> dict[str, Point]:
+def _candidate_initial_positions(lengths: dict[str, float], input_phase_deg: float = 0.0) -> dict[str, Point]:
     """Reconstruct a closed q=0 assembly for a materialized candidate YAML."""
+    if input_phase_deg:
+        poses = _phase_workspace_poses(lengths, np.array([0.0]), 0.0, input_phase_deg)
+        if not poses:
+            raise OptimizationConfigError("candidate cannot assemble at its installed input phase")
+        return poses[0][1]
     a = (-lengths["L_ad"], 0.0)
     d = (0.0, 0.0)
     e_candidates = _circle_intersections(a, lengths["L_ae"], d, lengths["L_de"])
@@ -2027,7 +2075,7 @@ def _candidate_mechanism_document(
     )
     output_rod["assumed_length_mm"] = values[problem.model["tip_rod_variable"]]
     output_rod["value_source"] = "co_optimization_candidate"
-    positions = _candidate_initial_positions(values)
+    positions = _candidate_initial_positions(values, problem.input_phase_deg)
     for node in document["nodes"]:
         node["initial_position_mm"] = list(positions[node["id"]])
     document["mechanism"]["status"] = (
@@ -2164,7 +2212,7 @@ def main() -> None:
     manifest = {
         "schema_version": 1,
         "optimization_scope": "independent_per_finger",
-        "shared_nominal_design": str(base_problem.nominal_design_path),
+        ("nominal_design" if base_problem.model.get("initialization") == "independent_measured_finger_mount" else "shared_nominal_design"): str(base_problem.nominal_design_path),
         "design_variable_sharing": "none",
         "fingers": [problem.objectives[0].finger for problem in problems],
     }
@@ -2193,7 +2241,8 @@ def main() -> None:
         write_outputs(finger_dir, problem, result)
         print(
             f"{finger}: independent Adam problem, "
-            f"{len(problem.variables)} variables initialized from the shared nominal"
+            f"{len(problem.variables)} variables initialized from "
+            f"{'this finger nominal' if problem.model.get('initialization') == 'independent_measured_finger_mount' else 'the shared nominal'}"
         )
         print(
             f"{finger} loss: {result.initial_evaluation.total_loss:.8g} -> "

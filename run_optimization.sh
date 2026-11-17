@@ -8,13 +8,13 @@ entry_point="${project_dir}/src/co-optimization/run_adam.py"
 config_root="${project_dir}/src/co-optimization/config"
 
 # Two mount variants live side by side; --design picks which one to optimise.
-#   long_ad  : the original 54 mm horizontal A-D baseline
+#   long_ad  : legacy extended mount, AD=68.049 mm at 10.7746 deg
 #   short_ad : the 2026-09 revision, 21.112 mm sloping 37.054 deg
 design="long_ad"
 forwarded=()
 while (($#)); do
   case "$1" in
-    --design) design="${2:?--design needs long_ad or short_ad}"; shift 2 ;;
+    --design) design="${2:?--design needs a configuration profile}"; shift 2 ;;
     --design=*) design="${1#--design=}"; shift ;;
     *) forwarded+=("$1"); shift ;;
   esac

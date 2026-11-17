@@ -1,0 +1,12 @@
+MOUNT {"finger": "index", "motor_offset_mm": 0, "root_offset_mm": 0, "horizontal_mm": 16.84881073214355, "vertical_mm_unchanged": 12.721404046425228, "AD_mm": 21.112, "tilt_deg": 37.054}
+BASELINE previous candidate | 3/3 rod= 22.54 clear= +0.198 PASS closure=  0.0572 PASS curl=PASS
+INITIAL          new mount | 3/3 rod= 22.54 clear= +0.198 PASS closure=  0.0572 PASS curl=PASS
+ITER {"poses": 7, "calls": 1, "cost": 4.21606966672968, "closure_mm": 0.05724453887622616, "clearance_mm": 0.19754888696737893, "elapsed_s": 0.0}
+STAGE 7 nfev 16 cost 0.07517680179141194
+CHECK          candidate | 3/3 rod= 22.80 clear= +0.415 PASS closure=  0.0087 PASS curl=PASS
+ITER {"poses": 17, "calls": 1, "cost": 49.31581529010624, "closure_mm": 0.19074441551302712, "clearance_mm": 0.41487865350370257, "elapsed_s": 2.1}
+STAGE 17 nfev 10 cost 21.87033606481851
+CHECK          candidate | 3/3 rod= 22.80 clear= +0.415 PASS closure=  0.0087 PASS curl=PASS
+SELECTED geometric seed
+DENSE              index | 3/3 rod= 22.54 clear= +0.198 PASS closure=  0.0572 PASS curl=PASS
+DONE index

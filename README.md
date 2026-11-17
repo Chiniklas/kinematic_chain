@@ -1,5 +1,9 @@
 # Multi-finger exoskeleton co-optimization
 
+> **2026-11-17：四指已按各自指根位置重新优化。** 指根相对食指为食指 0、中指 +6、无名指 +2、小指 −3 mm；电机孔位仍相差 50 mm。
+> 使用独立 `--design index/middle/ring/little` 配置；结果、完整尺寸和动态图见 [四指水平优化记录](docs/candidates/four_finger_offsets_2026_11_17/README.md)。旧长短模板和历史候选保留。
+
+
 [Thumb non-return candidate: straight F-G-H output with relocated D/E pivots (scheme 3, kinematic preview)](docs/candidates/thumb_nonreturn_v1/README.md)
 
 [Standalone direct-drive thumb candidate and CAD files](docs/candidates/thumb_direct/README.md)
@@ -103,11 +107,11 @@ and optimizer configuration. `--design` picks one; `long_ad` is the default.
 
 | Design | A-D baseline | Dorsal clearance | Config |
 |---|---|---|---|
-| `long_ad` | 54 mm, horizontal | 2.0 mm | `src/co-optimization/config/long_ad/` |
+| `long_ad` | 68.049 mm, tilted 10.7746° | 7.0 mm | `src/co-optimization/config/long_ad/` |
 | `short_ad` | 21.112 mm, sloping 37.054 deg | 7.0 mm | `src/co-optimization/config/short_ad/` |
 
 ```bash
-./run_optimization.sh --design long_ad      # 54 mm horizontal mount (default)
+./run_optimization.sh --design long_ad      # legacy extended mount (default)
 ./run_optimization.sh --design short_ad     # 21.112 mm tilted mount
 ```
 
