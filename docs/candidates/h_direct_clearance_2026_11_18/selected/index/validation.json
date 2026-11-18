@@ -1,0 +1,348 @@
+{
+  "finger": "index",
+  "poses_per_blend": 4801,
+  "angle_blend_count": 11,
+  "total_tested_configurations": 52811,
+  "old": {
+    "minimum_clearance_mm": 0.40895978236043895,
+    "pair": "L_gh/distal",
+    "q_deg": 51.4722025838767,
+    "reference_progress": 0.993700514075001,
+    "hand_angle_blend_fraction": 1.0,
+    "pose_index": 4780,
+    "interfering_pose_count": 0
+  },
+  "new": {
+    "minimum_clearance_mm": 0.40895978236043895,
+    "pair": "GH_P_H/distal",
+    "q_deg": 51.4722025838767,
+    "reference_progress": 0.993700514075001,
+    "hand_angle_blend_fraction": 1.0,
+    "pose_index": 4780,
+    "interfering_pose_count": 0
+  },
+  "by_hand_pose_blend": [
+    {
+      "blend_fraction": 0.0,
+      "old": {
+        "minimum_clearance_mm": 0.49999999983575627,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.0,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.49999999983575627,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.0,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23616998677316037
+    },
+    {
+      "blend_fraction": 0.1,
+      "old": {
+        "minimum_clearance_mm": 0.4914191004539221,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.1,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.4914191004539221,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.1,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23435379247725713
+    },
+    {
+      "blend_fraction": 0.2,
+      "old": {
+        "minimum_clearance_mm": 0.4828413369329203,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.2,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.4828413369329203,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.2,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23434972898581508
+    },
+    {
+      "blend_fraction": 0.30000000000000004,
+      "old": {
+        "minimum_clearance_mm": 0.474266714139282,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.30000000000000004,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.474266714139282,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.30000000000000004,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.2343441390231903
+    },
+    {
+      "blend_fraction": 0.4,
+      "old": {
+        "minimum_clearance_mm": 0.46569523692649106,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.4,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.46569523692649106,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.4,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23433702259159245
+    },
+    {
+      "blend_fraction": 0.5,
+      "old": {
+        "minimum_clearance_mm": 0.45712691013510565,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.5,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.45712691013510565,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.5,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23432837969397813
+    },
+    {
+      "blend_fraction": 0.6000000000000001,
+      "old": {
+        "minimum_clearance_mm": 0.44856173859261705,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.6000000000000001,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.44856173859261705,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.6000000000000001,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.2343182103339801
+    },
+    {
+      "blend_fraction": 0.7000000000000001,
+      "old": {
+        "minimum_clearance_mm": 0.43999972711354296,
+        "pair": "L_gh/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.7000000000000001,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.43999972711354296,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.68690764047129,
+        "reference_progress": 0.9994999999955412,
+        "hand_angle_blend_fraction": 0.7000000000000001,
+        "pose_index": 4800,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.2343065145160212
+    },
+    {
+      "blend_fraction": 0.8,
+      "old": {
+        "minimum_clearance_mm": 0.4304468309222065,
+        "pair": "L_gh/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 0.8,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.4304468309222065,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 0.8,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23429329224522974
+    },
+    {
+      "blend_fraction": 0.9,
+      "old": {
+        "minimum_clearance_mm": 0.4196893002049533,
+        "pair": "L_gh/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 0.9,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.4196893002049533,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 0.9,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.23427854352753918
+    },
+    {
+      "blend_fraction": 1.0,
+      "old": {
+        "minimum_clearance_mm": 0.40895978236043895,
+        "pair": "L_gh/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 1.0,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "new": {
+        "minimum_clearance_mm": 0.40895978236043895,
+        "pair": "GH_P_H/distal",
+        "q_deg": 51.4722025838767,
+        "reference_progress": 0.993700514075001,
+        "hand_angle_blend_fraction": 1.0,
+        "pose_index": 4780,
+        "interfering_pose_count": 0
+      },
+      "maximum_H_R4_mismatch_mm": 0.2342622683695183
+    }
+  ],
+  "maximum_reference_trajectory_error_mm": 0.23616998677316087,
+  "maximum_H_R4_mismatch_over_tested_hand_poses_mm": 0.23616998677316037,
+  "trajectory_tolerance_mm": 1.0,
+  "trajectory_passed": true,
+  "collision_passed": true,
+  "strict_closure_required": false,
+  "all_holes_and_lengths_unchanged": true,
+  "new_contour": {
+    "type": "rigid_G_P_H_outline",
+    "terminal_run_mm": 10.0,
+    "normal_offset_mm": 0.0,
+    "segment_radius_mm": 2.0,
+    "H_exclusion_mm": 4.0,
+    "P_is_new_joint": false,
+    "FG_retained": true
+  },
+  "outline_offset_sweep": {
+    "0.0": {
+      "minimum_clearance_mm": 0.40895978236043895,
+      "pair": "GH_P_H/distal",
+      "q_deg": 51.4722025838767,
+      "reference_progress": 0.993700514075001,
+      "hand_angle_blend_fraction": 1.0,
+      "pose_index": 4780,
+      "interfering_pose_count": 0
+    },
+    "0.5": {
+      "minimum_clearance_mm": 0.500000180212508,
+      "pair": "L_ef/middle",
+      "q_deg": 51.68690764047129,
+      "reference_progress": 0.9994999999955412,
+      "hand_angle_blend_fraction": 0.0,
+      "pose_index": 4800,
+      "interfering_pose_count": 0
+    },
+    "1.0": {
+      "minimum_clearance_mm": 0.500000180212508,
+      "pair": "L_ef/middle",
+      "q_deg": 51.68690764047129,
+      "reference_progress": 0.9994999999955412,
+      "hand_angle_blend_fraction": 0.0,
+      "pose_index": 4800,
+      "interfering_pose_count": 0
+    },
+    "1.5": {
+      "minimum_clearance_mm": 0.500000180212508,
+      "pair": "L_ef/middle",
+      "q_deg": 51.68690764047129,
+      "reference_progress": 0.9994999999955412,
+      "hand_angle_blend_fraction": 0.0,
+      "pose_index": 4800,
+      "interfering_pose_count": 0
+    },
+    "2.0": {
+      "minimum_clearance_mm": 0.500000180212508,
+      "pair": "L_ef/middle",
+      "q_deg": 51.68690764047129,
+      "reference_progress": 0.9994999999955412,
+      "hand_angle_blend_fraction": 0.0,
+      "pose_index": 4800,
+      "interfering_pose_count": 0
+    },
+    "3.0": {
+      "minimum_clearance_mm": 0.500000180212508,
+      "pair": "L_ef/middle",
+      "q_deg": 51.68690764047129,
+      "reference_progress": 0.9994999999955412,
+      "hand_angle_blend_fraction": 0.0,
+      "pose_index": 4800,
+      "interfering_pose_count": 0
+    }
+  },
+  "reference_path_policy": "Original proportional-flexion hand path retained.",
+  "supplementary_pose_policy": "Linear interpolation in motor angle through previous fitted-hand samples; 11 angular blends from reference to fitted posture.",
+  "sampled_planar_only": true,
+  "arbitrary_human_poses_certified": false,
+  "3d_collision_certified": false,
+  "self_collision_certified": false,
+  "strength_certified": false,
+  "passed_user_criteria": true
+}

@@ -1,0 +1,25 @@
+{
+  "poses": 241,
+  "closure_tolerance_mm": 0.0001,
+  "hand_joint_ranges_deg": [
+    65.0,
+    44.0,
+    34.0
+  ],
+  "all_positions_closed": false,
+  "closed_pose_count": 230,
+  "maximum_remaining_closure_error_mm": 0.7081767080008795,
+  "start_closure_error_mm": 0.7081767080008795,
+  "terminal_closure_error_mm": 8.881784197001252e-16,
+  "maximum_joint_change_deg": 16.825510508753723,
+  "maximum_joint_change_for_closed_poses_deg": 16.825510508753723,
+  "minimum_clearance_for_closed_poses_mm": -0.02309242534255418,
+  "minimum_fitted_joint_increment_deg": [
+    -4.027176978759853e-15,
+    -0.20869578780278708,
+    -3.171839891772077
+  ],
+  "independent_joint_fit_not_a_certified_passive_hand_motion": true,
+  "global_infeasibility_proven": false,
+  "negative_flexion_allowed": false
+}

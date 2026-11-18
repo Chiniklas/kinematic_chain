@@ -1,0 +1,190 @@
+{
+  "finger": "middle",
+  "lengths_mm": {
+    "L_ad": 73.95122274851227,
+    "L_ab": 38.95284504177015,
+    "L_bc": 73.42524232825717,
+    "L_cd": 32.922104329525695,
+    "L_ae": 80.32554793257522,
+    "L_de": 7.000000001644025,
+    "L_cg": 68.14328497048807,
+    "L_dg": 99.9999999951329,
+    "L_ef": 79.63635754552107,
+    "L_fg": 18.148761522209647,
+    "L_gh": 70.08123955083383,
+    "L_fh": 53.73241703780869
+  },
+  "q_deg": [
+    25.828338770359963,
+    27.555655005691655,
+    29.282971241023347,
+    31.01028747635504,
+    32.73760371168673,
+    34.464919947018416,
+    36.192236182350115,
+    37.9195524176818,
+    39.64686865301349,
+    41.374184888345184,
+    43.101501123676876,
+    44.82881735900857,
+    46.55613359434026,
+    48.28344982967195,
+    50.01076606500364,
+    51.738082300335336,
+    53.46539853566702,
+    55.19271477099871,
+    56.920031006330404,
+    58.6473472416621,
+    60.37466347699379,
+    62.10197971232548,
+    63.82929594765717,
+    65.55661218298886,
+    67.28392841832056
+  ],
+  "progress": [
+    0.0,
+    0.02522699617011129,
+    0.052493869584796446,
+    0.08006906532189233,
+    0.10798992239034742,
+    0.13629653433351296,
+    0.16503267484511625,
+    0.1942469107547309,
+    0.22399397713648386,
+    0.2543365173163008,
+    0.285347333414625,
+    0.3171123595841861,
+    0.34973467560881,
+    0.3833400504956785,
+    0.41808479528567916,
+    0.4541672111280121,
+    0.49184484694512054,
+    0.5314615760796886,
+    0.5734922088274073,
+    0.6186206670812456,
+    0.6678884211638717,
+    0.7230090218139634,
+    0.7871508440770701,
+    0.8674781345722904,
+    0.9900100000876392
+  ],
+  "output_branch": 1,
+  "model": "H is the direct revolute attachment to distal hand point R4",
+  "output_rod_present": false,
+  "perpendicularity_constraint": false,
+  "fixed_mount": {
+    "AD_mm": 73.95122274851227,
+    "tilt_deg": 9.905534457902052,
+    "dorsal_clearance_mm": 7.0
+  },
+  "source": "direct_conversion/middle/result.json",
+  "removed_output_rod_mm": 13.403086015119001,
+  "output_shape": "l_bracket",
+  "optimizer": "nearest-hand-pose constrained minimax, uniform motor-angle samples",
+  "search_history": [
+    {
+      "poses": 25,
+      "optimizer_success": false,
+      "message": "Iteration limit reached",
+      "search_maximum_error_mm": 0.9069307859815033,
+      "search_minimum_clearance_mm": 0.16999998964918994,
+      "constraint_min": -5.708324057884795e-08
+    }
+  ],
+  "bounds_mm": {
+    "L_ab": [
+      8,
+      50
+    ],
+    "L_bc": [
+      8,
+      100
+    ],
+    "L_cd": [
+      12.5,
+      55
+    ],
+    "L_ae": [
+      8,
+      130
+    ],
+    "L_de": [
+      7,
+      55
+    ],
+    "L_cg": [
+      8,
+      100
+    ],
+    "L_dg": [
+      12.5,
+      100
+    ],
+    "L_ef": [
+      8,
+      80
+    ],
+    "L_fg": [
+      8,
+      65
+    ],
+    "L_gh": [
+      8,
+      130
+    ],
+    "L_fh": [
+      8,
+      130
+    ]
+  },
+  "elapsed_s": 32.16003796737641,
+  "endpoint_tolerance_mm": 1.0,
+  "collision_search_clearance_mm": 0.17,
+  "search_terminal_progress_minimum": 0.99001,
+  "hand_path_modified": false,
+  "source_seed_dimensions_mm": {
+    "L_ab": 39.10227750166036,
+    "L_bc": 74.13736881393068,
+    "L_cd": 32.90292142083922,
+    "L_ae": 80.30820519759921,
+    "L_de": 7.000000000000229,
+    "L_cg": 68.14576183597212,
+    "L_dg": 99.99989025257074,
+    "L_ef": 79.5113320247945,
+    "L_fg": 18.316195515374062,
+    "L_gh": 69.9243186640402,
+    "L_fh": 53.441753610845545
+  },
+  "validation": {
+    "poses": 4801,
+    "maximum_endpoint_error_mm": 0.9498074164539066,
+    "minimum_clearance_mm": 0.1700001892912928,
+    "worst_clearance_pair": "L_gh/distal",
+    "worst_clearance_progress": 0.990010003064793,
+    "worst_error_progress": 0.9335012140558557,
+    "maximum_link_length_error_mm": 9.592326932761353e-14,
+    "minimum_circle_triangle_margin_mm": 0.38433535682143116,
+    "maximum_node_step_mm": 0.09866606862902212,
+    "assembly_valid": true,
+    "monotonic_progress": true,
+    "start_progress": 0.0,
+    "terminal_progress": 0.990010003064793,
+    "endpoint_tolerance_mm": 1.0,
+    "attachment_exclusion_mm": 4.0,
+    "mechanism_radius_mm": 2.0,
+    "output_shape": "l_bracket",
+    "sampled_only": true,
+    "continuous_certification": false,
+    "three_dimensional_collision_checked": false,
+    "joint_force_or_singularity_analysis_complete": false,
+    "trajectory_passed": true,
+    "collision_passed": true,
+    "passed": true,
+    "endpoint_error_passed": true,
+    "motion_passed": true,
+    "maximum_projection_progress_difference": 7.28356541745967e-09,
+    "maximum_projection_position_difference_mm": 6.768264046882782e-07
+  },
+  "status": "sampled_planar_candidate_1mm",
+  "validation_source_run": "middle_clear017"
+}

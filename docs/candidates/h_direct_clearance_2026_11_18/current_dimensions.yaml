@@ -1,0 +1,241 @@
+schema_version: 1
+units: mm
+status: current_sampled_planar_candidate
+criteria:
+  reference_trajectory_tolerance_mm: 1.0
+  strict_H_R4_coincidence_required: false
+note: Uses check_clearance.py; legacy optimizer profiles are historical and do not
+  support this GH outline.
+fingers:
+  index:
+    lengths_mm:
+      L_ad: 21.112
+      L_ab: 28.39462143699637
+      L_bc: 26.774039889480367
+      L_cd: 21.30455499138238
+      L_ae: 26.664520205148154
+      L_de: 7.000011054551171
+      L_cg: 78.70654169929722
+      L_dg: 99.99999999999926
+      L_ef: 51.57375712591246
+      L_fg: 45.16490186032862
+      L_gh: 69.62241838320148
+      L_fh: 41.099749519264996
+    motor_q_range_deg:
+    - 0.15769405777028941
+    - 51.68690764047129
+    motor_q_convention: theta_AB = 90 degrees - q, then rotate all coordinates by
+      -ad_tilt_deg; see base_geometry.fk
+    ad_tilt_deg: 37.054
+    output_branch: 1
+    initial_positions_mm:
+      a:
+      - -16.84881073214355
+      - 12.721404046425228
+      b:
+      - 0.3231680571176696
+      - 35.33506520536843
+      c:
+      - 16.231352062708574
+      - 13.799538890747101
+      d:
+      - 0.0
+      - 0.0
+      e:
+      - 6.962762917711466
+      - 0.7211707950136406
+      f:
+      - 52.18881669805339
+      - 25.509403558569552
+      g:
+      - 78.01044919299022
+      - 62.56492481181244
+      h:
+      - 77.26562101373716
+      - -7.053509331084946
+    output_material_contour:
+      type: rigid_G_P_H_outline
+      terminal_run_mm: 10.0
+      normal_offset_mm: 0.0
+      segment_radius_mm: 2.0
+      H_exclusion_mm: 4.0
+      P_is_new_joint: false
+      FG_retained: true
+    contour_definition: u=(H-G)/|H-G|; P=H-terminal_run_mm*u+normal_offset_mm*rot90(u);
+      rigid FG and G-P-H capsules, not a joint at P
+    maximum_reference_error_mm: 0.23616998677316087
+    minimum_sampled_clearance_mm: 0.40895978236043895
+  middle:
+    lengths_mm:
+      L_ad: 73.95122274851227
+      L_ab: 38.95284504177015
+      L_bc: 73.42524232825717
+      L_cd: 32.922104329525695
+      L_ae: 80.32554793257522
+      L_de: 7.000000001644025
+      L_cg: 68.14328497048807
+      L_dg: 99.9999999951329
+      L_ef: 79.63635754552107
+      L_fg: 18.148761522209647
+      L_gh: 70.08123955083383
+      L_fh: 53.73241703780869
+    motor_q_range_deg:
+    - 25.828338770359963
+    - 67.28392841832056
+    motor_q_convention: theta_AB = 90 degrees - q, then rotate all coordinates by
+      -ad_tilt_deg; see base_geometry.fk
+    ad_tilt_deg: 9.905534457902052
+    output_branch: 1
+    initial_positions_mm:
+      a:
+      - -72.84881073214356
+      - 12.721404046425228
+      b:
+      - -50.099522936161534
+      - 44.34092399255567
+      c:
+      - 20.85944362505339
+      - 25.470543086816843
+      d:
+      - 0.0
+      - 0.0
+      e:
+      - 6.742101513998559
+      - 1.882569307610146
+      f:
+      - 73.78919606458673
+      - 44.85507860649284
+      g:
+      - 78.06885523861519
+      - 62.4920302179304
+      h:
+      - 88.6175355749557
+      - -6.790763318005057
+    output_material_contour:
+      type: rigid_G_P_H_outline
+      terminal_run_mm: 10.0
+      normal_offset_mm: 2.0
+      segment_radius_mm: 2.0
+      H_exclusion_mm: 4.0
+      P_is_new_joint: false
+      FG_retained: true
+    contour_definition: u=(H-G)/|H-G|; P=H-terminal_run_mm*u+normal_offset_mm*rot90(u);
+      rigid FG and G-P-H capsules, not a joint at P
+    maximum_reference_error_mm: 0.9498074164538935
+    minimum_sampled_clearance_mm: 0.17000373296722948
+  ring:
+    lengths_mm:
+      L_ad: 22.74009206068819
+      L_ab: 26.404108340484303
+      L_bc: 33.006690942496604
+      L_cd: 28.29888154210735
+      L_ae: 28.61975964791694
+      L_de: 7.0
+      L_cg: 91.70278707809707
+      L_dg: 119.99999999999422
+      L_ef: 75.42573177420289
+      L_fg: 41.07950000193062
+      L_gh: 71.62382124619859
+      L_fh: 37.86557746106927
+    motor_q_range_deg:
+    - 3.3214184045870416
+    - 56.43027795321812
+    motor_q_convention: theta_AB = 90 degrees - q, then rotate all coordinates by
+      -ad_tilt_deg; see base_geometry.fk
+    ad_tilt_deg: 34.01612723513954
+    output_branch: 1
+    initial_positions_mm:
+      a:
+      - -18.848810732143548
+      - 12.721404046425231
+      b:
+      - -2.834467130028507
+      - 33.71468240521021
+      c:
+      - 24.164413777542304
+      - 14.72779017103203
+      d:
+      - 0.0
+      - 0.0
+      e:
+      - 6.987940257687137
+      - 0.41072004455036204
+      f:
+      - 76.19827181065014
+      - 30.393565473277295
+      g:
+      - 103.056238297198
+      - 61.47692045011483
+      h:
+      - 82.09290679425867
+      - -7.01038130871693
+    output_material_contour:
+      type: rigid_G_P_H_outline
+      terminal_run_mm: 10.0
+      normal_offset_mm: 2.0
+      segment_radius_mm: 2.0
+      H_exclusion_mm: 4.0
+      P_is_new_joint: false
+      FG_retained: true
+    contour_definition: u=(H-G)/|H-G|; P=H-terminal_run_mm*u+normal_offset_mm*rot90(u);
+      rigid FG and G-P-H capsules, not a joint at P
+    maximum_reference_error_mm: 0.9203965608040767
+    minimum_sampled_clearance_mm: 0.10012154730892497
+  little:
+    lengths_mm:
+      L_ad: 65.10379983396894
+      L_ab: 48.29532638396398
+      L_bc: 43.89533569569429
+      L_cd: 24.306528838383592
+      L_ae: 72.1027998339687
+      L_de: 7.000000000071595
+      L_cg: 75.86992839383397
+      L_dg: 99.99999993829415
+      L_ef: 67.56980660460222
+      L_fg: 43.17390564992333
+      L_gh: 87.2153874099394
+      L_fh: 44.074735458625035
+    motor_q_range_deg:
+    - 40.80548061158103
+    - 79.22860585452754
+    motor_q_convention: theta_AB = 90 degrees - q, then rotate all coordinates by
+      -ad_tilt_deg; see base_geometry.fk
+    ad_tilt_deg: 11.268200503401262
+    output_branch: 1
+    initial_positions_mm:
+      a:
+      - -63.84881073214355
+      - 12.72140404642523
+      b:
+      - -25.753368950655748
+      - 42.406010596064405
+      c:
+      - 12.486786272589221
+      - 20.853956764936743
+      d:
+      - 0.0
+      - 0.0
+      e:
+      - 6.888307087923013
+      - -1.2454820205325141
+      f:
+      - 62.69654550972321
+      - 36.84807765612214
+      g:
+      - 60.07669403074125
+      - 79.94242191724946
+      h:
+      - 67.79521716189022
+      - -6.930751167079232
+    output_material_contour:
+      type: rigid_G_P_H_outline
+      terminal_run_mm: 10.0
+      normal_offset_mm: 2.0
+      segment_radius_mm: 2.0
+      H_exclusion_mm: 4.0
+      P_is_new_joint: false
+      FG_retained: true
+    contour_definition: u=(H-G)/|H-G|; P=H-terminal_run_mm*u+normal_offset_mm*rot90(u);
+      rigid FG and G-P-H capsules, not a joint at P
+    maximum_reference_error_mm: 0.7082048071697882
+    minimum_sampled_clearance_mm: 0.7500340740964742

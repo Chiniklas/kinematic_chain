@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-18",
+  "source_commit": "eaa99da09862c05bcbfeea907cd4c48453f80f96",
+  "criteria": {
+    "maximum_reference_trajectory_error_mm": 1.0,
+    "minimum_sampled_clearance_mm": 0.0,
+    "strict_H_R4_coincidence_required": false
+  },
+  "all_four_passed_sampled_planar_criteria": true,
+  "all_link_dimensions_and_holes_unchanged": true,
+  "repository_profiles_changed": false,
+  "results": {
+    "index": {
+      "old_minimum_clearance_mm": 0.40895978236043895,
+      "new_minimum_clearance_mm": 0.40895978236043895,
+      "maximum_reference_error_mm": 0.23616998677316087,
+      "new_limiting_pair": "GH_P_H/distal",
+      "contour": {
+        "type": "rigid_G_P_H_outline",
+        "terminal_run_mm": 10.0,
+        "normal_offset_mm": 0.0,
+        "segment_radius_mm": 2.0,
+        "H_exclusion_mm": 4.0,
+        "P_is_new_joint": false,
+        "FG_retained": true
+      },
+      "tested_configurations": 52811
+    },
+    "middle": {
+      "old_minimum_clearance_mm": -0.26695512874137695,
+      "new_minimum_clearance_mm": 0.17000373296722948,
+      "maximum_reference_error_mm": 0.9498074164538935,
+      "new_limiting_pair": "L_ef/middle",
+      "contour": {
+        "type": "rigid_G_P_H_outline",
+        "terminal_run_mm": 10.0,
+        "normal_offset_mm": 2.0,
+        "segment_radius_mm": 2.0,
+        "H_exclusion_mm": 4.0,
+        "P_is_new_joint": false,
+        "FG_retained": true
+      },
+      "tested_configurations": 52811
+    },
+    "ring": {
+      "old_minimum_clearance_mm": -0.3550568210904288,
+      "new_minimum_clearance_mm": 0.10012154730892497,
+      "maximum_reference_error_mm": 0.9203965608040767,
+      "new_limiting_pair": "L_ef/middle",
+      "contour": {
+        "type": "rigid_G_P_H_outline",
+        "terminal_run_mm": 10.0,
+        "normal_offset_mm": 2.0,
+        "segment_radius_mm": 2.0,
+        "H_exclusion_mm": 4.0,
+        "P_is_new_joint": false,
+        "FG_retained": true
+      },
+      "tested_configurations": 52811
+    },
+    "little": {
+      "old_minimum_clearance_mm": -0.02309242534255418,
+      "new_minimum_clearance_mm": 0.7500340740964742,
+      "maximum_reference_error_mm": 0.7082048071697882,
+      "new_limiting_pair": "GH_P_H/middle",
+      "contour": {
+        "type": "rigid_G_P_H_outline",
+        "terminal_run_mm": 10.0,
+        "normal_offset_mm": 2.0,
+        "segment_radius_mm": 2.0,
+        "H_exclusion_mm": 4.0,
+        "P_is_new_joint": false,
+        "FG_retained": true
+      },
+      "tested_configurations": 52811
+    }
+  },
+  "archive_branch": "wanwan"
+}
