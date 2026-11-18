@@ -1,0 +1,125 @@
+{
+  "finger": "little",
+  "lengths_mm": {
+    "L_ad": 65.10379983396894,
+    "L_ab": 48.26659129482116,
+    "L_bc": 43.98553271871182,
+    "L_cd": 24.344845523768075,
+    "L_ae": 72.10279983396889,
+    "L_de": 7.00000000000003,
+    "L_cg": 75.85994149456468,
+    "L_dg": 100.0,
+    "L_ef": 67.80917402152839,
+    "L_fg": 43.09341322619668,
+    "L_gh": 86.06036295966719,
+    "L_fh": 42.99244595495638
+  },
+  "q_deg": [
+    41.0114419133624,
+    44.46582023864566,
+    47.775068571558585,
+    50.97873410975442,
+    54.085133662366715,
+    57.29366375258264,
+    60.4117808789316,
+    63.423341067913775,
+    66.26074016698381,
+    68.86286107515062,
+    71.50534519797658,
+    73.4250677898328,
+    75.45669532587773,
+    76.76830934864307,
+    77.95665904076705,
+    78.70106175224763,
+    79.24986123890749
+  ],
+  "progress": [
+    0.0,
+    0.0625,
+    0.125,
+    0.1875,
+    0.25,
+    0.3125,
+    0.375,
+    0.4375,
+    0.5,
+    0.5625,
+    0.625,
+    0.6875,
+    0.75,
+    0.8125,
+    0.875,
+    0.9375,
+    1.0
+  ],
+  "output_branch": 1,
+  "model": "H is the direct revolute attachment to distal hand point R4",
+  "output_rod_present": false,
+  "perpendicularity_constraint": false,
+  "fixed_mount": {
+    "AD_mm": 65.10379983396894,
+    "tilt_deg": 11.268200503401262,
+    "dorsal_clearance_mm": 7.0
+  },
+  "source": "direct_conversion/little/result.json",
+  "removed_output_rod_mm": 28.639888168720535,
+  "output_shape": "l_bracket",
+  "optimizer": "SLSQP minimax endpoint error with collision and assembly constraints",
+  "search_history": [
+    {
+      "n": 17,
+      "optimizer_success": true,
+      "message": "Optimization terminated successfully",
+      "max_error_mm": 0.595571291615273,
+      "minimum_clearance_mm": 0.09999999475883214,
+      "constraint_min": -1.708801444788577e-08
+    }
+  ],
+  "bounds_mm": {
+    "L_ab": [
+      8,
+      50
+    ],
+    "L_bc": [
+      8,
+      100
+    ],
+    "L_cd": [
+      12.5,
+      55
+    ],
+    "L_ae": [
+      8,
+      130
+    ],
+    "L_de": [
+      7,
+      55
+    ],
+    "L_cg": [
+      8,
+      100
+    ],
+    "L_dg": [
+      12.5,
+      100
+    ],
+    "L_ef": [
+      8,
+      80
+    ],
+    "L_fg": [
+      8,
+      65
+    ],
+    "L_gh": [
+      8,
+      130
+    ],
+    "L_fh": [
+      8,
+      130
+    ]
+  },
+  "elapsed_s": 12.2799241701141
+}

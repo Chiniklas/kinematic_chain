@@ -1,0 +1,192 @@
+{
+  "finger": "middle",
+  "lengths_mm": {
+    "L_ad": 73.95122274851227,
+    "L_ab": 39.53966563179121,
+    "L_bc": 73.4438167704059,
+    "L_cd": 32.69489016074939,
+    "L_ae": 80.30858594930214,
+    "L_de": 7.000000000018148,
+    "L_cg": 68.04273464000462,
+    "L_dg": 99.25845177693661,
+    "L_ef": 79.99997388405626,
+    "L_fg": 17.011164843365574,
+    "L_gh": 68.90185325779494,
+    "L_fh": 53.48590836231158
+  },
+  "q_deg": [
+    24.125652972776873,
+    26.03444270352569,
+    27.94323243427451,
+    29.896791124888377,
+    31.850349815502245,
+    33.558667272418184,
+    35.26698472933412,
+    37.17584912682074,
+    39.08471352430735,
+    40.84837556116031,
+    42.612037598013266,
+    44.215734907316346,
+    45.819432216619425,
+    47.31758700727268,
+    48.81574179792594,
+    50.1063137963305,
+    51.39688579473505,
+    52.71421228538479,
+    54.03153877603454,
+    55.25949747347288,
+    56.48745617091122,
+    57.54878285123945,
+    58.61010953156768,
+    59.58142427762223,
+    60.552739023676786,
+    61.377708759648385,
+    62.20267849561998,
+    62.87999291614308,
+    63.557307336666184,
+    64.09846630706886,
+    64.63962527747155,
+    65.04285683858001,
+    65.44608839968845
+  ],
+  "progress": [
+    0.0,
+    0.03125,
+    0.0625,
+    0.09375,
+    0.125,
+    0.15625,
+    0.1875,
+    0.21875,
+    0.25,
+    0.28125,
+    0.3125,
+    0.34375,
+    0.375,
+    0.40625,
+    0.4375,
+    0.46875,
+    0.5,
+    0.53125,
+    0.5625,
+    0.59375,
+    0.625,
+    0.65625,
+    0.6875,
+    0.71875,
+    0.75,
+    0.78125,
+    0.8125,
+    0.84375,
+    0.875,
+    0.90625,
+    0.9375,
+    0.96875,
+    1.0
+  ],
+  "output_branch": 1,
+  "model": "H is the direct revolute attachment to distal hand point R4",
+  "output_rod_present": false,
+  "perpendicularity_constraint": false,
+  "fixed_mount": {
+    "AD_mm": 73.95122274851227,
+    "tilt_deg": 9.905534457902052,
+    "dorsal_clearance_mm": 7.0
+  },
+  "source": "direct_conversion/middle/result.json",
+  "removed_output_rod_mm": 13.403086015119001,
+  "output_shape": "l_bracket",
+  "optimizer": "SLSQP minimax endpoint error with collision and assembly constraints",
+  "search_history": [
+    {
+      "n": 17,
+      "optimizer_success": false,
+      "message": "Iteration limit reached",
+      "max_error_mm": 0.5107455301033419,
+      "minimum_clearance_mm": 0.09999999832636952,
+      "constraint_min": -5.333026020792886e-09
+    },
+    {
+      "n": 33,
+      "optimizer_success": false,
+      "message": "Iteration limit reached",
+      "max_error_mm": 0.6017153782088988,
+      "minimum_clearance_mm": 0.09999999832636952,
+      "constraint_min": -1.673630484200217e-09
+    }
+  ],
+  "bounds_mm": {
+    "L_ab": [
+      8,
+      50
+    ],
+    "L_bc": [
+      8,
+      100
+    ],
+    "L_cd": [
+      12.5,
+      55
+    ],
+    "L_ae": [
+      8,
+      130
+    ],
+    "L_de": [
+      7,
+      55
+    ],
+    "L_cg": [
+      8,
+      100
+    ],
+    "L_dg": [
+      12.5,
+      100
+    ],
+    "L_ef": [
+      8,
+      80
+    ],
+    "L_fg": [
+      8,
+      65
+    ],
+    "L_gh": [
+      8,
+      130
+    ],
+    "L_fh": [
+      8,
+      130
+    ]
+  },
+  "elapsed_s": 99.73832478374243,
+  "validation": {
+    "poses": 1201,
+    "maximum_endpoint_error_mm": 0.5129264832680297,
+    "minimum_clearance_mm": -0.2071899757427902,
+    "worst_clearance_pair": "L_gh/distal",
+    "worst_clearance_progress": 0.9952667305660141,
+    "worst_error_progress": 0.8335633909968624,
+    "maximum_link_length_error_mm": 8.348877145181177e-14,
+    "minimum_circle_triangle_margin_mm": 0.639322806036482,
+    "maximum_node_step_mm": 0.32025025849999755,
+    "assembly_valid": true,
+    "monotonic_progress": true,
+    "start_progress": 0.0,
+    "terminal_progress": 0.9952667305660141,
+    "endpoint_tolerance_mm": 0.1,
+    "attachment_exclusion_mm": 4.0,
+    "mechanism_radius_mm": 2.0,
+    "output_shape": "l_bracket",
+    "sampled_only": true,
+    "continuous_certification": false,
+    "three_dimensional_collision_checked": false,
+    "joint_force_or_singularity_analysis_complete": false,
+    "trajectory_passed": false,
+    "collision_passed": false,
+    "passed": false
+  },
+  "status": "rejected_search_candidate"
+}

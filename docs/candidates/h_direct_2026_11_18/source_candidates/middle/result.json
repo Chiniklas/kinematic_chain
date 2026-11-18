@@ -1,0 +1,215 @@
+{
+  "finger": "middle",
+  "status": "sampled_planar_candidate",
+  "lengths_mm": {
+    "L_ad": 73.95122274851227,
+    "L_ab": 40.22515378390519,
+    "L_bc": 68.78110106114407,
+    "L_cd": 28.27876004064995,
+    "L_ae": 80.23687401232348,
+    "L_de": 7.000000000010546,
+    "L_cg": 68.09851027650852,
+    "L_dg": 95.57922019236679,
+    "L_ef": 76.19666453919349,
+    "L_fg": 17.07675100100324,
+    "L_gh": 65.32531721419865,
+    "L_fh": 52.661835674534416,
+    "L_tip_rod": 13.403086015119001
+  },
+  "q_deg": [
+    30.70272779993872,
+    34.09595298894311,
+    37.39416821894112,
+    40.56364670027497,
+    43.62752854011543,
+    46.5253057418277,
+    49.26493721114111,
+    51.8130314001234,
+    54.16691621231207,
+    56.34356024147753,
+    58.31747314681652,
+    60.05150743406139,
+    61.5823606257982,
+    62.85132788975575,
+    63.92567484256589,
+    64.76784597723113,
+    65.41586873523995
+  ],
+  "progress": [
+    0.0,
+    0.0625,
+    0.125,
+    0.1875,
+    0.25,
+    0.3125,
+    0.375,
+    0.4375,
+    0.5,
+    0.5625,
+    0.625,
+    0.6875,
+    0.75,
+    0.8125,
+    0.875,
+    0.9375,
+    1.0
+  ],
+  "rigid_GH_HR4_right_angle": true,
+  "output_side": -1,
+  "stages": [
+    {
+      "n": 17,
+      "success": false,
+      "message": "Iteration limit reached",
+      "max_error_mm": 0.09000000230760621,
+      "min_clearance_mm": 0.0999999990623257,
+      "constraint_min": -2.3076229260787784e-09,
+      "rod_mm": 13.403086015119001
+    }
+  ],
+  "fixed_mount": {
+    "AD_mm": 73.95122274851227,
+    "tilt_deg": 9.905534457902052,
+    "dorsal_clearance_mm": 7.0
+  },
+  "parameterization": "FG_R4_triangle",
+  "optimizer": "SLSQP constrained minimum output-arm length",
+  "endpoint_limit_mm": 0.09,
+  "source_seed": "work/gh_right_angle_2026_11_18/middle_constrained/stage_33.json",
+  "bounds_mm": {
+    "L_ab": [
+      8,
+      50
+    ],
+    "L_bc": [
+      8,
+      100
+    ],
+    "L_cd": [
+      12.5,
+      55
+    ],
+    "L_ae": [
+      8,
+      130
+    ],
+    "L_de": [
+      7,
+      55
+    ],
+    "L_cg": [
+      8,
+      100
+    ],
+    "L_dg": [
+      12.5,
+      100
+    ],
+    "L_ef": [
+      8,
+      80
+    ],
+    "L_fg": [
+      8,
+      65
+    ],
+    "distance_G_R4": [
+      8,
+      130
+    ],
+    "distance_F_R4": [
+      8,
+      130
+    ],
+    "L_tip_rod": [
+      5,
+      60
+    ]
+  },
+  "input_angle_bounds_deg": [
+    -25,
+    115
+  ],
+  "collision_clearance_constraint_mm": 0.1,
+  "minimum_circle_triangle_inequality_margin_mm": 0.001,
+  "validation": {
+    "poses": 1201,
+    "assembly_valid": true,
+    "triangle_inequality_margin_lower_bound_mm": 0.05,
+    "maximum_link_length_error_mm": 9.947598300641403e-14,
+    "maximum_node_step_mm": 0.3653450936920566,
+    "legacy_autoassembly_agrees": true,
+    "maximum_legacy_autoassembly_difference_mm": 1.458552311592237e-12,
+    "maximum_endpoint_error_mm": 0.09462270557764527,
+    "minimum_clearance_mm": 0.09113270294567499,
+    "maximum_GH_perpendicular_deviation_deg": 2.975818765980323e-14,
+    "start_progress": 0.0,
+    "terminal_progress": 0.999952404315304,
+    "monotonic_progress": true,
+    "input_phase_deg": 30.70272779993872,
+    "input_travel_deg": 34.71314093530123,
+    "endpoint_tolerance_mm": 0.1,
+    "sampled_only": true,
+    "singularity_certified": false,
+    "3d_collision_certified": false,
+    "passed": true,
+    "maximum_hand_contact_GH_perpendicular_deviation_deg": 0.2642801021680502
+  },
+  "source_stage": "work/gh_right_angle_2026_11_18/middle_short/stage_17.json",
+  "nodes_initial_world_mm": {
+    "a": [
+      -72.84881073214356,
+      12.721404046425228
+    ],
+    "b": [
+      -46.6669137978789,
+      43.259433941334386
+    ],
+    "c": [
+      18.534137899597074,
+      21.35823030485861
+    ],
+    "d": [
+      0.0,
+      0.0
+    ],
+    "e": [
+      6.680642174027394,
+      2.0902201182538604
+    ],
+    "f": [
+      71.78954117540769,
+      41.67257676520511
+    ],
+    "g": [
+      75.7526873404776,
+      58.28308239340795
+    ],
+    "h": [
+      101.71015452323431,
+      -1.6636186550383005
+    ],
+    "r": [
+      89.41062312041836,
+      -6.989427701542211
+    ]
+  },
+  "rigid_output_definition": {
+    "body_nodes": [
+      "f",
+      "g",
+      "h",
+      "r4"
+    ],
+    "angle_G_H_R4_deg": 90,
+    "H_connection": "fixed within output body",
+    "R4_hand_connection": "revolute",
+    "circle_intersection_branch_signs": [
+      1,
+      1,
+      1,
+      -1,
+      1
+    ]
+  }
+}

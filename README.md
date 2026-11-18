@@ -1,5 +1,8 @@
 # Multi-finger exoskeleton co-optimization
 
+> **2026-11-18：H＝R4 直连方案已完成数值验证，目前四指候选均未通过全部判据。**
+> 验证代码、固定输入、误差记录及动画见 [H 直连验证报告](docs/candidates/h_direct_2026_11_18/README.md)；正式尺寸仍使用下方 2026-11-17 方案。
+
 > **2026-11-17：四指已按各自指根位置重新优化。** 指根相对食指为食指 0、中指 +6、无名指 +2、小指 −3 mm；电机孔位仍相差 50 mm。
 > 使用独立 `--design index/middle/ring/little` 配置；结果、完整尺寸和动态图见 [四指水平优化记录](docs/candidates/four_finger_offsets_2026_11_17/README.md)。旧长短模板和历史候选保留。
 
