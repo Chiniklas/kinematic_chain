@@ -1,0 +1,26 @@
+schema_version: 1
+version: V7
+date: '2026-11-17'
+title: Four-finger independent X-offset optimization
+status: historical
+fingers:
+- index
+- middle
+- ring
+- little
+standard_files:
+  finger_candidates:
+  - index.yaml
+  - middle.yaml
+  - ring.yaml
+  - little.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    index: docs/candidates/_archive/four_finger_offsets_2026_11_17/index/mechanism.yaml
+    middle: docs/candidates/_archive/four_finger_offsets_2026_11_17/middle/mechanism.yaml
+    ring: docs/candidates/_archive/four_finger_offsets_2026_11_17/ring/mechanism.yaml
+    little: docs/candidates/_archive/four_finger_offsets_2026_11_17/little/mechanism.yaml
+  preview: docs/candidates/_archive/four_finger_offsets_2026_11_17/comparison.png
+  motion: docs/candidates/_archive/four_finger_offsets_2026_11_17/motion.gif

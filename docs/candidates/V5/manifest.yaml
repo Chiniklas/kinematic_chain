@@ -1,0 +1,22 @@
+schema_version: 1
+version: V5
+date: '2026-11-16'
+title: Ring- and little-finger reoptimization
+status: historical
+fingers:
+- ring
+- little
+standard_files:
+  finger_candidates:
+  - ring.yaml
+  - little.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    ring: docs/candidates/_archive/ring_little_reoptimization/ring/parameters.json
+    little: docs/candidates/_archive/ring_little_reoptimization/little/parameters.json
+  preview: docs/candidates/_archive/ring_little_reoptimization/optimized_motion.png
+  motion: docs/candidates/_archive/ring_little_reoptimization/optimized_motion.png (single frame)
+notes:
+- single-frame GIF because the archived result has no animation

@@ -1,0 +1,26 @@
+schema_version: 1
+version: V9
+date: '2026-11-18'
+title: Four-finger GH-clearance contour candidate
+status: current
+fingers:
+- index
+- middle
+- ring
+- little
+standard_files:
+  finger_candidates:
+  - index.yaml
+  - middle.yaml
+  - ring.yaml
+  - little.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    index: docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml
+    middle: docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml
+    ring: docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml
+    little: docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml
+  preview: docs/candidates/_archive/h_direct_clearance_2026_11_18/clearance_before_after.png
+  motion: docs/candidates/_archive/h_direct_clearance_2026_11_18/motion.gif

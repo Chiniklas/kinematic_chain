@@ -1,0 +1,70 @@
+schema_version: 1
+version: V9
+finger: ring
+source:
+  path: docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml
+  format: current
+candidate:
+  units: mm
+  status: current_sampled_planar_candidate
+  criteria:
+    reference_trajectory_tolerance_mm: 1.0
+    strict_H_R4_coincidence_required: false
+  note: Uses check_clearance.py; legacy optimizer profiles are historical and do not support this GH outline.
+  dimensions:
+    lengths_mm:
+      L_ad: 22.74009206068819
+      L_ab: 26.404108340484303
+      L_bc: 33.006690942496604
+      L_cd: 28.29888154210735
+      L_ae: 28.61975964791694
+      L_de: 7.0
+      L_cg: 91.70278707809707
+      L_dg: 119.99999999999422
+      L_ef: 75.42573177420289
+      L_fg: 41.07950000193062
+      L_gh: 71.62382124619859
+      L_fh: 37.86557746106927
+    motor_q_range_deg:
+    - 3.3214184045870416
+    - 56.43027795321812
+    motor_q_convention: theta_AB = 90 degrees - q, then rotate all coordinates by -ad_tilt_deg; see base_geometry.fk
+    ad_tilt_deg: 34.01612723513954
+    output_branch: 1
+    initial_positions_mm:
+      a:
+      - -18.848810732143548
+      - 12.721404046425231
+      b:
+      - -2.834467130028507
+      - 33.71468240521021
+      c:
+      - 24.164413777542304
+      - 14.72779017103203
+      d:
+      - 0.0
+      - 0.0
+      e:
+      - 6.987940257687137
+      - 0.41072004455036204
+      f:
+      - 76.19827181065014
+      - 30.393565473277295
+      g:
+      - 103.056238297198
+      - 61.47692045011483
+      h:
+      - 82.09290679425867
+      - -7.01038130871693
+    output_material_contour:
+      type: rigid_G_P_H_outline
+      terminal_run_mm: 10.0
+      normal_offset_mm: 2.0
+      segment_radius_mm: 2.0
+      H_exclusion_mm: 4.0
+      P_is_new_joint: false
+      FG_retained: true
+    contour_definition: u=(H-G)/|H-G|; P=H-terminal_run_mm*u+normal_offset_mm*rot90(u); rigid FG and G-P-H
+      capsules, not a joint at P
+    maximum_reference_error_mm: 0.9203965608040767
+    minimum_sampled_clearance_mm: 0.10012154730892497

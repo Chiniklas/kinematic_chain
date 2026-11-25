@@ -1,0 +1,17 @@
+schema_version: 1
+version: V4
+date: '2026-11-09'
+title: Direct-drive thumb candidate
+status: historical
+fingers:
+- thumb
+standard_files:
+  finger_candidates:
+  - thumb.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    thumb: docs/candidates/_archive/thumb_direct/parameters.json
+  preview: docs/candidates/_archive/thumb_direct/preview_straight.png
+  motion: docs/candidates/_archive/thumb_direct/thumb_direct.gif

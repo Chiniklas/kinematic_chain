@@ -1,0 +1,26 @@
+schema_version: 1
+version: V8
+date: '2026-11-18'
+title: Direct H-to-R4 four-finger feasibility study
+status: historical_feasibility_study
+fingers:
+- index
+- middle
+- ring
+- little
+standard_files:
+  finger_candidates:
+  - index.yaml
+  - middle.yaml
+  - ring.yaml
+  - little.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    index: docs/candidates/_archive/h_direct_2026_11_18/selected/index/result.json
+    middle: docs/candidates/_archive/h_direct_2026_11_18/selected/middle/result.json
+    ring: docs/candidates/_archive/h_direct_2026_11_18/selected/ring/result.json
+    little: docs/candidates/_archive/h_direct_2026_11_18/selected/little/result.json
+  preview: docs/candidates/_archive/h_direct_2026_11_18/refined.png
+  motion: docs/candidates/_archive/h_direct_2026_11_18/motion.gif

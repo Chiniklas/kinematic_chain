@@ -49,7 +49,7 @@ class FingerMountTests(unittest.TestCase):
         self.assertTrue(any(p>0 for p in phases))
 
     def test_saved_candidates_pass_dense_checks_after_loading_new_profiles(self):
-        summary=json.loads((ROOT/'docs/candidates/four_finger_offsets_2026_11_17/summary.json').read_text())
+        summary=json.loads((ROOT/'docs/candidates/_archive/four_finger_offsets_2026_11_17/summary.json').read_text())
         for finger in ('index','middle','ring','little'):
             with self.subTest(finger=finger):
                 m,p=load_design(finger,finger)

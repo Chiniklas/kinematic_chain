@@ -1,19 +1,23 @@
 # Multi-finger exoskeleton co-optimization
 
+统一候选版本见 [V1–V9 索引](docs/candidates/README.md)；当前采用版本为
+[V9](docs/candidates/V9/manifest.yaml)。原始 JSON、日志、CAD 和复现脚本保存在
+`docs/candidates/_archive/`。
+
 > **2026-11-18 最新候选四指尺寸：保留 1 mm 轨迹容差，GH 轮廓避让后均通过本轮平面采样检查。**
-> 当前尺寸见 [四指尺寸 YAML](docs/candidates/h_direct_clearance_2026_11_18/current_dimensions.yaml) / [尺寸 CSV](docs/candidates/h_direct_clearance_2026_11_18/dimensions.csv)，[报告、对比图与动画](docs/candidates/h_direct_clearance_2026_11_18/README.md)。食指保持原轮廓；中指、无名指、小指 GH 采用距 H 回退 10 mm、向外偏出 2 mm 的一体轮廓，无名指 DG=120 mm。
+> 当前尺寸见 [四指尺寸 YAML](docs/candidates/_archive/h_direct_clearance_2026_11_18/current_dimensions.yaml) / [尺寸 CSV](docs/candidates/_archive/h_direct_clearance_2026_11_18/dimensions.csv)，[报告、对比图与动画](docs/candidates/_archive/h_direct_clearance_2026_11_18/README.md)。食指保持原轮廓；中指、无名指、小指 GH 采用距 H 回退 10 mm、向外偏出 2 mm 的一体轮廓，无名指 DG=120 mm。
 > 本轮不要求 H/R4 严格重合；每指检查 52,811 组参考/拟合插值姿态。结论仅为指定姿态族的平面候选验证。旧优化器配置仍使用历史模型；新轮廓请使用报告目录的 `check_clearance.py`，不要直接套用旧验证入口。
-> 原先采用严格闭合判据的 [H 直连研究](docs/candidates/h_direct_2026_11_18/README.md) 保留供比较。
+> 原先采用严格闭合判据的 [H 直连研究](docs/candidates/_archive/h_direct_2026_11_18/README.md) 保留供比较。
 
 > **2026-11-17：四指已按各自指根位置重新优化。** 指根相对食指为食指 0、中指 +6、无名指 +2、小指 −3 mm；电机孔位仍相差 50 mm。
-> 使用独立 `--design index/middle/ring/little` 配置；结果、完整尺寸和动态图见 [四指水平优化记录](docs/candidates/four_finger_offsets_2026_11_17/README.md)。旧长短模板和历史候选保留。
+> 使用独立 `--design index/middle/ring/little` 配置；结果、完整尺寸和动态图见 [四指水平优化记录](docs/candidates/_archive/four_finger_offsets_2026_11_17/README.md)。旧长短模板和历史候选保留。
 
 
-[Thumb non-return candidate: straight F-G-H output with relocated D/E pivots (scheme 3, kinematic preview)](docs/candidates/thumb_nonreturn_v1/README.md)
+[Thumb non-return candidate: straight F-G-H output with relocated D/E pivots (scheme 3, kinematic preview)](docs/candidates/_archive/thumb_nonreturn_v1/README.md)
 
-[Standalone direct-drive thumb candidate and CAD files](docs/candidates/thumb_direct/README.md)
+[Standalone direct-drive thumb candidate and CAD files](docs/candidates/_archive/thumb_direct/README.md)
 
-[Ring and little finger length/starting-angle optimization results](docs/candidates/ring_little_reoptimization/README.md)
+[Ring and little finger length/starting-angle optimization results](docs/candidates/_archive/ring_little_reoptimization/README.md)
 
 This repository is developing a hand-mounted exoskeleton from the planar
 `mechanism_2` linkage. The index, middle, ring, and little fingers are four independent

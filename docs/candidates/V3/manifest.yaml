@@ -1,0 +1,17 @@
+schema_version: 1
+version: V3
+date: '2026-09-08'
+title: Extended-mount middle-finger candidate
+status: historical
+fingers:
+- middle
+standard_files:
+  finger_candidates:
+  - middle.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    middle: docs/candidates/_archive/middle_finger_long_ad/mechanism.yaml
+  preview: docs/candidates/_archive/middle_finger_long_ad/design_animation.gif (first frame)
+  motion: docs/candidates/_archive/middle_finger_long_ad/design_animation.gif

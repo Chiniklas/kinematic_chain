@@ -1,0 +1,17 @@
+schema_version: 1
+version: V2
+date: '2026-09-06'
+title: Tilted-mount index-finger candidate
+status: historical
+fingers:
+- index
+standard_files:
+  finger_candidates:
+  - index.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    index: docs/candidates/_archive/index_finger_tilted_v2/mechanism.yaml
+  preview: docs/candidates/_archive/index_finger_tilted_v2/design_animation.gif (first frame)
+  motion: docs/candidates/_archive/index_finger_tilted_v2/design_animation.gif

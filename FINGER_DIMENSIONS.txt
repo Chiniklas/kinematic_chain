@@ -32,4 +32,4 @@ Y 坐标来源：用户的模型装配图（当前仓库尚未记录）
 3. 获得模型装配图中的 Y 坐标后，应把上表中的“待从模型装配图补充”替换为实际数值。
 4. 以后修改任一指根 X/Y 坐标或任一人体指节长度时，必须在同一批改动中同步更新本文件。
 5. 指节长度的模型输入位于 src/co-optimization/config/objectives/；X 偏移的当前记录位于
-   docs/candidates/four_finger_offsets_2026_11_17/summary.json。
+   docs/candidates/_archive/four_finger_offsets_2026_11_17/summary.json。

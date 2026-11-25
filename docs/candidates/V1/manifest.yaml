@@ -1,0 +1,17 @@
+schema_version: 1
+version: V1
+date: '2026-08-25'
+title: Initial index-finger candidate
+status: historical
+fingers:
+- index
+standard_files:
+  finger_candidates:
+  - index.yaml
+  preview: preview.png
+  motion: motion.gif
+sources:
+  finger_candidates:
+    index: docs/candidates/_archive/index_finger_v1/mechanism.yaml
+  preview: docs/candidates/_archive/index_finger_v1/abstraction.png
+  motion: docs/candidates/_archive/index_finger_v1/design_animation.gif

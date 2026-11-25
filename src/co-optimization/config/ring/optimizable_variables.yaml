@@ -21,7 +21,7 @@ model:
   notes:
   - Independent ring mount and selected seed from 2026-11-17.
   - L_ad and installed input phase are fixed inputs; moving-link lengths are independent.
-  - See docs/candidates/four_finger_offsets_2026_11_17 for assumptions and sampled
+  - See docs/candidates/_archive/four_finger_offsets_2026_11_17 for assumptions and sampled
     validation.
   initialization: independent_measured_finger_mount
 variables:
